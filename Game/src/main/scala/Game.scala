@@ -1,3 +1,5 @@
+package main.scala
+
 /**
  * Created by Andrei on 25/01/15.
  */

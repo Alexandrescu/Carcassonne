@@ -1,8 +1,12 @@
 .idea/*
-project/*
 
 *.class
 
 target/*
 
 Game/Game.iml
+
+Game/target/*
+project/target/*
+
+*.cache
