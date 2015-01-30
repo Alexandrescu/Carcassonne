@@ -8,7 +8,9 @@
  * a difference between the "before" and "after" piece of grass the road splits.
  */
 
-abstract class TileEdge(sectionId : Integer)
-case class RoadEdge(sectionId : Integer) extends TileEdge(sectionId)
-case class CityEdge(sectionId : Integer) extends TileEdge(sectionId)
-case class GrassEdge(sectionId : Integer, beforeGrassSection : Integer, afterGrassSection : Integer) extends TileEdge(sectionId)
+package main.scala
+
+abstract class TileEdge
+case class GrassEdge(var sectionId : Integer) extends TileEdge
+case class CityEdge(var sectionId : Integer) extends TileEdge
+case class RoadEdge(var beforeGrassSection : Integer, var sectionId : Integer, var afterGrassSection : Integer) extends TileEdge
