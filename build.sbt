@@ -1,9 +1,18 @@
-name := "Carcassonne"
+autoScalaLibrary := false
 
-version := "1.0"
+lazy val commonSettings = Seq(
+  version := "1.0",
+  scalaVersion := "2.11.5"
+)
 
-scalaVersion := "2.11.5"
+lazy val carcassonne = (project in file(".")).
+  settings(commonSettings: _*).
+  settings(
+    name := "Carcassonne",
+    libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1"
+  )
 
-libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
-
-lazy val game = (project in file("./game/.")).settings(name := "game")
+lazy val game = (project in file("./game/.")).
+  settings(commonSettings: _*).
+  settings(name := "game").
+  dependsOn(carcassonne % "compile->compile;test->test")
