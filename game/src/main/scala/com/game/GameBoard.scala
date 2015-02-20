@@ -2,12 +2,26 @@ package com.game
 
 import main.scala.Tile
 
+import scala.collection.immutable.HashMap
+
 class GameBoard extends Board{
-  override def get(i: Int, j: Int): Tile = ???
+  val board : HashMap[Place, Tile] = new HashMap()
 
-  override def placeMove(tile: Tile, follower: Follower, i: Int, j: Int): Boolean = ???
+  override def get(place : Place): Option[Tile] = {
+    if(board.contains(place))
+      board.get(place)
+    None
+  }
 
-  override def getBoard(): Set[Tile] = ???
+  override def setMove(tile: Tile, place : Place, tileSection : Section, follower: PlayerFollower) : Boolean = {
+    false
+  }
 
-  override def isPlaceMove(tile: Tile, follower: Follower, i: Int, j: Int): Boolean = ???
+  override def getBoard(): Map[Place, Tile] = {
+    board
+  }
+
+  override def isMove(tile: Tile, place: Place, tileSection: Section, follower: PlayerFollower): Boolean = {
+    true
+  }
 }
