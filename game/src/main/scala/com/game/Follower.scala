@@ -1,8 +1,5 @@
 package com.game
 
-/**
- * Created by Andrei on 20/02/15.
- */
-class Follower {
-
-}
+abstract class Follower
+case class PlayerFollower(id : Integer) extends Follower
+case class Section(id : Integer) extends Follower
