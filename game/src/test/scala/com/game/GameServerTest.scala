@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers, ParallelTestExecution}
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class GameTest extends FlatSpec with MockFactory with BeforeAndAfter
+class GameServerTest extends FlatSpec with MockFactory with BeforeAndAfter
   with Matchers with ScalaFutures with ParallelTestExecution with AsyncAssertions {
 
   val mockGame = new Game
@@ -32,9 +32,6 @@ class GameTest extends FlatSpec with MockFactory with BeforeAndAfter
       Await.ready(mockPlayer.promise.future, 2 seconds)
     }
     assert(mockPlayer.isConnected)
-
   }
 
-  it should "start a server async" in {
-  }
 }
