@@ -3,8 +3,9 @@ package com.game
 import main.scala.Tile
 
 trait Board {
-  def get(i : Int, j : Int) : Tile
-  def getBoard() : Set[Tile]
-  def isPlaceMove(tile : Tile, follower : Follower, i : Int, j : Int) : Boolean
-  def placeMove(tile : Tile, follower : Follower, i : Int, j : Int) : Boolean
+  final type Place = (Integer, Integer)
+  def get(place : Place) : Option[Tile]
+  def getBoard() : Map[Place, Tile]
+  def setMove(tile: Tile, place : Place, tileSection : Section, follower : PlayerFollower) : Boolean
+  def isMove(tile : Tile, place : Place, tileSection : Section, follower : PlayerFollower) : Boolean
 }
