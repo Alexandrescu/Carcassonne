@@ -4,12 +4,13 @@
 
 package main.scala
 
+object Direction extends Enumeration {
+  type Direction = Value
+  val Up, Down, Left, Right = Value
+}
+import Direction._
+
 abstract class Tile(val identifier : String, up : TileEdge, down : TileEdge, left : TileEdge, right :TileEdge, value : Int) {
-  object Direction extends Enumeration {
-    type Direction = Value
-    val Up, Down, Left, Right = Value
-  }
-  import Direction._
 
   def getTileEdge(direction : Direction) : TileEdge = direction match {
     case Up => up
