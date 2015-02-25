@@ -1,30 +1,60 @@
-/**
- * Created by Andrei on 28/01/15.
- */
-
 package main.scala
 
-object Direction extends Enumeration {
-  type Direction = Value
-  val Up, Down, Left, Right = Value
-}
-import Direction._
+import main.scala.Direction._
 
-abstract class Tile(val identifier : String, up : TileEdge, down : TileEdge, left : TileEdge, right :TileEdge, value : Int) {
+
+abstract class Tile(identifier : String,
+                    _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge, value : Int,
+                    private var _orientation : Option[Direction]) {
+
+  def orientation_=(aOrientation : Direction): Unit = {
+    // I should probably throw an error or remove the if statement
+    if(_orientation.isEmpty)
+      _orientation = Some(aOrientation)
+  }
+
+  def orientation = _orientation
+
+  def up = {getEdge(Up)}
+  def down = {getEdge(Down)}
+  def left = {getEdge(Left)}
+  def right = {getEdge(Right)}
+
+  implicit def directionToInt(direction : Direction) : Int = direction match {
+    case Up => 0
+    case Left => 1
+    case Down => 2
+    case Right => 3
+  }
+
+  implicit def intToDirection(value : Int) : Direction = (value % 4) match {
+    case 0 => Up
+    case 1 => Left
+    case 2 => Down
+    case 3=> Right
+  }
+
+  private def getEdge(direction : Direction) : TileEdge = {
+    val directionValue : Int = direction
+    val offset : Int = orientation.getOrElse(Up)
+    val finalDirection = directionValue + offset
+
+    getTileEdge(finalDirection)
+  }
 
   def getTileEdge(direction : Direction) : TileEdge = direction match {
-    case Up => up
-    case Down => down
-    case Right => right
-    case Left => left
+    case Up => _up
+    case Down => _down
+    case Right => _right
+    case Left => _left
   }
 }
 
-case class SimpleTile(override val identifier : String, up : TileEdge, down : TileEdge, left : TileEdge, right :TileEdge)
-  extends Tile(identifier, up, down, left, right, 1)
+case class SimpleTile(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
+  extends Tile(identifier, _up, _down, _left, _right, 1, None)
 
-case class Monastery(override val identifier : String, up : TileEdge, down : TileEdge, left : TileEdge, right :TileEdge)
-  extends Tile(identifier, up, down, left, right, 1)
+case class Monastery(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
+  extends Tile(identifier, _up, _down, _left, _right, 1, None)
 
-case class BannerTile(override val identifier : String, up : TileEdge, down : TileEdge, left : TileEdge, right :TileEdge)
-  extends Tile(identifier, up, down, left, right, 2)
+case class BannerTile(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
+  extends Tile(identifier, _up, _down, _left, _right, 2, None)
