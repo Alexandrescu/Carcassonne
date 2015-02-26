@@ -35,11 +35,10 @@ abstract class Tile(identifier : String,
   }
 
   private def getEdge(direction : Direction) : TileEdge = {
-    val directionValue : Int = direction
-    val offset : Int = orientation.getOrElse(Up)
-    val finalDirection = directionValue + offset
+    val offset : Int = orientation.getOrElse(Up).toInt
+    val directionValue = direction.toInt + offset
 
-    getTileEdge(finalDirection)
+    getTileEdge(directionValue)
   }
 
   def getTileEdge(direction : Direction) : TileEdge = direction match {
