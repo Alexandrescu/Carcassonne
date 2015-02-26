@@ -13,7 +13,7 @@ abstract class Tile(identifier : String,
       _orientation = Some(aOrientation)
   }
 
-  def orientation = _orientation
+  def orientation = _orientation.getOrElse(Up)
 
   def up = {getEdge(Up)}
   def down = {getEdge(Down)}
@@ -35,7 +35,7 @@ abstract class Tile(identifier : String,
   }
 
   private def getEdge(direction : Direction) : TileEdge = {
-    val offset : Int = orientation.getOrElse(Up).toInt
+    val offset : Int = orientation.toInt
     val directionValue = direction.toInt + offset
 
     getTileEdge(directionValue)
