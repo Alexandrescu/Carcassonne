@@ -3,9 +3,7 @@ package com.game
 import main.scala.Direction._
 import main.scala._
 
-import scala.collection.mutable.HashSet
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{HashMap, HashSet}
 
 class StandardLogic extends Logic{
 
@@ -16,25 +14,28 @@ class StandardLogic extends Logic{
     case Right => Left
   }
 
-  def placeTile(tile : Tile, tiles : Map[Direction, Tile]): Option[HashMap[Int, HashSet[Int]]] = {
+  def placeTile(tile : Tile, tiles : Map[Direction, Tile]): Option[HashMap[TileSection, HashSet[BoardSection]]] = {
     // Unions has all the mappings from the sections to the boardSections
-    var unions : HashMap[Int, HashSet[Int]] = new HashMap()
+    var unions : HashMap[TileSection, HashSet[BoardSection]] = new HashMap()
 
     tiles.foreach{
       case (direction, thatTile) => tileMatch(tile, direction, thatTile) match {
         case None => return None
         case Some(deps) => deps.foreach(p => p match {
           case (TileSection(tileID), BoardSection(boardID)) => {
-            unions.get(tileID) match {
+            unions.get(TileSection(tileID)) match {
               case None => {
-                val set = new HashSet() + boardID
-                unions += (tileID -> set)
+                val set = new HashSet() + BoardSection(boardID)
+                unions += (TileSection(tileID) -> set)
               }
               case Some(set) => {
-                unions -= tileID
-                unions += (tileID -> (set + boardID))
+                unions -= TileSection(tileID)
+                unions += (TileSection(tileID) -> (set + BoardSection(boardID)))
               }
             }
+          }
+          case _ => {
+            throw new Error("We should have got a (TileSection, BoardSection) pair.")
           }
         })
       }
@@ -61,41 +62,7 @@ class StandardLogic extends Logic{
     }
   }
 
-  def tileMatchus(value: Tile, value1: Direction, tile: Tile) : Boolean = {
-    var actionList = new ArrayBuffer()
-
-
-
-    true
+  override def isMove(tile: Tile, tiles: Map[Direction, Tile]): Option[HashMap[TileSection, HashSet[BoardSection]]] = {
+    placeTile(tile, tiles)
   }
-
-  /** A move is divided into the following stages:
-    *
-    * 1. Placing new tiles
-    *
-    * */
-
-  override def isTileMove(thisTile : Tile, tiles : Map[Direction, Tile]): Boolean = {
-    tiles.forall {
-      case (direction, thatTile) => tileMatchus(thatTile, direction, thisTile)
-    }
-    None.isEmpty
-  }
-
-  // Returns none if not a valid move
-  override def validSections(tile: Tile, tiles: Map[Direction, Tile]): Option[List[TileSection]] = ???
-
-  override def isMove(tile: Tile, section: TileSection, tiles: Map[Direction, Tile]): Option[List[Action]] =
-    placeTile(tile, tiles) match {
-      case None => null
-      case Some(dependencies) => {
-        var validFollower = true
-
-        dependencies.foreach{case (tileSection, boardSections) => {
-          if(section.id == tileSection) {
-            validFollower = boardSections.forall()
-          }
-        }}
-      }
-    }
 }
