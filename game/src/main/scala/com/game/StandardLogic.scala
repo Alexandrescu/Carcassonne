@@ -1,9 +1,7 @@
 package com.game
 
+import com.tile._
 import main.scala.Direction._
-import main.scala._
-
-import scala.collection.mutable.{HashMap, HashSet}
 
 class StandardLogic extends Logic{
 
@@ -14,55 +12,42 @@ class StandardLogic extends Logic{
     case Right => Left
   }
 
-  def placeTile(tile : Tile, tiles : Map[Direction, Tile]): Option[HashMap[TileSection, HashSet[BoardSection]]] = {
+  def placeTile(thisTile : Tile, tiles : Map[Direction, Tile]): Option[Map[Section, Set[Section]]] = {
     // Unions has all the mappings from the sections to the boardSections
-    var unions : HashMap[TileSection, HashSet[BoardSection]] = new HashMap()
+    var unions : Map[Section, Set[Section]] = Map()
 
-    tiles.foreach{
-      case (direction, thatTile) => tileMatch(tile, direction, thatTile) match {
-        case None => return None
-        case Some(deps) => deps.foreach(p => p match {
-          case (TileSection(tileID), BoardSection(boardID)) => {
-            unions.get(TileSection(tileID)) match {
-              case None => {
-                val set = new HashSet() + BoardSection(boardID)
-                unions += (TileSection(tileID) -> set)
-              }
-              case Some(set) => {
-                unions -= TileSection(tileID)
-                unions += (TileSection(tileID) -> (set + BoardSection(boardID)))
-              }
-            }
-          }
-          case _ => {
-            throw new Error("We should have got a (TileSection, BoardSection) pair.")
-          }
-        })
-      }
-    }
+    // Exploring each direction for the tile
+    tiles.foreach{ case (direction, thatTile) => tileMatch(thisTile, direction, thatTile) match {
+      case None => return None
+      case Some(sectionMap) => sectionMap.foreach{ case (tileSection, boardSection) => {
+        val depSet = unions.getOrElse(tileSection, Set())
+        unions = unions - tileSection
+        unions = unions + (tileSection -> (depSet + boardSection))
+      }}
+    }}
 
     return Some(unions)
   }
 
-  def tileMatch(tile: Tile, direction : Direction, that : Tile) : Option[Map[Section, Section]] = {
+  private def tileMatch(tile: Tile, direction : Direction, that : Tile) : Option[Map[Section, Section]] = {
     val thisEdge = tile.getEdge(direction)
     val thatEdge = that.getEdge(reverse(direction))
 
     (thisEdge, thatEdge) match {
-      case (GrassEdge(t1), GrassEdge(b1)) => {
-        Some(Map(t1 -> b1))
+      case (GrassEdge(t), GrassEdge(b)) => {
+        Some(Map(t -> b))
       }
-      case (RoadEdge(beforeT1, t1, afterT1), RoadEdge(afterB1, b1, beforeB1)) => {
-        Some(Map(beforeT1 -> beforeB1, t1 -> b1, afterT1 -> afterB1))
+      case (RoadEdge(beforeT, t, afterT), RoadEdge(afterB, b, beforeB)) => {
+        Some(Map(beforeT -> beforeB, t -> b, afterT -> afterB))
       }
-      case (CityEdge(t1), CityEdge(b1)) => {
-        Some(Map(t1 -> b1))
+      case (CityEdge(t), CityEdge(b)) => {
+        Some(Map(t -> b))
       }
       case _ => None
     }
   }
 
-  override def isMove(tile: Tile, tiles: Map[Direction, Tile]): Option[HashMap[TileSection, HashSet[BoardSection]]] = {
+  override def isMove(tile: Tile, tiles: Map[Direction, Tile]): Option[Map[Section, Set[Section]]] = {
     placeTile(tile, tiles)
   }
 }
