@@ -4,8 +4,9 @@
 
 target/*
 
+com.game.com.game.Game/com.game.com.game.Game.iml
 
-com.game.Game/target/*
+com.game.com.game.Game/target/*
 project/target/*
 
 *.cache
