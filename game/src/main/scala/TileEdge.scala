@@ -10,9 +10,10 @@
 
 package main.scala
 
-import com.game.TileSection
+import com.game._
 
 abstract class TileEdge
-case class GrassEdge(var sectionId : TileSection) extends TileEdge
-case class CityEdge(var sectionId : TileSection) extends TileEdge
-case class RoadEdge(var beforeGrassSection : TileSection, var sectionId : TileSection, var afterGrassSection : TileSection) extends TileEdge
+case class GrassEdge(grass : GrassSection) extends TileEdge
+case class CityEdge(city : CitySection) extends TileEdge
+// before, current, after in clockwise fashion
+case class RoadEdge(beforeGrass : GrassSection, road : RoadSection, afterGrass: GrassSection) extends TileEdge
