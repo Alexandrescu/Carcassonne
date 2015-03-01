@@ -1,21 +1,22 @@
-package com.game
+package com.board
 
+import com.tile.{RoadEdge, CityEdge, GrassEdge, SimpleTile}
 import main.scala.Direction._
-import main.scala.{CityEdge, GrassEdge, RoadEdge, SimpleTile}
+import main.scala.RoadEdge
 import org.scalatest.FlatSpec
 
 class TileTest extends FlatSpec {
   trait StartTile {
     val identifier = "D"
     val tile = SimpleTile(identifier,
-      RoadEdge(Section(1), Section(2), Section(3)),
-      RoadEdge(Section(3), Section(2), Section(1)),
-      GrassEdge(Section(1)), CityEdge(Section(4)))
+      RoadEdge(TileSection(1), TileSection(2), TileSection(3)),
+      RoadEdge(TileSection(3), TileSection(2), TileSection(1)),
+      GrassEdge(TileSection(1)), CityEdge(TileSection(4)))
 
-    val upEdge = RoadEdge(Section(1), Section(2), Section(3))
-    val downEdge = RoadEdge(Section(3), Section(2), Section(1))
-    val leftEdge = GrassEdge(Section(1))
-    val rightEdge = CityEdge(Section(4))
+    val upEdge = RoadEdge(TileSection(1), TileSection(2), TileSection(3))
+    val downEdge = RoadEdge(TileSection(3), TileSection(2), TileSection(1))
+    val leftEdge = GrassEdge(TileSection(1))
+    val rightEdge = CityEdge(TileSection(4))
   }
   "Tile" should "have a identifier" in new StartTile {
     assert(tile.identifier == identifier)

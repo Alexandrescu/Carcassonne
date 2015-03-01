@@ -1,20 +1,20 @@
-package com.game
+package com.board
 
+import com.tile.Tile
 import main.scala.Direction._
 import main.scala.Direction.Direction
-import main.scala.{Player, Direction, Tile}
+import main.scala.{Player, Direction}
 
 import scala.collection.mutable._
 
 
-class GameBoard(logic: Logic, unionKeeper : UnionKeeper) extends Board{
-  val BaseSection = unionKeeper.base
+class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   val board : scala.collection.immutable.HashMap[Place, Tile] = new scala.collection.immutable.HashMap()
   val boardOutline : scala.collection.immutable.HashMap[Place, Tile] = new scala.collection.immutable.HashMap()
 
   private def canOwn(boardSections: Option[HashSet[BoardSection]]) : Boolean =  boardSections match {
     case None => true
-    case Some(sections) => sections.forall(unionKeeper.isOwned)
+    case Some(sections) => sections.forall(sectionKeeper.isOwned)
   }
 
   // No going back now
@@ -28,9 +28,9 @@ class GameBoard(logic: Logic, unionKeeper : UnionKeeper) extends Board{
       }
       freeSections = freeSections - tileSection
 
-      val newSection = boardSections.foldLeft(BaseSection){case (sectA, sectB) => unionKeeper.union(sectA, sectB)}
+      val newSection = boardSections.reduce{case (sectA, sectB) => sectionKeeper.union(sectA, sectB)}
       if(toOwnPair.isDefined && tileSection == toOwnPair.get._1) {
-        unionKeeper.own(newSection, toOwnPair.get._2)
+        sectionKeeper.own(newSection, toOwnPair.get._2)
       }
       tile.updateSection(tileSection, newSection)
     }

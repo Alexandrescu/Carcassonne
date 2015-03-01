@@ -1,4 +1,4 @@
-package com.game
+package com.board
 
 import main.scala.Player
 
@@ -9,7 +9,7 @@ trait UnionKeeper {
   def isOwned(boardSection : BoardSection) : Boolean
 
   def union(boardSectionA: BoardSection, boardSectionB: BoardSection) : BoardSection
-  def own(boardSection: BoardSection, player : Player) : Unit
+  def own(boardSection: BoardSection, player : Player) : Boolean
 
   def base : BoardSection
 }

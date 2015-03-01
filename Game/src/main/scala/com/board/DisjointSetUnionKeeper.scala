@@ -1,8 +1,10 @@
-package com.game
+package com.board
 
 import main.scala.Player
 
 class DisjointSetUnionKeeper extends UnionKeeper{
+  private val sectionKeeper : SectionKeeper = ???
+
   private val parent : Array[Int] = new Array[Int](1024)
   private val rank : Array[Int] = new Array[Int](1024)
   private var currentSection = 0

@@ -1,4 +1,4 @@
-package com.game
+package com.board
 
 import org.scalatest.FlatSpec
 

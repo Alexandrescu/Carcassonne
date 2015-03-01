@@ -1,6 +1,7 @@
-package com.game
+package com.board
 
-import main.scala.{Player, Tile}
+import com.tile.Tile
+import main.scala.Player
 
 trait Board {
   final type Place = (Integer, Integer)

@@ -1,5 +1,6 @@
-package com.game
+package com.board
 
+import com.tile._
 import main.scala._
 import main.scala.Direction._
 import org.scalatest.FlatSpec

@@ -1,4 +1,4 @@
-package com.game.mocks
+package com.board.mocks
 
 import main.scala.Player
 
