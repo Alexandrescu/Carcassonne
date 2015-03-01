@@ -6,7 +6,7 @@ class GameTest extends FlatSpec {
 
   val mockGame = new Game
 
-  "Game" should "know how many player have connected to the game"
+  "com.game.Game" should "know how many player have connected to the game"
   it should "be able to identify players by id" in {
     // In here I will mock the player id inside the game
   }

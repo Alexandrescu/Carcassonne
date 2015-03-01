@@ -1,7 +1,7 @@
 package com.board
 
+import com.game.Player
 import com.tile._
-import main.scala.Player
 
 class SectionKeeper {
   def removeOpen(section: Section): Unit = ???

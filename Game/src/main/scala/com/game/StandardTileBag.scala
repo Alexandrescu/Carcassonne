@@ -6,7 +6,7 @@
  * when implementing the AI for efficiency
  */
 
-package main.scala
+package com.game
 
 import scala.util.Random
 

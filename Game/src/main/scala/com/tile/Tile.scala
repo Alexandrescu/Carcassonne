@@ -1,6 +1,7 @@
 package com.tile
 
-import main.scala.Direction._
+import com.game.Direction
+import Direction._
 
 abstract class Tile(identifier : String,
                     private var _up : TileEdge,

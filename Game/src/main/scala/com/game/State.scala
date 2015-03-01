@@ -1,4 +1,4 @@
-package main.scala
+package com.game
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 

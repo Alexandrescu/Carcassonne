@@ -1,4 +1,4 @@
-package main.scala
+package com.game
 
 trait TileBag {
   val startTile : Tile

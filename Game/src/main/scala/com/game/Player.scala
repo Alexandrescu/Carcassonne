@@ -1,4 +1,4 @@
-package main.scala
+package com.game
 
 import com.github.nkzawa.emitter.Emitter.Listener
 import com.github.nkzawa.socketio.client.IO.Options

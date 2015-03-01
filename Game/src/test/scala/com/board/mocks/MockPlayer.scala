@@ -1,6 +1,6 @@
 package com.board.mocks
 
-import main.scala.Player
+import com.game.Player
 
 class MockPlayer extends Player{
   override def name: String = "MockPlayer"

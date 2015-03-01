@@ -1,4 +1,4 @@
-package main.scala
+package com.game
 
 import scala.reflect.ClassTag
 

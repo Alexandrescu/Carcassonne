@@ -1,7 +1,8 @@
 package com.board
 
+import com.game.Direction
 import com.tile._
-import main.scala.Direction._
+import Direction._
 
 class StandardLogic extends Logic{
 

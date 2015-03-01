@@ -1,3 +1,4 @@
+import com.game.{State, StandardTileBag}
 import main.scala._
 import org.scalatest.{Matchers, FlatSpec}
 /**

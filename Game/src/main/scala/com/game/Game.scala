@@ -1,3 +1,5 @@
+package com.game
+
 import com.corundumstudio.socketio.listener.ConnectListener
 import com.corundumstudio.socketio.{Configuration, SocketIOClient, SocketIOServer}
 

@@ -1,7 +1,8 @@
 package com.board
 
+import com.game.Direction
 import com.tile.{RoadEdge, CityEdge, GrassEdge, SimpleTile}
-import main.scala.Direction._
+import Direction._
 import main.scala.RoadEdge
 import org.scalatest.FlatSpec
 

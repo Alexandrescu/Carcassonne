@@ -1,3 +1,4 @@
+import com.game.StandardTileBag
 import main.scala._
 import org.scalatest.FlatSpec
 

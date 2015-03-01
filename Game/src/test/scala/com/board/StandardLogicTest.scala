@@ -1,8 +1,9 @@
 package com.board
 
+import com.game.Direction
 import com.tile._
 import main.scala._
-import main.scala.Direction._
+import Direction._
 import org.scalatest.FlatSpec
 
 class StandardLogicTest extends FlatSpec {

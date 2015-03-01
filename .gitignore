@@ -4,7 +4,6 @@
 
 target/*
 
-com.game.Game/com.game.Game.iml
 
 com.game.Game/target/*
 project/target/*

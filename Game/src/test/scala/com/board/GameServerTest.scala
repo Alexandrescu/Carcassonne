@@ -25,7 +25,7 @@ class GameServerTest extends FlatSpec with MockFactory with BeforeAndAfter
     mockGame.server.stop()
   }
 
-  "Game" should "create a server to which player can connect" in {
+  "com.game.Game" should "create a server to which player can connect" in {
     println("How we are waiting for the promise to test2")
     mockPlayer.connect()
     intercept[TimeoutException] {
