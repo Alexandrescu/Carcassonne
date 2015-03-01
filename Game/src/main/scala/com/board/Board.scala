@@ -1,12 +1,15 @@
 package com.board
 
 import com.tile.Tile
-import main.scala.Player
 
 trait Board {
-  final type Place = (Integer, Integer)
+  final type Place = (Int, Int)
+
   def get(place : Place) : Option[Tile]
   def getBoard() : Map[Place, Tile]
-  def setMove(tile: Tile, place : Place, toOwn : Option[(TileSection, Player)]) : Unit
-  def isMove(tile : Tile, place : Place, toOwn : Option[TileSection]) : Boolean
+
+  def setMove(move : Move) : Unit
+  def isMove(move : Move) : Boolean
+
+  def getMoves() : Map[Place, Set[Move]]
 }

@@ -1,99 +1,119 @@
 package com.board
 
-import com.tile.Tile
-import main.scala.Direction._
-import main.scala.Direction.Direction
-import main.scala.{Player, Direction}
-
-import scala.collection.mutable._
-
+import com.tile._
+import main.scala.Direction
+import main.scala.Direction.{Direction, _}
 
 class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
-  val board : scala.collection.immutable.HashMap[Place, Tile] = new scala.collection.immutable.HashMap()
-  val boardOutline : scala.collection.immutable.HashMap[Place, Tile] = new scala.collection.immutable.HashMap()
+  type Dependency = Map[Section, Set[Section]]
+  private var board : Map[Place, Tile] = Map()
+  private var boardOutline : Map[Place, Set[Section]] = Map()
 
-  private def canOwn(boardSections: Option[HashSet[BoardSection]]) : Boolean =  boardSections match {
-    case None => true
-    case Some(sections) => sections.forall(sectionKeeper.isOwned)
-  }
+  override def get(place: Place): Option[Tile] = board.get(place)
 
-  // No going back now
-  private def updateBoard(tile: Tile, place : Place, deps: HashMap[TileSection, HashSet[BoardSection]], toOwnPair : Option[(TileSection, Player)]): Unit = {
-    var freeSections = tile.getSections()
+  override def getMoves(): Map[(Integer, Integer), Set[Move]] = ???
 
-    // Union-ing the dependencies
-    deps.foreach{case (tileSection, boardSections) =>
-      if(!freeSections.contains(tileSection)) {
-        throw new Error("Union-ing something which is not on the tile")
-      }
-      freeSections = freeSections - tileSection
+  override def getBoard(): Map[(Integer, Integer), Tile] = ???
 
-      val newSection = boardSections.reduce{case (sectA, sectB) => sectionKeeper.union(sectA, sectB)}
-      if(toOwnPair.isDefined && tileSection == toOwnPair.get._1) {
-        sectionKeeper.own(newSection, toOwnPair.get._2)
-      }
-      tile.updateSection(tileSection, newSection)
+  override def setMove(move: Move): Unit = {
+    val moveDep = getMoveDependencies(move)
+    if(!isMoveByDependencies(move, moveDep)) {
+      throw new Error("Setting an invalid move.")
     }
 
-    freeSections.foreach(section => {
-      val newSection = unionKeeper.add(section)
-      tile.updateSection(section, newSection)
+    solveDependencies(move, moveDep.get)
+    updateOutline(move)
+  }
+
+  override def isMove(move: Move): Boolean = {
+    val moveDep = getMoveDependencies(move)
+    isMoveByDependencies(move, moveDep)
+  }
+
+  private def updateOutline(move: Move) = {
+    // Order matters - should keep track of touched dependencies, but what the heck
+    addOutline(move)
+    removeOutline(move)
+  }
+  private def solveDependencies(move: Move, maybeDependency: Dependency): Unit = {
+    maybeDependency.foreach{case (thisSection, theSections) => sectionKeeper.union(thisSection, theSections)}
+    sectionKeeper.own(move.toOwn, move.player)
+  }
+
+  private def addOutline(move: Move) = {
+    Direction.values.foreach(direction => getTile(move.place, direction) match {
+      case None => {
+        // Getting existing outline and removing it to update
+        val outlinePlace = add(move.place, direction)
+        var outline = boardOutline.getOrElse(outlinePlace, Set())
+        boardOutline = boardOutline - move.place
+
+        move.tile.getEdge(direction) match {
+          case RoadEdge(_, roadSection, _) => {
+            outline = outline + roadSection
+            sectionKeeper.addOpen(roadSection)
+          }
+          case CityEdge(citySection) => {
+            outline = outline + citySection
+            sectionKeeper.addOpen(citySection)
+          }
+          case _ => {}
+        }
+
+        boardOutline = boardOutline + (outlinePlace -> outline)
+      }
+      case Some(_) => {}
     })
-  }
 
-  override def get(place : Place): Option[Tile] = board.get(place)
-
-  override def getBoard(): scala.collection.immutable.Map[Place, Tile] = board
-
-  override def setMove(tile: Tile, place : Place, toOwnPair : Option[(TileSection, Player)]) : Unit = {
-    val toOwn : Option[TileSection] = if(toOwnPair.isEmpty) None else Some(toOwnPair.get._1)
-    val move = isMove(tile, place, toOwn)
-
-    val dependencies = move.get
-
-    updateBoard(tile, place, dependencies, toOwnPair)
-  }
-
-  override def isMove(tile : Tile, place : Place, toOwn : Option[TileSection]): Option[HashMap[TileSection, HashSet[BoardSection]]] = {
-    // Generating places to test for move in Logic
-    var map : scala.collection.immutable.Map[Direction, Tile] = scala.collection.immutable.HashMap()
-    Direction.values.foreach(direction => getTile(place, direction) match {
-      case Some(tile) => map = map + (direction -> tile)
+    move.tile match {
+      case Monastery(_, _, _, _, _, move.toOwn) => {
+        throw new NotImplementedError("You need to implement the Monastery outline dependency.")
+      }
       case _ => {}
-    })
-    // Getting back the union dependencies created by placing the tiles
-    val dependencies = logic.isMove(tile, map)
+    }
+  }
 
-    // Checking if player can own the dependency he wants
-    if(dependencies.isEmpty) return None
-    val actualDependencies = dependencies.get
+  private def removeOutline(move: Move): Unit = {
+    boardOutline.get(move.place) match {
+      case None => {}
+      case Some(sections) => sections.foreach(sectionKeeper.removeOpen(_))
+    }
+  }
 
-    toOwn match {
-      case None => dependencies
-      case Some(toOwnSection) => {
-        if(canOwn(actualDependencies.get(toOwnSection))) {
-          return dependencies
-        }
-        else {
-          return None
-        }
+  private def isMoveByDependencies(move : Move, moveDep : Option[Dependency]) : Boolean = {
+    moveDep match {
+      case None => false
+      case Some(dependencies) => move.toOwn match {
+        case None => true
+        case Some(section) =>
+          dependencies.getOrElse(section, Set()).forall(_.isOwned == false) && move.player.hasFollower
       }
     }
   }
 
-  // This implies that a Tile must include sufficient information to be able to do this
-  // The board could connect with the Logic so that if the logic needs more details it can query the board
+  private def getMoveDependencies(move : Move) : Option[Dependency] = {
+    // Generating tiles around place
 
-  implicit def directionToPlace(dir : Direction) : Place = dir match {
+    var mapTiles : Map[Direction, Tile] = Map()
+    Direction.values.foreach(direction => getTile(move.place, direction) match {
+      case None => {}
+      case Some(thatTile) => mapTiles = mapTiles + (direction -> thatTile)
+    })
+
+    logic.isMove(move.tile, mapTiles)
+  }
+
+  // Auxiliary function
+  private implicit def directionToPlace(dir : Direction) : Place = dir match {
     case Up => (0, 1)
     case Down => (0, -1)
     case Left => (-1, 0)
     case Right => (1, 0)
   }
-  protected def add(place1 : Place, place2 : Place): Place = {
+  private def add(place1 : Place, place2 : Place): Place = {
     (place1._1 + place2._1, place1._2 + place2._2)
   }
-  protected def getTile(place : Place, direction : Direction) : Option[Tile] = {
+  private def getTile(place : Place, direction : Direction) : Option[Tile] = {
     get(add(place, direction))
   }
 }

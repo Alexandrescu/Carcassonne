@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.Promise
 
 abstract class Player {
+  def hasFollower : Boolean
   def name : String
   def promise = Promise[Boolean]
 

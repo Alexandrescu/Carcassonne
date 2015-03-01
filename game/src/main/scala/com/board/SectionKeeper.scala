@@ -1,14 +1,20 @@
 package com.board
 
-import com.tile.{MonasterySection, RoadSection, CitySection, GrassSection}
+import com.tile._
 import main.scala.Player
 
 class SectionKeeper {
+  def removeOpen(section: Section): Unit = ???
+
+  def addOpen(section: CitySection) = ???
+
+  def addOpen(section: RoadSection) = ???
+
   private var currentId = 0
 
   private def newGrass() : GrassSection = {
     currentId += 1
-    GrassSection(currentId)
+    GrassSection()
   }
   def union(grassA : GrassSection, grassB : GrassSection) : GrassSection = {
     val grass = newGrass()
@@ -20,7 +26,7 @@ class SectionKeeper {
 
   def newCity() : CitySection = {
     currentId += 1
-    CitySection(currentId)
+    CitySection()
   }
 
   def union(cityA : CitySection, cityB : CitySection) : CitySection = {
@@ -37,8 +43,11 @@ class SectionKeeper {
   def newMonastery() : MonasterySection = ???
   def union(roadA : MonasterySection, roadB : MonasterySection) : MonasterySection = ???
 
-  def union(sectionA : BoardSection, sectionB : BoardSection) : BoardSection = ???
-  def isOwned(boardSection: BoardSection) : Boolean = ???
+  def union(sectionA : Section, sectionB : Section) : Section = ???
+  def isOwned(boardSection: Section) : Boolean = ???
 
-  def own(sectionA : BoardSection, player : Player) : Unit = ???
+  def own(sectionA : Option[Section], player : Player) : Unit = ???
+
+  def union(thisSection : Section, theSections : Set[Section]) : Unit = ???
+
 }

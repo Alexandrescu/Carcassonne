@@ -2,6 +2,7 @@ package com.tile
 
 case class Section() {
   var isPlayed : Boolean = false
+  def isOwned = ???
 }
 
 case class GrassSection() extends Section() {
