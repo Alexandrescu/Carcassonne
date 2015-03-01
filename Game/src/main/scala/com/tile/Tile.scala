@@ -1,8 +1,6 @@
 package com.tile
 
-import Section
 import main.scala.Direction._
-import main.scala.RoadEdge
 
 abstract class Tile(identifier : String,
                     private var _up : TileEdge,

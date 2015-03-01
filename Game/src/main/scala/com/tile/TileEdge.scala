@@ -10,8 +10,6 @@
 
 package com.tile
 
-import com.game._
-
 abstract class TileEdge
 case class GrassEdge(grass : GrassSection) extends TileEdge
 case class CityEdge(city : CitySection) extends TileEdge
