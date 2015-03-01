@@ -1,4 +1,4 @@
-package com.game
+package com.tile
 
 case class Section(id : Int) {
   var isPlayed : Boolean = false

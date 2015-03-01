@@ -8,7 +8,7 @@
  * a difference between the "before" and "after" piece of grass the road splits.
  */
 
-package main.scala
+package com.tile
 
 import com.game._
 
