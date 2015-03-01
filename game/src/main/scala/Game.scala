@@ -1,7 +1,5 @@
-package com.board
-
 import com.corundumstudio.socketio.listener.ConnectListener
-import com.corundumstudio.socketio.{SocketIOClient, Configuration, SocketIOServer}
+import com.corundumstudio.socketio.{Configuration, SocketIOClient, SocketIOServer}
 
 class Game {
   val config = new Configuration()
