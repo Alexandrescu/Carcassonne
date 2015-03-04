@@ -1,17 +1,35 @@
 package com.board
 
-import com.game.Direction
+import com.game.{Player, Direction}
 import com.tile._
 import Direction.{Direction, _}
 
 class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   type Dependency = Map[Section, Set[Section]]
-  private var board : Map[Place, Tile] = Map()
+  private val board : Map[Place, Tile] = Map()
   private var boardOutline : Map[Place, Set[Section]] = Map()
 
   override def get(place: Place): Option[Tile] = board.get(place)
 
-  override def getMoves(): Map[(Integer, Integer), Set[Move]] = ???
+  override def getMoves(tile : Tile, player : Player): Set[PossibleMove] = {
+    var possibleMoves : Set[PossibleMove] = Set()
+    var sections : Set[Option[Section]] = if(player.hasFollower) tile.getSections().map(Some(_)) else Set()
+    sections = sections + None
+
+    boardOutline.foreach{case (place, set) => Direction.values.foreach(direction => {
+      // Moving tile in different directions
+      tile.orientation = direction
+      sections.foreach(someSection => {
+        val move = new Move(tile, place, someSection , player)
+        if(isMove(move)) {
+          val possible = new PossibleMove(direction, place, someSection)
+          possibleMoves = possibleMoves + possible
+        }
+      })
+    })}
+
+    possibleMoves
+  }
 
   override def getBoard(): Map[(Integer, Integer), Tile] = ???
 
@@ -37,7 +55,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   }
   private def solveDependencies(move: Move, maybeDependency: Dependency): Unit = {
     maybeDependency.foreach{case (thisSection, theSections) => sectionKeeper.union(thisSection, theSections)}
-    sectionKeeper.own(move.toOwn, move.player)
+    sectionKeeper.own(move.toOwnFromTile, move.player)
   }
 
   private def addOutline(move: Move) = {
@@ -66,7 +84,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     })
 
     move.tile match {
-      case Monastery(_, _, _, _, _, move.toOwn) => {
+      case Monastery(_, _, _, _, _, move.`toOwnFromTile`) => {
         throw new NotImplementedError("You need to implement the Monastery outline dependency.")
       }
       case _ => {}
@@ -76,14 +94,14 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   private def removeOutline(move: Move): Unit = {
     boardOutline.get(move.place) match {
       case None => {}
-      case Some(sections) => sections.foreach(sectionKeeper.removeOpen(_))
+      case Some(sections) => sections.foreach(sectionKeeper.removeOpen)
     }
   }
 
   private def isMoveByDependencies(move : Move, moveDep : Option[Dependency]) : Boolean = {
     moveDep match {
       case None => false
-      case Some(dependencies) => move.toOwn match {
+      case Some(dependencies) => move.toOwnFromTile match {
         case None => true
         case Some(section) =>
           dependencies.getOrElse(section, Set()).forall(_.isOwned == false) && move.player.hasFollower
@@ -93,7 +111,6 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
 
   private def getMoveDependencies(move : Move) : Option[Dependency] = {
     // Generating tiles around place
-
     var mapTiles : Map[Direction, Tile] = Map()
     Direction.values.foreach(direction => getTile(move.place, direction) match {
       case None => {}

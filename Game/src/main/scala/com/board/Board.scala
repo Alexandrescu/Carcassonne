@@ -1,5 +1,6 @@
 package com.board
 
+import com.game.Player
 import com.tile.Tile
 
 trait Board {
@@ -11,5 +12,5 @@ trait Board {
   def setMove(move : Move) : Unit
   def isMove(move : Move) : Boolean
 
-  def getMoves() : Map[Place, Set[Move]]
+  def getMoves(tile : Tile, player : Player) : Set[PossibleMove]
 }
