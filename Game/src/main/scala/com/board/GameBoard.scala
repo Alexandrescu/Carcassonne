@@ -6,7 +6,7 @@ import Direction.{Direction, _}
 
 class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   type Dependency = Map[Section, Set[Section]]
-  private val board : Map[Place, Tile] = Map()
+  private var board : Map[Place, Tile] = Map()
   private var boardOutline : Map[Place, Set[Section]] = Map()
 
   override def get(place: Place): Option[Tile] = board.get(place)
@@ -31,7 +31,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     possibleMoves
   }
 
-  override def getBoard(): Map[(Integer, Integer), Tile] = ???
+  override def getBoard(): Map[Place, Tile] = board
 
   override def setMove(move: Move): Unit = {
     val moveDep = getMoveDependencies(move)
@@ -41,6 +41,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
 
     solveDependencies(move, moveDep.get)
     updateOutline(move)
+    board = board + (move.place -> move.tile)
   }
 
   override def isMove(move: Move): Boolean = {
@@ -59,41 +60,58 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   }
 
   private def addOutline(move: Move) = {
-    Direction.values.foreach(direction => getTile(move.place, direction) match {
-      case None => {
+    Direction.values.foreach(f = direction => getTile(move.place, direction) match {
+      case None =>
         // Getting existing outline and removing it to update
         val outlinePlace = add(move.place, direction)
         var outline = boardOutline.getOrElse(outlinePlace, Set())
         boardOutline = boardOutline - move.place
 
         move.tile.getEdge(direction) match {
-          case RoadEdge(_, roadSection, _) => {
+          case RoadEdge(_, roadSection, _) =>
             outline = outline + roadSection
             sectionKeeper.addOpen(roadSection)
-          }
-          case CityEdge(citySection) => {
+          case CityEdge(citySection) =>
             outline = outline + citySection
             sectionKeeper.addOpen(citySection)
-          }
-          case _ => {}
+          case _ =>
         }
 
         boardOutline = boardOutline + (outlinePlace -> outline)
-      }
-      case Some(_) => {}
+      case Some(_) =>
     })
 
-    move.tile match {
-      case Monastery(_, _, _, _, _, move.`toOwnFromTile`) => {
-        throw new NotImplementedError("You need to implement the Monastery outline dependency.")
-      }
-      case _ => {}
+    move.toOwnFromTile match {
+      case Some(playerSection : MonasterySection) =>
+        // these `` allow scala to know you are interpreting the value as a constant
+        move.tile match {
+          case Monastery(_, _, _, _, _, `playerSection`) =>
+            // Adding all 8 surrounding places to the outline
+            val monasteryOutline: Set[Place] = Set(
+              add(add(move.place, Up), Right),
+              add(add(move.place, Up), Left),
+              add(add(move.place, Down), Right),
+              add(add(move.place, Down), Left)
+            ) ++ Direction.values.map(add(move.place, _)).toSet
+
+            monasteryOutline.foreach(place => get(place) match {
+              case Some(_) =>
+              case None =>
+                var outline = boardOutline.getOrElse(place, Set())
+                boardOutline = boardOutline - move.place
+
+                outline = outline + playerSection
+                sectionKeeper.addOpen(playerSection)
+                boardOutline = boardOutline + (place -> outline)
+            })
+          case _ =>
+        }
     }
   }
 
   private def removeOutline(move: Move): Unit = {
     boardOutline.get(move.place) match {
-      case None => {}
+      case None =>
       case Some(sections) => sections.foreach(sectionKeeper.removeOpen)
     }
   }
@@ -112,8 +130,8 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   private def getMoveDependencies(move : Move) : Option[Dependency] = {
     // Generating tiles around place
     var mapTiles : Map[Direction, Tile] = Map()
-    Direction.values.foreach(direction => getTile(move.place, direction) match {
-      case None => {}
+    Direction.values.foreach(f = direction => getTile(move.place, direction) match {
+      case None =>
       case Some(thatTile) => mapTiles = mapTiles + (direction -> thatTile)
     })
 

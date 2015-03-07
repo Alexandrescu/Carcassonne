@@ -10,11 +10,13 @@ class SectionKeeper {
 
   def addOpen(section: RoadSection) = ???
 
+  def addOpen(section: MonasterySection) = ???
+
   private var currentId = 0
 
   private def newGrass() : GrassSection = {
     currentId += 1
-    GrassSection()
+    new GrassSection()
   }
   def union(grassA : GrassSection, grassB : GrassSection) : GrassSection = {
     val grass = newGrass()
@@ -26,7 +28,7 @@ class SectionKeeper {
 
   def newCity() : CitySection = {
     currentId += 1
-    CitySection()
+    new CitySection()
   }
 
   def union(cityA : CitySection, cityB : CitySection) : CitySection = {

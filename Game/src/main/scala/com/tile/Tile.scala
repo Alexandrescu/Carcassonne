@@ -17,7 +17,7 @@ abstract class Tile(identifier : String,
     case _ => throw new Error("Initialization of tile with non TileEdge not permitted")
   }
 
-  var sections : Set[Section] = Set()
+  private var sections : Set[Section] = Set()
   def getSections(): Set[Section] = sections
   sections = getSectionsEdge(_up) ++ getSectionsEdge(_down) ++ getSectionsEdge(_left) ++getSectionsEdge(_right)
 
@@ -66,7 +66,7 @@ abstract class Tile(identifier : String,
 case class SimpleTile(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
   extends Tile(identifier, _up, _down, _left, _right, 1, None)
 
-case class Monastery(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
+case class Monastery(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge, monastery: Section)
   extends Tile(identifier, _up, _down, _left, _right, 1, None)
 
 case class BannerTile(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
