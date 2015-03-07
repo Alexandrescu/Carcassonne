@@ -68,10 +68,10 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
         boardOutline = boardOutline - move.place
 
         move.tile.getEdge(direction) match {
-          case RoadEdge(_, roadSection, _) =>
+          case RoadEdge(_, roadSection : RoadSection, _) =>
             outline = outline + roadSection
             sectionKeeper.addOpen(roadSection)
-          case CityEdge(citySection) =>
+          case CityEdge(citySection : CitySection) =>
             outline = outline + citySection
             sectionKeeper.addOpen(citySection)
           case _ =>
