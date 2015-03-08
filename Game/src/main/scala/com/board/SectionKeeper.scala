@@ -29,8 +29,8 @@ class SectionKeeper {
     cityA.addOwners(cityB.owners)
 
     cityA.addOpen(cityB.openEdges)
-    cityA.addTiles(cityB.tileCount)
-    cityA.addGrass(cityB.getGrass)
+    cityA.addTiles(cityB.tileCount())
+    cityA.addGrass(cityB.getGrass())
   }
 
   def union(roadA : RoadSection, roadB : RoadSection) : Unit = {
@@ -41,7 +41,7 @@ class SectionKeeper {
     roadA.addOwners(roadB.owners)
 
     roadA.addOpen(roadB.openEdges)
-    roadA.addTiles(roadB.tileCount)
+    roadA.addTiles(roadB.tileCount())
   }
 
   def own(sectionOption : Option[Section], player : Player) : Unit = sectionOption match {
