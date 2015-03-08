@@ -53,6 +53,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     // Order matters - should keep track of touched dependencies, but what the heck
     addOutline(move)
     removeOutline(move)
+    move.tile.getSections().foreach(section => section.updateClose())
   }
   private def solveDependencies(move: Move, maybeDependency: Dependency): Unit = {
     maybeDependency.foreach{case (thisSection, theSections) => sectionKeeper.union(thisSection, theSections)}

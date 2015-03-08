@@ -8,6 +8,21 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.Promise
 
 abstract class Player {
+  private var _followers : Int = 7
+  def addFollowers(i: Int): Unit= {
+    _followers += i
+  }
+  def removeFollowers(i : Int = 1) = {
+    _followers -= i
+  }
+
+  private var _points : Int = 0
+  def addPoints(i: Int): Unit = {
+    _points += i
+  }
+
+  def points : Int = _points
+
   def hasFollower : Boolean
   def name : String
   def promise = Promise[Boolean]
