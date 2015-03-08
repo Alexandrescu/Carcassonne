@@ -190,6 +190,9 @@ class BoardTest extends FlatSpec {
 
     val moves2 = board.getMoves(L, playerA).size
     assert(moves2 == 49)
+
+    val moves3 = board.getMoves(B, playerA).size
+    assert(moves3 == 12)
   }
   it should "evaluate the board points in case of 'game end' event"
 }
