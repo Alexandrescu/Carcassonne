@@ -3,6 +3,7 @@ package com.board
 import java.util.concurrent.TimeoutException
 
 import com.board.mocks.MockPlayer
+import com.game.Game
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.{AsyncAssertions, ScalaFutures}
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers, ParallelTestExecution}

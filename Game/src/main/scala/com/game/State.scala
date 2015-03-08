@@ -1,10 +1,7 @@
 package com.game
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
-
-import scala.collection.immutable.HashMap
-
 class State(private val tileBag : TileBag) {
+  /*
   def getPossibleMoves(tile: Tile) : Iterable[(Integer, Integer)]= ???
 
   def getBorderEdges() : Iterable[(Integer, Integer)] = ???
@@ -18,5 +15,5 @@ class State(private val tileBag : TileBag) {
     throw new NotImplementedException()
   }
 
-
+*/
 }

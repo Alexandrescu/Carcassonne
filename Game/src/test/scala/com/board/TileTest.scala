@@ -1,12 +1,9 @@
 package com.board
 
-import com.game.Direction
-import com.tile.{RoadEdge, CityEdge, GrassEdge, SimpleTile}
-import Direction._
-import main.scala.RoadEdge
 import org.scalatest.FlatSpec
 
 class TileTest extends FlatSpec {
+  /*
   trait StartTile {
     val identifier = "D"
     val tile = SimpleTile(identifier,
@@ -52,4 +49,5 @@ class TileTest extends FlatSpec {
     tile.orientation = otherOrientation
     assert(tile.orientation == newOrientation)
   }
+  */
 }

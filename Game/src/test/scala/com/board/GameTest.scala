@@ -1,5 +1,6 @@
 package com.board
 
+import com.game.Game
 import org.scalatest.FlatSpec
 
 class GameTest extends FlatSpec {

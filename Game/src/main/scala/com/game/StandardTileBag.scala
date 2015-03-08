@@ -8,9 +8,8 @@
 
 package com.game
 
-import scala.util.Random
-
 class StandardTileBag extends TileBag {
+  /*
   val tileList = List(
     (Monastery("A", GrassEdge(0), RoadEdge(0, 0, 0),GrassEdge(0), GrassEdge(0)), 2),
     (Monastery("B", GrassEdge(0), GrassEdge(0), GrassEdge(0), GrassEdge(0)), 4),
@@ -59,4 +58,5 @@ class StandardTileBag extends TileBag {
       case _ => None
     }
   }
+  */
 }
