@@ -55,7 +55,7 @@ class RoadSection extends Section{
       //closed
       var maxFollowers = 0
       root._owners.foreach{case (player, followers) => maxFollowers = Math.max(followers, maxFollowers)}
-      root._owners.filter(p => p._2 == maxFollowers).foreach{case (player, _) => player.addPoints(tileCount())}
+      root._owners.filter(p => p._2 == maxFollowers).foreach{case (player, _) => player.addPoints(root.tileCount())}
       root._owners.foreach{case (player, followers) => player.addFollowers(followers)}
     }
   }
