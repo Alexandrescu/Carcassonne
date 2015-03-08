@@ -74,6 +74,12 @@ class BoardTest extends FlatSpec {
 
     assert(Dsection4.openEdges == 0 && Esection1.openEdges == 0)
   }
-  it should "return the number of points for each player when section is closed"
+  it should "return the number of points for each player when section is closed" in new SimpleBoard with GameCollection{
+    board.setMove(move1)
+    E.orientation = Right
+    board.setMove(move2)
+
+    assert(playerA.points == 4)
+  }
   it should "evaluate the board points in case of 'game end' event"
 }
