@@ -23,7 +23,7 @@ abstract class Player {
 
   def points : Int = _points
 
-  def hasFollower : Boolean
+  def hasFollower : Boolean = _followers != 0
   def name : String
   def promise = Promise[Boolean]
 

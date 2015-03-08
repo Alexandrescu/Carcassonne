@@ -8,6 +8,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   type Dependency = Map[Section, Set[Section]]
   private var board : Map[Place, Tile] = Map()
   private var boardOutline : Map[Place, Set[Section]] = Map()
+  private var tileOutline : Set[Place] = Set((0, 0))
 
   override def get(place: Place): Option[Tile] = board.get(place)
 
@@ -16,7 +17,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     var sections : Set[Option[Section]] = if(player.hasFollower) tile.getSections().map(Some(_)) else Set()
     sections = sections + None
 
-    boardOutline.foreach{case (place, set) => Direction.values.foreach(direction => {
+    tileOutline.foreach{place => Direction.values.foreach(direction => {
       // Moving tile in different directions
       tile.orientation = direction
       sections.foreach(someSection => {
@@ -49,10 +50,21 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     isMoveByDependencies(move, moveDep)
   }
 
+  def updateTileOutline(move: Move) = {
+    tileOutline -= move.place
+    Direction.values.foreach(direction => {
+      val newPlace = add(move.place, direction)
+      if(get(newPlace).isEmpty) {
+        tileOutline += newPlace
+      }
+    })
+  }
+
   private def updateOutline(move: Move) = {
     // Order matters - should keep track of touched dependencies, but what the heck
     addOutline(move)
     removeOutline(move)
+    updateTileOutline(move)
     move.tile.getSections().foreach(section => section.updateClose())
   }
   private def solveDependencies(move: Move, maybeDependency: Dependency): Unit = {
