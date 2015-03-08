@@ -65,19 +65,20 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
         // Getting existing outline and removing it to update
         val outlinePlace = add(move.place, direction)
         var outline = boardOutline.getOrElse(outlinePlace, Set())
-        boardOutline = boardOutline - move.place
+        boardOutline = boardOutline - outlinePlace
 
         move.tile.getEdge(direction) match {
           case RoadEdge(_, roadSection : RoadSection, _) =>
             outline = outline + roadSection
-            sectionKeeper.addOpen(roadSection)
+            roadSection.addOpen()
           case CityEdge(citySection : CitySection) =>
             outline = outline + citySection
-            sectionKeeper.addOpen(citySection)
+            citySection.addOpen()
           case _ =>
         }
 
-        boardOutline = boardOutline + (outlinePlace -> outline)
+        if(outline.nonEmpty)
+          boardOutline = boardOutline + (outlinePlace -> outline)
       case Some(_) =>
     })
 
@@ -101,11 +102,12 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
                 boardOutline = boardOutline - move.place
 
                 outline = outline + playerSection
-                sectionKeeper.addOpen(playerSection)
+                playerSection.addOpen()
                 boardOutline = boardOutline + (place -> outline)
             })
           case _ =>
         }
+      case _ =>
     }
   }
 

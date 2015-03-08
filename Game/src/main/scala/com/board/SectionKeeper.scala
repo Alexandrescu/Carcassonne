@@ -5,34 +5,10 @@ import com.tile._
 
 class SectionKeeper {
   def removeOpen(section: Section): Unit = section match {
-    case citySection : CitySection => removeOpen(citySection)
-    case roadSection : RoadSection => removeOpen(roadSection)
-    case monasterySection : MonasterySection => removeOpen(monasterySection)
+    case citySection : CitySection => citySection.removeOpen()
+    case roadSection : RoadSection => roadSection.removeOpen()
+    case monasterySection : MonasterySection => monasterySection.removeOpen()
     case _ => throw new NoSuchElementException("There should only be these type of sections")
-  }
-
-  def removeOpen(citySection: CitySection) : Unit = {
-    citySection.openEdges -= 1
-  }
-
-  def removeOpen(roadSection: RoadSection) : Unit = {
-    roadSection.openEdges -= 1
-  }
-
-  def removeOpen(monasterySection: MonasterySection): Unit = {
-    monasterySection.tileCount -= 1
-  }
-
-  def addOpen(citySection: CitySection) = {
-    citySection.openEdges += 1
-  }
-
-  def addOpen(roadSection: RoadSection) = {
-    roadSection.openEdges += 1
-  }
-
-  def addOpen(monasterySection: MonasterySection) = {
-    monasterySection.tileCount += 1
   }
 
   def union(grassA : GrassSection, grassB : GrassSection) : Unit = {
@@ -52,10 +28,9 @@ class SectionKeeper {
     }
     cityA.addOwners(cityB.owners)
 
-    cityA.openEdges += cityB.openEdges
-    cityA.tileCount += cityB.tileCount
-    cityA.adjacentGrass = cityA.adjacentGrass.map(grass => grass.findRoot())
-    cityA.adjacentGrass ++= cityB.adjacentGrass.map(grass => grass.findRoot())
+    cityA.addOpen(cityB.openEdges)
+    cityA.addTiles(cityB.tileCount)
+    cityA.addGrass(cityB.getGrass)
   }
 
   def union(roadA : RoadSection, roadB : RoadSection) : Unit = {
@@ -65,8 +40,8 @@ class SectionKeeper {
     }
     roadA.addOwners(roadB.owners)
 
-    roadA.openEdges += roadB.openEdges
-    roadA.tileCount += roadB.tileCount
+    roadA.addOpen(roadB.openEdges)
+    roadA.addTiles(roadB.tileCount)
   }
 
   def own(sectionOption : Option[Section], player : Player) : Unit = sectionOption match {
@@ -81,7 +56,7 @@ class SectionKeeper {
   }
 
   def optimizeUnion(sections: Set[Section]) : (Section, Set[Section]) = {
-    var maxDepth : Section = new Section()
+    var maxDepth : Section = sections.toList.head
     sections.foreach(section => if(section.treeDepth > maxDepth.treeDepth) maxDepth = section)
     (maxDepth, sections - maxDepth)
   }
