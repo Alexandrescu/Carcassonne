@@ -70,7 +70,7 @@ class BoardTest extends FlatSpec {
     assert(!Dsection4.isOwned)
     board.setMove(move2)
     assert(Dsection4.isOwned && Esection1.isOwned &&
-      (Dsection4.owners intersect Esection1.owners) == Set(playerA))
+      (Dsection4.owners.map(p => p._1).toSet intersect Esection1.owners.map(p => p._1).toSet) == Set(playerA))
 
     assert(Dsection4.openEdges == 0 && Esection1.openEdges == 0)
   }

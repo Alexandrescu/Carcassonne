@@ -18,7 +18,7 @@ class SectionKeeper {
     }
     grassA.addOwners(grassB.owners)
 
-    grassA.closedCities ++= grassB.closedCities
+    grassA.addClosedCities(grassB.closedCities())
   }
 
   def union(cityA : CitySection, cityB : CitySection) : Unit = {
@@ -50,7 +50,7 @@ class SectionKeeper {
         throw new Error("Can't own already owned section")
       }
       else {
-        section.addOwners(Set(player))
+        section.addOwners(Map(player -> 1))
       }
     case _ =>
   }
