@@ -5,14 +5,21 @@ import com.game.Player
 class RoadSection extends Section{
   private var _openEdges : Int = 0
   private var _tileCount : Int = 1
-  var parent : Option[RoadSection] = None
+  private var _parent : Option[RoadSection] = None
+
+  def parent(roadSection: RoadSection): Unit = {
+    val parentRoot = roadSection.findRoot()
+    val root = this.findRoot()
+
+    root._parent = Some(parentRoot)
+  }
 
   def openEdges : Int = _openEdges
 
   def findRoot() : RoadSection = {
     var root = this
-    while(root.parent.isDefined) {
-      root = root.parent.get
+    while(root._parent.isDefined) {
+      root = root._parent.get
     }
     root
   }
@@ -32,7 +39,7 @@ class RoadSection extends Section{
   }
 
   override def isOwned: Boolean = {
-    if(parent.isEmpty) return owners.nonEmpty
+    if(_parent.isEmpty) return owners.nonEmpty
     findRoot().isOwned
   }
 

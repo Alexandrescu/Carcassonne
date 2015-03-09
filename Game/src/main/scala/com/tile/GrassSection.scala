@@ -3,8 +3,15 @@ package com.tile
 import com.game.Player
 
 class GrassSection extends Section{
-  var parent : Option[GrassSection] = None
+  private var _parent : Option[GrassSection] = None
   private var _closedCities : Set[CitySection] = Set()
+
+  def parent(grassSection: GrassSection): Unit = {
+    val parentRoot = grassSection.findRoot()
+    val root = this.findRoot()
+
+    root._parent = Some(parentRoot)
+  }
 
   def addClosedCities(cities : Set[CitySection]): Unit = {
     findRoot()._closedCities ++= cities
@@ -14,14 +21,14 @@ class GrassSection extends Section{
 
   def findRoot() : GrassSection = {
     var root = this
-    while(root.parent.isDefined) {
-      root = root.parent.get
+    while(root._parent.isDefined) {
+      root = root._parent.get
     }
     root
   }
 
   override def isOwned: Boolean = {
-    if(parent.isEmpty) return owners.nonEmpty
+    if(_parent.isEmpty) return owners.nonEmpty
     findRoot().isOwned
   }
 

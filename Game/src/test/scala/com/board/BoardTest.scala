@@ -145,10 +145,6 @@ class BoardTest extends FlatSpec {
     }
   }
 
-  trait PossibleMovesTest extends MiniGame {
-  }
-
-
   "Board" should "contain a collection of the tiles creating the map" in new SimpleBoard with GameCollection {
     assert(board.getBoard().isEmpty)
   }
@@ -161,7 +157,7 @@ class BoardTest extends FlatSpec {
 
     val tile = board.get(0,0).get
     assert(Dsection4.getGrass().size == 1 && Dsection4.openEdges == 1
-        && Dsection4.parent == None && Dsection4.tileCount == 1)
+        && Dsection4.tileCount == 1)
   }
   it should "place a move correctly - update the ownership" in new SimpleBoard with GameCollection {
     board.setMove(move1)
@@ -184,7 +180,7 @@ class BoardTest extends FlatSpec {
     assert(playerA.points == 4 && playerB.points == 0)
   }
 
-  it should "get available moves for a city" in new MiniGame {
+  it should "get available moves" in new MiniGame {
     val moves1 = board.getMoves(J, playerA)
     assert(moves1.size == 30)
 
@@ -193,6 +189,28 @@ class BoardTest extends FlatSpec {
 
     val moves3 = board.getMoves(B, playerA).size
     assert(moves3 == 12)
+  }
+  it should "know how to union cities" in new MiniGame {
+    val move1 = new Move(L, (0, -1), Some(Lsection6), playerA)
+    Q.orientation = Right
+    val move2 = new Move(Q, (1, 0), Some(Qsect1), playerB)
+    J.orientation = Down
+    val move3 = new Move(J, (1, 1), None, playerA)
+    val move4 = new Move(O, (1, -1), None, playerB)
+
+    board.setMove(move1)
+    assert(Lsection6.owners.contains(playerA))
+
+    board.setMove(move2)
+    assert(Qsect1.owners.contains(playerB))
+
+    board.setMove(move3)
+
+    board.setMove(move4)
+    assert(Qsect1.owners.contains(playerA) && Qsect1.owners.contains(playerB))
+
+    assert(Osect1.openEdges == 0)
+    assert(playerB.points == 10 && playerA.points == 10)
   }
   it should "evaluate the board points in case of 'game end' event"
 }

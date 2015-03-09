@@ -12,17 +12,16 @@ class SectionKeeper {
   }
 
   def union(grassA : GrassSection, grassB : GrassSection) : Unit = {
-    grassB.parent = Some(grassA)
     if(grassA.treeDepth == grassB.treeDepth){
       grassA.treeDepth += 1
     }
     grassA.addOwners(grassB.owners)
 
     grassA.addClosedCities(grassB.closedCities())
+    grassB.parent(grassA)
   }
 
   def union(cityA : CitySection, cityB : CitySection) : Unit = {
-    cityB.parent = Some(cityA)
     if(cityA.treeDepth == cityB.treeDepth) {
       cityA.treeDepth += 1
     }
@@ -31,10 +30,10 @@ class SectionKeeper {
     cityA.addOpen(cityB.openEdges)
     cityA.addTiles(cityB.tileCount())
     cityA.addGrass(cityB.getGrass())
+    cityB.parent(cityA)
   }
 
   def union(roadA : RoadSection, roadB : RoadSection) : Unit = {
-    roadB.parent = Some(roadA)
     if(roadB.treeDepth == roadA.treeDepth) {
       roadA.treeDepth += 1
     }
@@ -42,6 +41,7 @@ class SectionKeeper {
 
     roadA.addOpen(roadB.openEdges)
     roadA.addTiles(roadB.tileCount())
+    roadB.parent(roadA)
   }
 
   def own(sectionOption : Option[Section], player : Player) : Unit = sectionOption match {

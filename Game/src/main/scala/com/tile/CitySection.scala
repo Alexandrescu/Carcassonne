@@ -5,13 +5,20 @@ import com.game.Player
 class CitySection extends Section{
   private var _openEdges : Int = 0
   private var _tileCount : Int = 1
-  var parent : Option[CitySection] = None
+  private var _parent : Option[CitySection] = None
   private var adjacentGrass : Set[GrassSection] = Set()
+
+  def parent(citySection: CitySection): Unit = {
+    val parentRoot = citySection.findRoot()
+    val root = this.findRoot()
+
+    root._parent = Some(parentRoot)
+  }
 
   def findRoot() : CitySection = {
     var root = this
-    while(root.parent.isDefined) {
-      root = root.parent.get
+    while(root._parent.isDefined) {
+      root = root._parent.get
     }
     root
   }
@@ -46,7 +53,7 @@ class CitySection extends Section{
   }
 
   override def isOwned: Boolean = {
-    if(parent.isEmpty) return owners.nonEmpty
+    if(_parent.isEmpty) return owners.nonEmpty
     findRoot().isOwned
   }
 
