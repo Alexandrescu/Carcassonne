@@ -5,8 +5,7 @@ var _ = require('lodash'),
     gulpLoadPlugins = require('gulp-load-plugins'),
     runSequence = require('run-sequence'),
     defaultAssets = require('./config/assets'),
-    plugins = gulpLoadPlugins(),
-    gls = require('gulp-live-server');
+    plugins = gulpLoadPlugins();
 
 gulp.task('env:dev', function(){
   process.env.NODE_ENV = 'development';
@@ -48,15 +47,22 @@ gulp.task('sass', function () {
     .pipe(gulp.dest(defaultAssets.client.css));
 });
 
-gulp.task('serve', function() {
-  var server = gls.new('server.js');
-  server.start();
-  gulp.watch('./views/*', server.notify);
+gulp.task('nodemon', function () {
+  return plugins.nodemon({
+    script: 'server.js',
+    nodeArgs: ['--debug'],
+    ext: 'js,html',
+    watch: _.union(defaultAssets.server.views, defaultAssets.server.allJS, defaultAssets.server.config, defaultAssets.server.server)
+  });
+});
 
-  //restart my server
-  gulp.watch('server.js', server.start);
+// Watch Files For Changes
+gulp.task('watch', function() {
+  // Start livereload
+  plugins.livereload.listen();
+  gulp.watch(defaultAssets.client.views).on('change', plugins.livereload.changed);
 });
 
 gulp.task('default', function(done) {
-  runSequence('env:dev', 'lint', 'serve', done);
+  runSequence('env:dev', 'lint', ['nodemon', 'watch'], done);
 });
