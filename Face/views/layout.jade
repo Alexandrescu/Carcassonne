@@ -1,7 +1,13 @@
 doctype html
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+    script(src='/js/angular.js')
+    script(src='/js/angular-route.js')
+    script(src='/app/app.js')
+    script(src='/app/controllers.js')
+    base(href='/')
+  body(ng-app='carcassonne')
+    // HEADER AND NAVBAR
+    header Navbar Boom!
+    div.main
+      div(ng-view)
