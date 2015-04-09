@@ -55,7 +55,7 @@ gulp.task('js', function(done) {
 });
 
 gulp.task('sass', function () {
-  return gulp.src(defaultAssets.server.sass)
+  return gulp.src(defaultAssets.server.sass + '**')
     .pipe(plugins.sass())
     .pipe(gulp.dest(defaultAssets.client.css));
 });
@@ -71,6 +71,8 @@ gulp.task('nodemon', function () {
 gulp.task('watch', function() {
   // Start livereload
   plugins.livereload.listen();
+  gulp.watch(defaultAssets.server.sass + '**', ['sass']);
+  gulp.watch(defaultAssets.client.css).on('change', plugins.livereload.changed);
   gulp.watch(defaultAssets.client.views).on('change', plugins.livereload.changed);
   gulp.watch(defaultAssets.server.app, ['js']).on('change', plugins.livereload.changed);
   gulp.watch(defaultAssets.server.routes).on('change', plugins.livereload.changed);
