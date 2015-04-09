@@ -19,7 +19,7 @@ exports.server = {
   routes: './routes/**'
 };
 
-var deps = ['angular/angular.js', 'angular-route/angular-route.js'];
+var deps = ['angular/angular.js', 'angular-route/angular-route.js', 'd3/d3.js'];
 
 exports.dependencies = _.map(deps, function(s) {
   return './node_modules/' + s;
