@@ -16,33 +16,46 @@ gulp.task('env:prod', function () {
 });
 
 // Lint CSS and JavaScript files.
-gulp.task('lint', function(done) {
+gulp.task('build', function(done) {
   //runSequence('sass', ['csslint', 'jshint'], done);
-  runSequence('sass', done);
+  runSequence(['sass', 'js', 'dependencies'], done);
 });
 
-// CSS linting task
-gulp.task('csslint', function (done) {
-  return gulp.src(defaultAssets.client.css)
-    .pipe(plugins.csslint('.csslintrc'))
-    .pipe(plugins.csslint.reporter())
-    .pipe(plugins.csslint.reporter(function (file) {
-      if (!file.csslint.errorCount) {
-        done();
-      }
-    }));
+gulp.task('dependencies', function() {
+  gulp.src(defaultAssets.dependencies)
+    .pipe(gulp.dest(defaultAssets.client.js));
 });
 
-// JS linting task
-gulp.task('jshint', function () {
-  return gulp.src(_.union(defaultAssets.server.allJS, defaultAssets.client.js))
-    .pipe(plugins.jshint())
-    .pipe(plugins.jshint.reporter('default'))
-    .pipe(plugins.jshint.reporter('fail'));
+gulp.task('js:app', function() {
+  gulp.src(defaultAssets.server.appLocation + 'app.js')
+    .pipe(gulp.dest(defaultAssets.client.app));
+});
+
+gulp.task('js:controllers', function() {
+  gulp.src(defaultAssets.server.appLocation + 'controllers/**')
+    .pipe(plugins.concat('controllers.js'))
+    .pipe(gulp.dest(defaultAssets.client.app));
+});
+
+gulp.task('js:directives', function() {
+  gulp.src(defaultAssets.server.appLocation + 'directives/**')
+    .pipe(plugins.concat('directives.js'))
+    .pipe(gulp.dest(defaultAssets.client.app));
+});
+
+gulp.task('js:services', function() {
+  gulp.src(defaultAssets.server.appLocation + 'services/**')
+    .pipe(plugins.concat('services.js'))
+    .pipe(gulp.dest(defaultAssets.client.app));
+});
+
+gulp.task('js', function(done) {
+  runSequence(['js:app', 'js:controllers', 'js:directives', 'js:services'], done);
+
 });
 
 gulp.task('sass', function () {
-  return gulp.src(defaultAssets.client.sass)
+  return gulp.src(defaultAssets.server.sass)
     .pipe(plugins.sass())
     .pipe(gulp.dest(defaultAssets.client.css));
 });
@@ -61,8 +74,9 @@ gulp.task('watch', function() {
   // Start livereload
   plugins.livereload.listen();
   gulp.watch(defaultAssets.client.views).on('change', plugins.livereload.changed);
+  gulp.watch(defaultAssets.server.app, ['js']).on('change', plugins.livereload.changed);
 });
 
 gulp.task('default', function(done) {
-  runSequence('env:dev', 'lint', ['nodemon', 'watch'], done);
+  runSequence('env:dev', 'build', ['nodemon', 'watch'], done);
 });

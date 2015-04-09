@@ -1,15 +1,25 @@
 'use stict';
 
+var _ = require('lodash');
+
 exports.client = {
-  sass: './styles/',
   css: './public/css',
   js: './public/js',
-  views: './views/**'
+  views: './views/**',
+  app: './public/app/'
 };
 
 exports.server = {
-  allJS: './app/',
+  sass: './styles/',
+  appLocation: './app/',
   config: './config/',
   views: './views/',
-  server: 'server.js'
+  server: 'server.js',
+  app: './app/**'
 };
+
+var deps = ['angular/angular.js', 'angular-route/angular-route.js'];
+
+exports.dependencies = _.map(deps, function(s) {
+  return './node_modules/' + s;
+});
