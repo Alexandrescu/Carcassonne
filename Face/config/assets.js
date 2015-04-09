@@ -15,7 +15,8 @@ exports.server = {
   config: './config/',
   views: './views/',
   server: 'server.js',
-  app: './app/**'
+  app: './app/**',
+  routes: './routes/**'
 };
 
 var deps = ['angular/angular.js', 'angular-route/angular-route.js'];

@@ -63,9 +63,7 @@ gulp.task('sass', function () {
 gulp.task('nodemon', function () {
   return plugins.nodemon({
     script: 'server.js',
-    nodeArgs: ['--debug'],
-    ext: 'js,html',
-    watch: _.union(defaultAssets.server.views, defaultAssets.server.allJS, defaultAssets.server.config, defaultAssets.server.server)
+    nodeArgs: ['--debug']
   });
 });
 
@@ -75,6 +73,9 @@ gulp.task('watch', function() {
   plugins.livereload.listen();
   gulp.watch(defaultAssets.client.views).on('change', plugins.livereload.changed);
   gulp.watch(defaultAssets.server.app, ['js']).on('change', plugins.livereload.changed);
+  gulp.watch(defaultAssets.server.routes).on('change', plugins.livereload.changed);
+  gulp.watch( _.union(defaultAssets.server.views, defaultAssets.server.allJS, defaultAssets.server.config, defaultAssets.server.server))
+    .on('change', plugins.livereload.changed);
 });
 
 gulp.task('default', function(done) {
