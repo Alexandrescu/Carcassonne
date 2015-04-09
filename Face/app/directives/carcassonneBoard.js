@@ -8,6 +8,9 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
       width: '='
     },
     link: function(scope, element, attrs) {
+      var zoomLowerBound = 1;
+      var zoomCurrent = 2;
+      var zoomUpperBound = 4;
       var height = scope.height;
       var width = scope.width;
       var tileSize = 20;
@@ -15,7 +18,8 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
       // When the event zoom is called then zoomed is triggered
       var zoomBehaviour =
         $d3.behavior.zoom()
-          .scaleExtent([1, 10])
+          .scaleExtent([zoomLowerBound, zoomUpperBound])
+          .scale(zoomCurrent)
           .on('zoom', zoomed);
 
       function zoomed() {
@@ -38,7 +42,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
           .attr('width', width)
           .attr('height', height)
         .append('g')
-          .attr("transform", "translate(" + '0' + "," + '0' + ")")
+          .attr("transform", "translate(0,0)")
           .call(zoomBehaviour);
 
       var rect = svgGroup.append('rect')
@@ -47,7 +51,8 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
         .style("fill", "none")
         .style('pointer-events', 'all');
 
-      var grid = svgGroup.append('g');
+      var grid = svgGroup.append('g')
+        .attr('transform', "translate(0,0)scale(" + zoomCurrent + ")");
 
       var row = grid.selectAll('.row')
           .data($d3.range(0, height, tileSize))
