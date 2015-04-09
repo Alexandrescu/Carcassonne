@@ -15,11 +15,11 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
       // When the event zoom is called then zoomed is triggered
       var zoomBehaviour =
         $d3.behavior.zoom()
-          .scale([1, 10])
+          .scaleExtent([1, 10])
           .on('zoom', zoomed);
 
       function zoomed() {
-
+        grid.attr("transform", "translate(" + $d3.event.translate + ")scale(" + $d3.event.scale + ")");
       }
 
       var board = $d3.select(element[0]);
@@ -37,7 +37,9 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
           .attr('class', 'cs-board')
           .attr('width', width)
           .attr('height', height)
-        .append('g');
+        .append('g')
+          .attr("transform", "translate(" + '0' + "," + '0' + ")")
+          .call(zoomBehaviour);
 
       var rect = svgGroup.append('rect')
         .attr('width', width)
@@ -57,22 +59,14 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
         .enter().append('rect')
         .attr('fill', 'red')
         .attr('x', function(d, i, j) {
-          return xScale(i);
+          return i * tileSize;
         })
         .attr('y', function(d, i, j){
-          return yScale(i, j);
+          return j * tileSize;
         })
-        .attr('width', tileSize)
-        .attr('height', tileSize)
+        .attr('width', tileSize - 1)
+        .attr('height', tileSize - 1)
         .attr('class', 'tile');
-
-      function xScale(i) {
-        return i * tileSize;
-      }
-
-      function yScale(i, j) {
-        return j * tileSize;
-      }
     },
     template: '<div></div>'
   }
