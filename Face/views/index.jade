@@ -1,7 +1,12 @@
 h1= title
 p Welcome to Say What?
 
-carcassonne-tile(tile-size='50', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
+div(ng-style='socketStyle')
+  | Socket connection.
+input(ng-model='roomName')
+button(ng-click='addRoom()') Console the rooms
+
+carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
 
 br
 
