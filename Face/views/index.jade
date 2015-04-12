@@ -1,13 +1,18 @@
-h1= title
-p Welcome to Say What?
+div.game
+  div(ng-hide='progressFinish', layout="column" layout-sm="column" layout-align="space-around center")
+    md-progress-circular(md-mode="indeterminate")
+    p Connecting to server
 
-div(ng-style='socketStyle')
-  | Socket connection.
-input(ng-model='roomName')
-button(ng-click='addRoom()') Console the rooms
+  div(ng-show='progressFinish')
+    p Welcome to Say What?
 
-carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
+    div(ng-style='socketStyle')
+      | Socket connection.
+    input(ng-model='roomName')
+    button(ng-click='addRoom()') Console the rooms
 
-br
+    carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
 
-carcassonne-board(height='600', width='800')
+    br
+
+    carcassonne-board(height='600', width='800')

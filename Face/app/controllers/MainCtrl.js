@@ -2,6 +2,7 @@ var carcassonne = angular.module('carcassonne');
 
 carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socket) {
   var socket = $socket.io('http://localhost:1337');
+
   $scope.$on('$destroy', function() {
     socket.removeAllListeners();
   });
@@ -11,7 +12,8 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
   };
 
   socket.on('connect', function () {
-
+    // Stop the progress circle
+    $scope.progressFinish = true;
     $scope.socketStyle = {
       "background-color": "green"
     };
@@ -24,5 +26,5 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
       socket.emit('addRoom', {roomName: $scope.roomName});
     };
   });
-  
+
 }]);
