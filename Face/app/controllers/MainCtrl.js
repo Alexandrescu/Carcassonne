@@ -27,4 +27,7 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
     };
   });
 
+  socket.on('disconnect', function() {
+    $scope.progressFinish = false;
+  })
 }]);
