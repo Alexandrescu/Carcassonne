@@ -19,9 +19,9 @@ exports.server = {
   routes: './routes/**'
 };
 
-var deps = ['angular/angular.js', 'angular-route/angular-route.js', 'd3/d3.js',
-  'socket.io/node_modules/socket.io-client/socket.io.js', 'angular-socket-io/socket.js'];
+var npmDeps = ['angular/angular.js', 'angular-route/angular-route.js', 'd3/d3.js',
+  'socket.io/node_modules/socket.io-client/socket.io.js', 'angular-socket-io/socket.js',
+  'angular-animate/angular-animate.js', 'angular-aria/angular-aria.js',
+  'angular-material/angular-material.js'];
 
-exports.dependencies = _.map(deps, function(s) {
-  return './node_modules/' + s;
-});
+exports.dependencies = _.map(npmDeps, function(s) {return './node_modules/' + s;});
