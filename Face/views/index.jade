@@ -1,16 +1,33 @@
-div.game
-  div(ng-hide='progressFinish', layout="column" layout-sm="column" layout-align="space-around center")
+div.game(layout='row', layout-align='center center', layout-padding)
+  div(ng-if='!progressFinish', flex='50', layout="column" layout-sm="column" layout-align="space-around center")
     md-progress-circular(md-mode="indeterminate")
     p Connecting to server
 
-  div(ng-show='progressFinish')
-    p Welcome to Say What?
+  div.md-whiteframe-z1(ng-if='progressFinish', class="animate-if", flex='50')
+    md-list
+      md-subheader.md-no-sticky Available rooms to join
+      md-list-item(ng-hide='availableRooms.length')
+        div.list-item
+          p Sorry, no rooms available.
+      md-list-item(ng-repeat='room in availableRooms')
+        div.list-item
+          p room
 
-    div(ng-style='socketStyle')
-      | Socket connection.
-    input(ng-model='roomName')
-    button(ng-click='addRoom()') Console the rooms
+      md-subheader Create your own room
+      md-list-item
+        form(name='form')
+          div.list-item(layout='row', layout-align='space-around center', layout-align-sm='column')
+            div(flex='66')
+              md-input-container
+                label Room name
+                input(required, name="roomName", ng-model="roomName", placeholder='Gods of Carcassonne')
+                div(ng-messages="roomName.$error")
+                  div(ng-message="required") Room name is required
+            div(flex='33', layout='row', layout-align='center')
+              md-button.md-primary(ng-click='createRoom(roomName)', type='submit', ng-disabled='creatingRoom') Create
 
+
+    br
     carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
 
     br

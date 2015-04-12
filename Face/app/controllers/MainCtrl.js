@@ -14,12 +14,9 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
   socket.on('connect', function () {
     // Stop the progress circle
     $scope.progressFinish = true;
-    $scope.socketStyle = {
-      "background-color": "green"
-    };
 
     socket.on('availableRooms', function (data) {
-      console.log(data);
+      $scope.availableRooms = data;
     });
 
     $scope.addRoom = function () {
@@ -29,5 +26,12 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
 
   socket.on('disconnect', function() {
     $scope.progressFinish = false;
-  })
+  });
+
+  $scope.createRoom = function(roomName) {
+    if(roomName && roomName != '') {
+      console.log(roomName);
+      $scope.creatingRoom = true;
+    }
+  };
 }]);
