@@ -1,16 +1,13 @@
 package com.server.json;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Room {
-    private String _roomName;
+    public final String roomName;
 
-    @JsonProperty("roomName")
-    public void setRoom(String room) {
-        this._roomName = room;
-    }
-
-    public String getRoom() {
-        return this._roomName;
+    @JsonCreator
+    public Room(@JsonProperty("roomName") String roomName) {
+        this.roomName = roomName;
     }
 }

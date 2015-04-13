@@ -8,7 +8,7 @@ public class Rooms {
     private List<Room> _rooms;
 
     @JsonProperty("rooms")
-    public List<Room> getTheName() { return _rooms; }
+    public List<Room> getTheRooms() { return _rooms; }
 
-    public void setTheName(List<Room> rooms) { _rooms = rooms; }
+    public void setTheRooms(List<Room> rooms) { _rooms = rooms; }
 }

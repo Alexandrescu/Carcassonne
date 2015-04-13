@@ -2,7 +2,7 @@ package com.server
 
 import com.corundumstudio.socketio._
 import com.corundumstudio.socketio.annotation._
-import com.server.json.{Room, Rooms}
+import com.server.json.{Room, RoomJoin, RoomUpdate, Rooms}
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
@@ -20,41 +20,35 @@ class ServerScala {
   def start() = server.start()
   def stop() = server.stop()
 
-  var rooms =  Map[String, Int]()
-
+  val rooms = new RoomSet()
   class ServerEvents {
     @OnConnect
     def onConnect(client: SocketIOClient): Unit = {
-      logger.info("Another client has connected ")
+      logger.info(s"Another client has connected ${client.getSessionId.toString}")
       client.sendEvent("availableRooms", getRooms())
     }
 
     @OnDisconnect
     def onDisconnect(client: SocketIOClient): Unit ={
-      logger.info("Player is being disconnected")
+      logger.info(s"Player is being disconnected ${client.getSessionId.toString}")
       for(room <- client.getAllRooms) {
-        logger.info(s"Player was connected to $room.")
-        val players = rooms.getOrElse(room, 0)
-        if(players > 1) {
-          rooms += (room -> (players - 1))
-        }
-        else {
-          rooms -= room
-          logger.info(s"${Console.BLUE}[Room]${Console.RESET} Removing $room from rooms")
-        }
+        logger.info(s"Removing player from $room.")
+        rooms.removePlayer(client.getSessionId.toString, room)
       }
       availableRooms()
     }
 
     @OnEvent("addRoom")
-    def onAddRoom(client: SocketIOClient, data: Room) : Unit = {
+    def onAddRoom(client: SocketIOClient, data: RoomJoin) : Unit = {
       logger.info(s"Request to create room ${data.getRoom}.")
 
       if(rooms.contains(data.getRoom)) {
         logger.info("Room not created. Already exists.")
         return
       }
-      rooms += (data.getRoom -> 1)
+
+      rooms.addRoom(data.getRoom)
+      rooms.addPlayer(data.getRoom, client.getSessionId.toString, data.getUsername, data.getUserColor)
 
       client.joinRoom(data.getRoom)
       client.sendEvent("roomConnected", data)
@@ -65,13 +59,11 @@ class ServerScala {
     }
 
     @OnEvent("joinRoom")
-    def onJoinRoom(client: SocketIOClient, data : Room) : Unit = {
+    def onJoinRoom(client: SocketIOClient, data : RoomJoin) : Unit = {
       logger.info(s"Request to join room ${data.getRoom}.")
 
-      val players = rooms.getOrElse(data.getRoom, 0)
-      if(players > 0) {
-        rooms -= data.getRoom
-        rooms += (data.getRoom -> (players + 1))
+      if(rooms.contains(data.getRoom)) {
+        rooms.addPlayer(data.getRoom, client.getSessionId.toString, data.getUsername, data.getUserColor)
 
         client.joinRoom(data.getRoom)
         client.sendEvent("roomConnected", data)
@@ -86,14 +78,8 @@ class ServerScala {
     }
 
     def getRooms(): Rooms = {
-      def toRoom(roomPair:(String, Int)) : Room = {
-        val room = new Room()
-        room.setRoom(roomPair._1)
-        room
-      }
-
       val data = new Rooms()
-      data.setTheName(rooms.map(toRoom).toList)
+      data.setTheRooms(rooms.getRooms().map(new Room(_)).toList)
       data
     }
 
