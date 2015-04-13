@@ -2,15 +2,21 @@ div.game(layout='row', layout-align='center center', layout-padding, layout-wrap
   div(ng-if='!progressFinish', flex='100', layout="column" layout-sm="column" layout-align="space-around center")
     md-progress-circular(md-mode="indeterminate")
     p Connecting to server
-  section(ng-if='progressFinish', flex='100', layout='row', layout-align='center center', layout-padding, layout-wrap)
-    div.md-whiteframe-z1(ng-if='!roomConnected', class="animate-if", flex='50')
-      md-list
+  section(ng-if='progressFinish', flex='100', layout='row', layout-align='center')
+    div.md-whiteframe-z1(ng-if='!roomConnected', class="animate-if", flex='50',
+    layout='row', layout-align='center center', layout-wrap, layout-padding)
+      md-input-container(flex='60')
+        label Nickname
+        input(ng-model='id.nickname', placeholder='Epic Follower', ng-disabled='id.disabled')
+      md-button.md-primary.md-raised(flex, ng-hide='id.disabled', ng-click='chooseNickname()') Choose name
+      md-button.md-warn.md-raised(flex, ng-show='id.disabled', ng-click='id.disabled = false') Edit name
+      md-list(flex='100', ng-if='id.disabled')
         md-subheader.md-no-sticky Available rooms to join
         md-list-item(ng-hide='availableRooms.length')
           div.list-item
             p Sorry, no rooms available.
         md-list-item(ng-repeat='room in availableRooms')
-          div.list-item(layout='row', layout-align='space-around center', layout-align-sm='column')
+          div.list-item(layout='row', layout-align='space-around center', layout-sm='column')
             div(flex='66')
               p {{room.roomName}}
             div(flex='33', layout='row', layout-align='center')
@@ -27,11 +33,8 @@ div.game(layout='row', layout-align='center center', layout-padding, layout-wrap
                     div(ng-message="required") Room name is required
               div(flex='33', layout='row', layout-align='center')
                 md-button.md-primary(ng-click='createRoom(roomName)', type='submit', ng-disabled='creatingRoom') Create
-    div.md-whiteframe-z2(ng-if='roomConnected', class="animate-if", flex='50')
+    div.md-whiteframe-z2(ng-if='roomConnected', class="animate-if", flex='80',
+    layout='row', layout-align='left', layout-padding, layout-wrap, layout-sm='column')
       div(flex='100')
-        pre {{myRoom | json}}
-      div(flex='100')
-        br
-        carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
-        br
-        carcassonne-board(height='600', width='800')
+        h3 Room {{myRoom}}
+      div(flex)

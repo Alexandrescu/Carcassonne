@@ -35,7 +35,10 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
     $scope.creatingRoom = false;
   });
 
-  // Join Room
+  socket.on('roomUpdate', function(room) {
+  });
+
+  // Join Room request
   $scope.joinRoom = function(roomName) {
     socket.emit('joinRoom', {roomName: roomName});
   };
@@ -46,6 +49,12 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
       $scope.myRoom = roomName;
       $scope.creatingRoom = true;
       socket.emit('addRoom', {roomName: roomName});
+    }
+  };
+  $scope.id = {};
+  $scope.chooseNickname = function() {
+    if($scope.id.nickname && $scope.id.nickname != '') {
+      $scope.id.disabled = true;
     }
   };
 
