@@ -2,7 +2,7 @@ package com.server
 
 import com.corundumstudio.socketio._
 import com.corundumstudio.socketio.annotation._
-import com.server.json.{Room, RoomJoin, RoomUpdate, Rooms}
+import com.server.json.{Room, RoomJoin, Rooms}
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
@@ -21,6 +21,7 @@ class ServerScala {
   def stop() = server.stop()
 
   val rooms = new RoomSet()
+
   class ServerEvents {
     @OnConnect
     def onConnect(client: SocketIOClient): Unit = {
@@ -33,7 +34,7 @@ class ServerScala {
       logger.info(s"Player is being disconnected ${client.getSessionId.toString}")
       for(room <- client.getAllRooms) {
         logger.info(s"Removing player from $room.")
-        rooms.removePlayer(client.getSessionId.toString, room)
+        rooms.removeClient(room, client.getSessionId.toString)
       }
       availableRooms()
     }
@@ -48,7 +49,7 @@ class ServerScala {
       }
 
       rooms.addRoom(data.getRoom)
-      rooms.addPlayer(data.getRoom, client.getSessionId.toString, data.getUsername, data.getUserColor)
+      rooms.addClient(data.getRoom, client.getSessionId.toString)
 
       client.joinRoom(data.getRoom)
       client.sendEvent("roomConnected", data)
@@ -63,7 +64,7 @@ class ServerScala {
       logger.info(s"Request to join room ${data.getRoom}.")
 
       if(rooms.contains(data.getRoom)) {
-        rooms.addPlayer(data.getRoom, client.getSessionId.toString, data.getUsername, data.getUserColor)
+        rooms.addClient(data.getRoom, client.getSessionId.toString)
 
         client.joinRoom(data.getRoom)
         client.sendEvent("roomConnected", data)

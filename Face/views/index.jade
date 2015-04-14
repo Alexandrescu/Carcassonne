@@ -5,12 +5,7 @@ div.game(layout='row', layout-align='center center', layout-padding, layout-wrap
   section(ng-if='progressFinish', flex='100', layout='row', layout-align='center')
     div.md-whiteframe-z1(ng-if='!roomConnected', class="animate-if", flex='50',
     layout='row', layout-align='center center', layout-wrap, layout-padding)
-      md-input-container(flex='60')
-        label Nickname
-        input(ng-model='id.nickname', placeholder='Epic Follower', ng-disabled='id.disabled')
-      md-button.md-primary.md-raised(flex, ng-hide='id.disabled', ng-click='chooseNickname()') Choose name
-      md-button.md-warn.md-raised(flex, ng-show='id.disabled', ng-click='id.disabled = false') Edit name
-      md-list(flex='100', ng-if='id.disabled')
+      md-list(flex='100')
         md-subheader.md-no-sticky Available rooms to join
         md-list-item(ng-hide='availableRooms.length')
           div.list-item
