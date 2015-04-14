@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class Rooms {
+public class RoomList {
     private List<Room> _rooms;
 
     @JsonProperty("rooms")
