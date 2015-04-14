@@ -2,8 +2,8 @@ div.game(layout='row', layout-align='center center', layout-padding, layout-wrap
   div(ng-if='!progressFinish', flex='100', layout="column" layout-sm="column" layout-align="space-around center")
     md-progress-circular(md-mode="indeterminate")
     p Connecting to server
-  section(ng-if='progressFinish', flex='100', layout='row', layout-align='center')
-    div.md-whiteframe-z1(ng-if='!roomConnected', class="animate-if", flex='50',
+  section(ng-if='progressFinish', flex='100', layout='row', layout-align='center', layout-wrap)
+    div.md-whiteframe-z1(ng-if='!myRoom.joined', class="animate-if", flex='50',
     layout='row', layout-align='center center', layout-wrap, layout-padding)
       md-list(flex='100')
         md-subheader.md-no-sticky Available rooms to join
@@ -28,8 +28,23 @@ div.game(layout='row', layout-align='center center', layout-padding, layout-wrap
                     div(ng-message="required") Room name is required
               div(flex='33', layout='row', layout-align='center')
                 md-button.md-primary(ng-click='createRoom(roomName)', type='submit', ng-disabled='creatingRoom') Create
-    div.md-whiteframe-z2(ng-if='roomConnected', class="animate-if", flex='80',
+    // PUT BACK ,
+    div.md-whiteframe-z4( class="animate-if", flex='80', ng-if='myRoom.joined',
     layout='row', layout-align='left', layout-padding, layout-wrap, layout-sm='column')
       div(flex='100')
-        h3 Room {{myRoom}}
-      div(flex)
+        h3 Room {{myRoom.roomName}}
+      div(flex='100', layout='row', layout-align='center center')
+        md-input-container(flex='60')
+          label Nickname
+          input(ng-model='id.nickname', placeholder='Epic Follower', ng-disabled='id.disabled', ng-enter='chooseNickname()')
+        md-button.md-raised(flex, ng-click='chooseNickname()',
+        ng-class='{"md-primary" : !id.disabled, "md-warn" : id.disabled}')
+          | {{id.disabled ? 'Edit name' : 'Choose name'}}
+        //md-button.md-warn.md-raised(flex, ng-show='id.disabled', ng-click='chooseNickname()') Edit name
+      div(flex, ng-repeat='slot in slots track by $index', ng-show='id.disabled')
+        h4 Slot {{slot.slot + 1}}
+        div(ng-show='slot.isEmpty')
+          md-button.md-raised(ng-click='joinSlot($index)', ng-hide='myRoom.slot >= 0') Jump in
+          md-button.md-raised(ng-click='aiSlot($index)') Add AI
+        div(ng-hide='slot.isEmpty')
+          h5 {{slot.isAI? 'AI:' : 'Player' }}&nbsp{{slot.playerName}}
