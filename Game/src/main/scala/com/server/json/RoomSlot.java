@@ -2,16 +2,18 @@ package com.server.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RoomJoin {
-    @JsonProperty("roomName")
-    public String roomName;
+import java.util.List;
+
+public class RoomSlot {
+    @JsonProperty("slot")
+    public int slot;
 
     @JsonProperty("playerName")
     public String playerName;
 
-    @JsonProperty("slot")
-    public int slot;
-
     @JsonProperty("isAI")
     public boolean isAI;
+
+    @JsonProperty("isEmpty")
+    public boolean isEmpty;
 }
