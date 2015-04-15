@@ -31,9 +31,10 @@ class RoomSet {
           newSlot.slot = i
           newSlot.isEmpty = false
           playerSet.get(i) match {
-            case Some(HumanPlayer(name, _)) =>
+            case Some(HumanPlayer(name, uuid)) =>
               newSlot.playerName = name
               newSlot.isAI = false
+              newSlot.uuid = uuid
             case Some(AI(name)) =>
               newSlot.playerName = name
               newSlot.isAI = true

@@ -1,5 +1,6 @@
 package com.server.json;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -16,4 +17,10 @@ public class RoomSlot {
 
     @JsonProperty("isEmpty")
     public boolean isEmpty;
+
+    @JsonIgnore
+    public String uuid;
+
+    @JsonIgnore
+    public String token;
 }
