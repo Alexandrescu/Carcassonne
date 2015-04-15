@@ -15,10 +15,12 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($
     console.log($scope.creatingRoom);
 
     $scope.availableRooms = data.rooms;
+    // If I am creating room, and my Room has been created then I can join it here.
+    // See issue in which I am telling future improvements for this.
     if($scope.creatingRoom) {
       for(var i = 0; i < data.rooms.length; i++) {
         if($scope.myRoom == data.rooms[i].roomName){
-          joinRoom($scope.myRoom)
+          $scope.joinRoom($scope.myRoom)
         }
       }
     }
@@ -31,7 +33,6 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($
 
   // Start the progress circle
   socket.on('disconnect', function() {
-    $scope.myRoom.joined = false;
     $scope.progressFinish = false;
     $scope.myRoom = {
       joined : false,
@@ -86,7 +87,9 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($
     if($scope.id.disabled) {
       console.log("HERE");
       $scope.id.disabled = false;
-      //UPDATE ROOM
+      if($scope.myRoom.slot > 0) {
+        $scope.removeSlot($scope.myRoom.slot);
+      }
     }
     else if($scope.id.nickname && $scope.id.nickname != '') {
       $scope.id.disabled = true;
