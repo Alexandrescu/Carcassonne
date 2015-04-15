@@ -12,7 +12,7 @@ class ServerScala {
   val logger = Logger(LoggerFactory.getLogger("Carcassonne Server"))
 
   val config = new Configuration()
-  config.setHostname("localhost")
+  //config.setHostname("localhost")
   config.setPort(1337)
 
   val server : SocketIOServer = new SocketIOServer(config)
@@ -75,6 +75,18 @@ class ServerScala {
       }
     }
 
+    @OnEvent("leaveRoom")
+    def onLeaveRoom(client: SocketIOClient, data : Room) : Unit = {
+      logger.info(s"Request to leave room ${data.roomName}")
+      if(rooms.contains(data.roomName)) {
+        val newRoom : RoomDetails = rooms.removeClient(data.roomName, client.getSessionId.toString)
+        server.getRoomOperations(data.roomName).sendEvent("roomUpdate", newRoom)
+        client.leaveRoom(data.roomName)
+        client.sendEvent("roomLeft", data)
+      }
+      availableRooms()
+    }
+
     @OnEvent("addPlayer")
     def onAddPlayer(client : SocketIOClient, data : RoomJoin) : Unit = {
       logger.info(s"Request to add player to room ${data.roomName}")
@@ -92,6 +104,7 @@ class ServerScala {
         server.getRoomOperations(data.roomName).sendEvent("roomUpdate", newRoom)
       }
     }
+    
     def availableRooms(): Unit = {
       server.getBroadcastOperations.sendEvent("availableRooms", getRooms())
     }
