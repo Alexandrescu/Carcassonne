@@ -105,7 +105,7 @@ class RoomSet {
       case Some(r) =>
         r.addClient(id)
         r.toJSON
-      case _ => new RoomDetails()
+      case _ => null
     }
   }
 
@@ -115,7 +115,7 @@ class RoomSet {
         r.removeClient(id)
         if(r.countClients == 0) {
           rooms -= room
-          return new RoomDetails()
+          return null
         }
         r.toJSON
       case _ => throw UninitializedFieldError("Room doesn't exist")
