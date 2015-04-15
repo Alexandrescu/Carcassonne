@@ -33,6 +33,7 @@ div.game(layout='row', layout-align='center center', layout-padding, layout-wrap
     layout='row', layout-align='left', layout-padding, layout-wrap, layout-sm='column')
       div(flex='100')
         h3 Room {{myRoom.roomName}}
+        md-button.md-raised.md-warn(ng-click='leaveRoom()') Leave room
       div(flex='100', layout='row', layout-align='center center')
         md-input-container(flex='60')
           label Nickname
@@ -48,3 +49,6 @@ div.game(layout='row', layout-align='center center', layout-padding, layout-wrap
           md-button.md-raised(ng-click='aiSlot($index)') Add AI
         div(ng-hide='slot.isEmpty')
           h5 {{slot.isAI? 'AI:' : 'Player' }}&nbsp{{slot.playerName}}
+          md-button.md-raised(ng-click='removeSlot($index)', ng-if='slot.isAI || myRoom.slot == $index')
+            | {{slot.isAI? 'Remove AI' : 'Leave slot'}}
+

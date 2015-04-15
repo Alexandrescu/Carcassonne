@@ -1,11 +1,13 @@
 var carcassonne = angular.module('carcassonne');
 
-carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socket) {
+carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($scope, $socket, $location) {
   $scope.myRoom = {
     roomName : '',
     joined : false
   };
-  var socket = $socket.io('http://localhost:1337');
+  var host = $location.host();
+  console.log('http://' + host + ':1337');
+  var socket = $socket.io('http://' + host + ':1337');
 
   socket.on('availableRooms', function (data) {
     console.log(data);
@@ -31,6 +33,10 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
   socket.on('disconnect', function() {
     $scope.myRoom.joined = false;
     $scope.progressFinish = false;
+    $scope.myRoom = {
+      joined : false,
+      roomName: ''
+    }
   });
 
   //Joining room
@@ -50,6 +56,17 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
   socket.on('roomUpdate', function(room) {
     $scope.slots = room.slots.sort(function(a, b) { return a.slot - b.slot});
   });
+
+  socket.on('roomLeft', function(room) {
+    $scope.myRoom = {
+      joined : false,
+      roomName: ''
+    }
+  });
+
+  $scope.leaveRoom = function() {
+    socket.emit('leaveRoom', {roomName: $scope.myRoom.roomName});
+  };
 
   // Join Room request
   $scope.joinRoom = function(roomName) {
@@ -102,11 +119,31 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', function($scope, $socke
     socket.emit('removePlayer', data);
   };
 
+  $scope.aiSlot = function(index) {
+    var data = {
+      roomName: $scope.myRoom.roomName,
+      playerName: aiNames[index],
+      slot: index,
+      isAI: true
+    };
+    console.log("addAI event");
+    console.log(data);
+    socket.emit('addPlayer', data);
+  };
+
   $scope.$on('$destroy', function() {
     socket.removeAllListeners();
   });
 
   // Slot section
   var slotNumber = 6;
+  var aiNames = [
+    'Anca',
+    'Bianca',
+    'Ciobi',
+    'Dan',
+    'Emil',
+    'Flavius'
+  ];
   $scope.slots = new Array(slotNumber);
 }]);
