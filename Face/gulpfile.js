@@ -21,7 +21,7 @@ gulp.task('build', function(done) {
   runSequence(['sass', 'js', 'dependencies'], done);
 });
 
-gulp.task('dependencies', function() {
+gulp.task('dependencies', ['cssDependency'], function() {
   gulp.src(defaultAssets.dependencies)
     .pipe(gulp.dest(defaultAssets.client.js));
 });
@@ -57,6 +57,11 @@ gulp.task('js', function(done) {
 gulp.task('sass', function () {
   return gulp.src(defaultAssets.server.sass + '**')
     .pipe(plugins.sass())
+    .pipe(gulp.dest(defaultAssets.client.css));
+});
+
+gulp.task('cssDependency', function() {
+  return gulp.src('./node_modules/angular-material/angular-material.css')
     .pipe(gulp.dest(defaultAssets.client.css));
 });
 

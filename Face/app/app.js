@@ -1,7 +1,9 @@
 'use strict';
 
 var carcassonne = angular.module('carcassonne',[
-  'ngRoute'
+  'ngRoute',
+  'btford.socket-io',
+  'ngMaterial'
 ]).config(function($routeProvider, $locationProvider) {
   $routeProvider
     .when('/', {
