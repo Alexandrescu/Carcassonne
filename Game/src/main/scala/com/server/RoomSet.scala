@@ -22,7 +22,16 @@ class RoomSet {
       def removePlayer(slot : Int): Unit = {
         playerSet -= slot
       }
-      
+
+      def removePlayer(id : String): Unit = {
+        for((slot, player) <- playerSet) {
+          player match {
+            case HumanPlayer(_, playerId) if playerId == id => playerSet -= slot
+            case _ =>
+          }
+        }
+      }
+
       def toJSON() : RoomDetails = {
         val json = new RoomDetails()
         json.roomName = roomName
@@ -81,6 +90,7 @@ class RoomSet {
     }
 
     def removeClient(id : String): Unit = {
+      playerSet.removePlayer(id)
       clientSet.removeClient(id)
     }
 
