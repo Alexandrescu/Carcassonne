@@ -7,6 +7,9 @@ carcassonne.directive('carcassonneTile', ['$d3', function($d3) {
       tileSize: '=',
       tile: '='
     },
+    templateNamespace: 'svg',
+    template: '<svg></svg>',
+    replace: true,
     link: function(scope, element, attrs) {
       var tileLetter = angular.lowercase(scope.tile);
       var tileSize = scope.tileSize;
@@ -19,7 +22,7 @@ carcassonne.directive('carcassonneTile', ['$d3', function($d3) {
           .attr('width', tileSize)
           .attr('height', tileSize)
           .attr('xlink:href', '/tiles/' + tileLetter + 'Tile.png')
-          .attr('visibility', tileVisible? 'visible' : 'hidden');
+          .attr('opacity', tileVisible? '100' : '0');
 
       var rotation = 0;
 
@@ -36,8 +39,8 @@ carcassonne.directive('carcassonneTile', ['$d3', function($d3) {
       });
 
       element.bind('mouseenter mouseleave', function(event) {
-        tileVisible = !tileVisible
-        tile.attr('visibility', tileVisible? 'visible' : 'hidden');
+        tileVisible = !tileVisible;
+        tile.attr('opacity', tileVisible? '100' : '0');
       });
     }
   }
