@@ -8,6 +8,8 @@
 
 package com.game
 
+import com.tile.Tile
+
 class StandardTileBag extends TileBag {
   /*
   val tileList = List(
@@ -59,4 +61,11 @@ class StandardTileBag extends TileBag {
     }
   }
   */
+  override val startTile: Tile = _
+
+  override def getEntireTileBag: Iterable[Tile] = ???
+
+  override def finished: Boolean = ???
+
+  override def getTile: Option[Tile] = ???
 }

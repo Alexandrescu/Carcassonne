@@ -1,9 +1,9 @@
 package com.board
 
-import com.game.Game
+import com.game.GameFactory
 import org.scalatest.FlatSpec
 
-class GameTest extends FlatSpec {
+class GameFactoryTest extends FlatSpec {
 
   val mockGame = new Game
 
