@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory
 
 import scala.concurrent.Promise
 
-abstract class Player {
+class Player(var name : String, var uuid : String, private var _token : String) {
+
+  def token : String = _token
+
   private var _followers : Int = 7
   def addFollowers(i: Int): Unit= {
     _followers += i
@@ -24,7 +27,6 @@ abstract class Player {
   def points : Int = _points
 
   def hasFollower : Boolean = _followers != 0
-  def name : String
   def promise = Promise[Boolean]
 
   private val logger = LoggerFactory.getLogger(this.getClass)
