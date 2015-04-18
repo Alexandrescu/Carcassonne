@@ -22,6 +22,7 @@ exports.server = {
 var npmDeps = ['angular/angular.js', 'angular-route/angular-route.js', 'd3/d3.js',
   'socket.io/node_modules/socket.io-client/socket.io.js', 'angular-socket-io/socket.js',
   'angular-animate/angular-animate.js', 'angular-aria/angular-aria.js',
-  'angular-material/angular-material.js', 'angular-messages/angular-messages.js'];
+  'angular-material/angular-material.js', 'angular-messages/angular-messages.js',
+  'angular-resource/angular-resource.js'];
 
 exports.dependencies = _.map(npmDeps, function(s) {return './node_modules/' + s;});

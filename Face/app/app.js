@@ -3,7 +3,8 @@
 var carcassonne = angular.module('carcassonne',[
   'ngRoute',
   'btford.socket-io',
-  'ngMaterial'
+  'ngMaterial',
+  'ngResource'
 ]).config(function($routeProvider, $locationProvider) {
   $routeProvider
     .when('/', {
