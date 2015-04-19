@@ -2,7 +2,7 @@ package com.tile
 
 import com.game.Player
 
-abstract class Section{
+abstract class Section(val frontEndId : Int) {
   var treeDepth : Int = 1
 
   protected var _owners : Map[Player, Int] = Map()

@@ -2,7 +2,7 @@ package com.tile
 
 import com.game.Player
 
-class MonasterySection extends Section {
+class MonasterySection(override val frontEndId : Int) extends Section(frontEndId) {
   private var tileCount : Int = 0
 
   def addOpen() : Unit = {

@@ -2,7 +2,7 @@ package com.tile
 
 import com.game.Player
 
-class RoadSection extends Section{
+class RoadSection(override val frontEndId : Int) extends Section(frontEndId){
   private var _openEdges : Int = 0
   private var _tileCount : Int = 1
   private var _parent : Option[RoadSection] = None
