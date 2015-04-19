@@ -3,7 +3,7 @@ package com.tile
 import com.game.Direction
 import Direction._
 
-abstract class Tile(identifier : String,
+abstract class Tile(val identifier : String,
                     private var _up : TileEdge,
                     private var _down : TileEdge,
                     private var _left : TileEdge,
@@ -63,13 +63,13 @@ abstract class Tile(identifier : String,
   }
 }
 
-case class SimpleTile(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
+case class SimpleTile(override val identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
   extends Tile(identifier, _up, _down, _left, _right, 1)
 
-case class Monastery(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge, monastery: MonasterySection)
+case class Monastery(override val identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge, monastery: MonasterySection)
   extends Tile(identifier, _up, _down, _left, _right, 1) {
   sections = sections + monastery
 }
 
-case class BannerTile(identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
+case class BannerTile(override val identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
   extends Tile(identifier, _up, _down, _left, _right, 2)
