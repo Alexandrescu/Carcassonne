@@ -10,7 +10,7 @@ class PlayerState(room : RoomDetails) {
 
   for(slot <- room.slots.toList) {
     if(!slot.isAI) {
-      slotMap += (slot.slot -> new Player(slot.playerName, slot.uuid, "token" + slot.slot))
+      slotMap += (slot.slot -> new Player(slot.slot ,slot.playerName, slot.uuid, "token" + slot.slot))
     }
   }
 
@@ -28,6 +28,8 @@ class PlayerState(room : RoomDetails) {
   def getPlayer(slot : Int): Unit = {
 
   }
+
+  def currentSlot() : Int = ???
 
   def doneConnecting : Boolean = (slotMap.size - connected) == 0
 

@@ -15,7 +15,9 @@ object Converter {
     new GameMove(move.tile.identifier, move.place._1, move.place._2, section, toGamePlayer(move.player))
   }
 
-  def toGamePlayer(player : Player) : GamePlayer = ???
+  def toGamePlayer(player : Player) : GamePlayer = {
+    new GamePlayer(player.slot, player.followers, player.points)
+  }
 
   def toGameNextMove(tile : Tile, moves : Set[PossibleMove]) : GameNextMove = ???
 
