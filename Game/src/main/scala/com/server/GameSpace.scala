@@ -24,8 +24,9 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
     def onPlayerSessionUpdate(client: SocketIOClient, player : GamePlayer): Unit = {
       playerState.updateUUID(player.slot, player.token, client.getSessionId.toString)
       if(playerState.doneConnecting) {
-        space.getBroadcastOperations.sendEvent("gameStart")
-        firstMove
+        val firstMove = game.setBoard()
+        space.getBroadcastOperations.sendEvent("gameStart", Converter.moveToJson(firstMove))
+        nextRound
       }
     }
 
@@ -51,12 +52,6 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
     }
   }
 
-  def firstMove {
-    val firstMove = game.setBoard()
-    space.getBroadcastOperations.sendEvent("gameMove", Converter.moveToJson(firstMove))
-    nextRound
-  }
-
   def nextRound {
     if(finished) {
       endGame()
@@ -80,4 +75,6 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
     game.endGame()
     space.getBroadcastOperations.sendEvent("gameEnd", playerState.endGame)
   }
+
+  def forceStop = ???
 }

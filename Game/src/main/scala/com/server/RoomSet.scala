@@ -170,4 +170,11 @@ class RoomSet {
   def getRooms() : List[String] = {
     (for(pair <- rooms) yield pair._1).toList
   }
+
+  def getRoomDetails(room : String) : RoomDetails = {
+    rooms.get(room) match {
+      case Some(r) => r.toJSON
+      case _ => throw UninitializedFieldError("Room doesn't exist")
+    }
+  }
 }

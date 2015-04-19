@@ -21,6 +21,7 @@ class ServerScala {
   def stop() = server.stop()
 
   val rooms = new RoomSet()
+  var gameMap = Map[String, GameSpace]()
 
   class ServerEvents {
     @OnConnect
@@ -104,9 +105,41 @@ class ServerScala {
         server.getRoomOperations(data.roomName).sendEvent("roomUpdate", newRoom)
       }
     }
-    
+
+    @OnEvent("startGame")
+    def onStartGame(client: SocketIOClient, data: Room): Unit = {
+      val namespace = server.addNamespace(data.roomName)
+      val gameSpace = new GameSpace(namespace, new PlayerState(rooms.getRoomDetails(data.roomName)))
+      gameMap += (data.roomName -> gameSpace)
+      availableGames
+    }
+
+    @OnEvent("stopGame")
+    def onStopGame(client: SocketIOClient, data : Room): Unit = {
+      server.removeNamespace(data.roomName)
+      gameMap.get(data.roomName) match {
+        case Some(space) =>
+          space.forceStop
+        case None => throw UninitializedFieldError("Not a valid game")
+      }
+      gameMap -= data.roomName
+      availableGames
+    }
+
     def availableRooms(): Unit = {
       server.getBroadcastOperations.sendEvent("availableRooms", getRooms())
+    }
+
+    def availableGames(): Unit = {
+      server.getBroadcastOperations.sendEvent("availableGames", getGames())
+    }
+
+    def getGames() : RoomList = {
+      val data = new RoomList()
+      data.setTheRooms(
+        (for((game, space) <- gameMap) yield new Room(game)).toList
+      )
+      data
     }
 
     def getRooms(): RoomList = {
