@@ -5,6 +5,7 @@ object CarcassonneStart {
     val server = new ServerScala
     try {
       server.start
+      server.addRoom("test")
       while (System.in.read != 'c') {
         println(Console.BLUE + "[Server] Please press 'c' to stop" + Console.RESET)
       }

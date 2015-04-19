@@ -61,7 +61,7 @@ class StandardTileBag extends TileBag {
     }
   }
   */
-  override val startTile: Tile = _
+  override val startTile: Tile = ???
 
   override def getEntireTileBag: Iterable[Tile] = ???
 
