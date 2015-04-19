@@ -35,7 +35,7 @@ object Converter {
   }
 
   def toGameDraw(tile : Tile, player : Player) : GameDraw = {
-
+    new GameDraw(tile.identifier, player.slot)
   }
 
   def toMove(move : GameMove, tile : Tile, player : Player) : Move = {
