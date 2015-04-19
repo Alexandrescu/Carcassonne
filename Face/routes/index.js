@@ -15,4 +15,10 @@ router.get('/gamePartial', function(req, res) {
   res.render('game');
 });
 
+/* Resources */
+var tiles = require('../config/tiles');
+router.get('/tile/:id', function(req, res) {
+  res.send(tiles[req.params.id]);
+});
+
 module.exports = router;
