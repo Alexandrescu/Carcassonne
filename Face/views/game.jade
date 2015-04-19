@@ -1,11 +1,12 @@
-div(flex='100', layout='row')
+div(flex='100', layout='row', carcassonne-game)
   div(flex)
     md-button(ng-click='changeMove()') Green
     br
-    carcassonne-board(height='600', width='800', move='move', tile-size='50')
+    div
+      carcassonne-board(height='600', width='800', move='move', tile-size='50')
 
   md-sidenav(class="md-sidenav-right md-whiteframe-z2", md-component-id="right", md-is-locked-open="$mdMedia('gt-md')")
     md-toolbar(class="md-theme-light")
       h1(class="md-toolbar-tools") Sidenav Right
-    | Hello
+    | Hello {{andrei}}
 
