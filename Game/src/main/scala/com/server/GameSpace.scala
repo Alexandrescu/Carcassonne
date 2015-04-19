@@ -21,7 +21,7 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
     }
 
     @OnEvent("playerSessionUpdate")
-    def onPlayerSessionUpdate(client: SocketIOClient, player : GamePlayer): Unit = {
+    def onPlayerSessionUpdate(client: SocketIOClient, player : GameClient): Unit = {
       playerState.updateUUID(player.slot, player.token, client.getSessionId.toString)
       if(playerState.doneConnecting) {
         val firstMove = game.setBoard()
@@ -52,6 +52,8 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
     }
   }
 
+  space.addListeners(new GameEvents)
+
   def nextRound {
     if(finished) {
       endGame()
@@ -76,5 +78,7 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
     space.getBroadcastOperations.sendEvent("gameEnd", playerState.endGame)
   }
 
-  def forceStop = ???
+  def forceStop: Unit = {
+    logger.info("Stopping this game now")
+  }
 }

@@ -1,4 +1,4 @@
 package com.server.json;
 
-public class GamePlayer {
+public class GameTile {
 }
