@@ -34,11 +34,25 @@ object Converter {
     )
   }
 
-  def toGameDraw(tile : Tile, player : Player) : GameDraw = ???
+  def toGameDraw(tile : Tile, player : Player) : GameDraw = {
 
-  def toMove(move : GameMove) : Move = ???
+  }
 
-  def toStringDirection(direction : Direction): String = {
+  def toMove(move : GameMove, tile : Tile, player : Player) : Move = {
+    val place = (move.tile.x, move.tile.y)
+    val sections = tile.getSections()
+
+    var owned : Option[Section] = None
+    for(section <- sections) {
+      if(section.frontEndId == move.tile.owned) {
+        owned = Some(section)
+      }
+    }
+
+    new Move(tile, place, owned, player)
+  }
+
+  private def toStringDirection(direction : Direction): String = {
     direction match {
       case Up => "Up"
       case Down => "Down"
@@ -47,7 +61,7 @@ object Converter {
     }
   }
 
-  def toOwnToList(toOwn : List[Option[Section]]) : List[Integer] = {
+  private def toOwnToList(toOwn : List[Option[Section]]) : List[Integer] = {
     def convert(x : Option[Section]) : Integer = x match {
       case Some(s) => s.frontEndId
       case None => -1

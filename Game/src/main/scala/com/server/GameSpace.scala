@@ -5,14 +5,18 @@ import java.util.UUID
 import com.board.Move
 import com.corundumstudio.socketio.annotation.{OnConnect, OnEvent}
 import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
-import com.game.{Game, GameFactory}
+import com.game.{Player, Game, GameFactory}
 import com.server.json._
+import com.tile.Tile
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
 class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
   val logger = Logger(LoggerFactory.getLogger("Carcassonne Game"))
   val game : Game = GameFactory.standardGame(callEndOfGame)
+
+  private var currentTile : Tile = null
+  private var currentPlayer : Player = null
 
   class GameEvents {
     @OnConnect
@@ -33,7 +37,7 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
     @OnEvent("playerMove")
     def onPlayerMove(client : SocketIOClient, gameMove : GameMove): Unit = {
       if(playerState.isCurrentPlayer(client.getSessionId.toString)) {
-        val move : Move = Converter.toMove(gameMove)
+        val move : Move = Converter.toMove(gameMove, currentTile, currentPlayer)
         if(game.isMove(move)) {
           game.setMove(move)
 
@@ -59,13 +63,13 @@ class GameSpace(space : SocketIONamespace, playerState : PlayerState) {
       endGame()
       return
     }
-    val nextTile = game.drawTile()
-    val nextPlayer = playerState.nextPlayer
-    val availableMoves = game.getMoves(nextTile, nextPlayer)
+    currentTile = game.drawTile()
+    currentPlayer = playerState.nextPlayer
+    val availableMoves = game.getMoves(currentTile, currentPlayer)
 
-    space.getClient(UUID.fromString(nextPlayer.uuid)).
-      sendEvent("gameNext", Converter.toGameNextMove(nextTile, availableMoves))
-    space.getBroadcastOperations.sendEvent("gameDraw", Converter.toGameDraw(nextTile, nextPlayer))
+    space.getClient(UUID.fromString(currentPlayer.uuid)).
+      sendEvent("gameNext", Converter.toGameNextMoveList(currentTile, availableMoves))
+    space.getBroadcastOperations.sendEvent("gameDraw", Converter.toGameDraw(currentTile, currentPlayer))
   }
 
   private var finished = false
