@@ -5,6 +5,10 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
   return {
     restrict: 'A',
     controller: function($scope, $rootScope) {
+      $scope.nextMove = 0;
+      $scope.button = function() {
+        $scope.nextMove++;
+      };
       console.log($routeParams.gameName);
       var host = $location.host();
       //var socket = $socket.io('http://' + host + ':1337/' + $routeParams.gameName);

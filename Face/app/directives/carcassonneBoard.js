@@ -167,21 +167,32 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
           .attr('color', '"red"')
           .attr('play-move', 'playMove()')
           .attr('final', 'final')
-          .call(function() {
+          .call(function(section) {
             console.log(this[0]);
-            $compile(grid.node())(scope);
+            $compile(section.node())(scope);
           });
 
         gameCtrl.moveAdded();
       }
 
+      function removeFinishedFollower(follower) {
+        var finalTiles = tile.filter(function(d, i, j){
+          return (follower.x - offset) == i && (follower.y - offset) == j;
+        });
+
+        finalTiles.select('.section' + follower.section).remove();
+      }
+
       scope.$watch('move', function(after, before) {
-        if(after)
+        if(after) {
           finalTile(after);
+        }
       });
 
       scope.$watch('myMove', function(after, before) {
-        appendPossibleTiles();
+
+        removeFinishedFollower({x:1, y:0, section:1});
+        //appendPossibleTiles();
       });
 
       gameCtrl.loaded();

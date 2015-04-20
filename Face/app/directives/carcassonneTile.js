@@ -87,8 +87,10 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
             .attr('y', function(d) {
               return d.y * tileSize;
             })
-            .attr('class', 'follower')
-            .attr('fill', scope.color)
+            .attr('class', function(d) {
+              return 'follower section' + d.section;
+            })
+            .attr('fill', scope.color);
 
           rotateTile();
         });
@@ -162,7 +164,9 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
 
               // Marking follower not to be removed
               $d3.select(this)
-                .attr('class', 'follower')
+                .attr('class', function(d) {
+                  return 'follower section' + d.section;
+                })
                 .attr('fill', scope.color)
                 .on('mouseleave', null)
                 .on('mouseenter', null)
