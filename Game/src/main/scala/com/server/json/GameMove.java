@@ -12,10 +12,14 @@ public class GameMove {
     @JsonProperty("player")
     public GamePlayer player;
 
+    @JsonProperty("direction")
+    public String direction;
+
     // NEED TO UPDATE FOLLOWERS WHICH SHOULD BE TAKEN FROM THE BOARD
 
-    public GameMove(String type, int x, int y, int section, GamePlayer player) {
+    public GameMove(String type, int x, int y, int section, GamePlayer player, String direction) {
         this.tile = new GameTile(type, x, y, section, player);
         this.player = player;
+        this.direction = direction;
     }
 }

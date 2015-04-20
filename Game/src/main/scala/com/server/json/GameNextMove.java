@@ -2,12 +2,12 @@ package com.server.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class GameNextMove {
-    @JsonProperty("tile")
-    public String tile;
+import java.util.List;
+import java.util.Map;
 
+public class GameNextMove {
     @JsonProperty("moves")
-    public GameTileMove moves;
+    public Map<String, List<Integer>> moves;
 
     @JsonProperty("x")
     public int x;
@@ -15,8 +15,7 @@ public class GameNextMove {
     @JsonProperty("y")
     public int y;
 
-    public GameNextMove(String tile, GameTileMove moves, int x, int y) {
-        this.tile = tile;
+    public GameNextMove(Map<String, List<Integer>> moves, int x, int y) {
         this.moves = moves;
         this.x = x;
         this.y = y;
