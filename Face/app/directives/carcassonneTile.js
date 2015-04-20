@@ -9,7 +9,8 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
       tile: '=',
       moves: '=',
       color: '=',
-      playMove: '&'
+      playMove: '&',
+      final: '='
     },
     templateNamespace: 'svg',
     template: '<svg></svg>',
@@ -24,23 +25,76 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         3 -> right
        */
       var UP = 0;
+      var DOWN = 2;
 
       var tileLetter = angular.lowercase(scope.tile);
       var tileSize = scope.tileSize;
       var tileVisible = false;
       var tilePlaced = false;
-      var tileDirection = UP;
-      var tileMoves = scope.moves;
+      var tileDirection = DOWN;
+      var tileMoves = scope.moves || {};
       var tileRotation = 0;
 
       var directionMap = ['UP', 'LEFT', 'DOWN', 'RIGHT'];
 
       console.log(tileMoves);
+      console.log("Tile letter " + tileLetter);
 
       var containerSVG = $d3.select(element[0]).append('g')
         .attr('width', tileSize)
+        .attr('height', tileSize);
+
+      containerSVG.append('rect')
+        .attr('width', tileSize)
         .attr('height', tileSize)
         .attr('class', 'tileContainer');
+
+      if(scope.final) {
+        console.log("FINAL TILE");
+        var final = scope.final;
+        console.log(final);
+        tileMoves[final.direction] = {};
+
+        var finalTile = containerSVG
+          .append('image')
+          .attr('width', tileSize)
+          .attr('height', tileSize)
+          .attr('xlink:href', '/tiles/' + tileLetter + 'Tile.png');
+
+        TileRegions.get({id: tileLetter}, function(tileRegions) {
+          console.log("REGIONS");
+          var regions = [];
+          tileRegions.forEach(function(entry) {
+            if(entry.section == final.section) {
+              regions.push(entry);
+            }
+          });
+          console.log(tileRegions);
+          $d3.select(containerSVG.node().parentNode)
+            .classed({
+              'carcassonne-final' : true,
+              'carcassonne' : false
+            });
+
+          containerSVG.selectAll('.follower').data(regions).enter()
+            .append('rect')
+            .attr('width', tileSize / 10)
+            .attr('height', tileSize / 10)
+            .attr('x', function(d){
+              console.log(d.x * tileSize);
+              return d.x * tileSize;
+            })
+            .attr('y', function(d) {
+              return d.y * tileSize;
+            })
+            .attr('class', 'follower')
+            .attr('fill', scope.color)
+
+          rotateTile();
+        });
+        return;
+      }
+      console.log("GOING HERE");
 
       var tile = containerSVG
         .append('image')
@@ -66,9 +120,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
               result.push(entry);
             }
           }
-
-          console.log('false');
-          return false;
         });
         console.log('result');
         console.log(tileRegions);
@@ -88,7 +139,7 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
 
           var availableRegions = removeUnavailable(tileRegions);
 
-          containerSVG.selectAll('rect').data(availableRegions).enter()
+          containerSVG.selectAll('.follower-place').data(availableRegions).enter()
             .append('rect')
             .attr('width', tileSize / 10)
             .attr('height', tileSize / 10)

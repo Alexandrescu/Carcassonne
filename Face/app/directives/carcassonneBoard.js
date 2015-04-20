@@ -1,25 +1,43 @@
 var carcassonne = angular.module('carcassonne');
 
-carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
+carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $compile) {
   return {
+    require: '^carcassonneGame',
     restrict: 'E',
     scope : {
       height: '=',
-      width: '='
+      width: '=',
+      move: '=',
+      myMove: '=',
+      tileSize: '='
     },
-    link: function(scope, element, attrs) {
+    controller : function() {
+      this.freezed = false;
+      this.placeTile = function() {
+        this.freezed = true;
+      };
+      this.unPlaceTile = function() {
+        this.freezed = false;
+      };
+    },
+    link: function(scope, element, attrs, gameCtrl) {
+      var gridSize = 100;
+      var offset = -20;
       var zoomLowerBound = 1;
       var zoomCurrent = 2;
       var zoomUpperBound = 4;
+
       var height = scope.height;
       var width = scope.width;
-      var tileSize = 20;
+      var tileSize = scope.tileSize | 20;
+
       // This is the d3 Zoom Behaviour
       // When the event zoom is called then zoomed is triggered
       var zoomBehaviour =
         $d3.behavior.zoom()
           .scaleExtent([zoomLowerBound, zoomUpperBound])
           .scale(zoomCurrent)
+          .translate([offset * tileSize * zoomCurrent, offset * tileSize * zoomCurrent])
           .on('zoom', zoomed);
 
       function zoomed() {
@@ -52,26 +70,121 @@ carcassonne.directive('carcassonneBoard', ['$d3', function($d3) {
         .style('pointer-events', 'all');
 
       var grid = svgGroup.append('g')
-        .attr('transform', "translate(0,0)scale(" + zoomCurrent + ")");
+        .attr('transform', "translate(" + (offset * tileSize * zoomCurrent) + ", " + (offset * tileSize * zoomCurrent) + ")scale(" + zoomCurrent + ")");
 
       var row = grid.selectAll('.row')
-          .data($d3.range(0, height, tileSize))
+          .data($d3.range(0, gridSize, 1))
         .enter().append('g')
         .attr('class', 'row');
 
       var tile = row.selectAll('.tile')
-          .data($d3.range(0, width, tileSize))
-        .enter().append('rect')
-        .attr('fill', 'red')
+          .data($d3.range(0, gridSize, 1))
+        .enter().append('svg')
         .attr('x', function(d, i, j) {
           return i * tileSize;
         })
         .attr('y', function(d, i, j){
           return j * tileSize;
         })
-        .attr('width', tileSize - 1)
-        .attr('height', tileSize - 1)
+        .attr('width', tileSize)
+        .attr('height', tileSize)
         .attr('class', 'tile');
+
+      /* Red rectangles
+      tile.append('rect')
+        .attr('fill', 'red')
+        .attr('width', tileSize - 1)
+        .attr('height', tileSize - 1);
+      */
+      var boom = false;
+      var tilePlaces = {};
+      tilePlaces.remove  = function(){};
+
+      // Simply test moves
+      scope.tileMoves = {
+        'UP': {
+          sections: [1, 2, 3]
+        },
+        'LEFT' : {
+          sections: [1, 2, 3, 4]
+        },
+        'DOWN' : {
+          sections: []
+        }
+      };
+
+      var places = {};
+      scope.playMove = function(){
+        svgGroup.selectAll('.follower-place').remove();
+        places.select('.carcassonne').remove();
+      };
+
+      function appendPossibleTiles() {
+        places = tile.filter(function(d, i, j) {
+          return j == 0;
+        });
+        console.log('value of boom ' + boom);
+        if(boom) {
+          //places.attr('fill', 'green');
+          //carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
+
+          tilePlaces = places.append('carcassonne-tile')
+            .attr('tile-size', tileSize)
+            .attr('tile', '"D"')
+            .attr('class', 'carcassonne')
+            .attr('moves', 'tileMoves')
+            .attr('color', '"red"')
+            .attr('play-move', 'playMove()')
+            .call(function() {
+              console.log(this[0]);
+              $compile(this[0].parentNode)(scope);
+            });
+          boom = false;
+          console.log('now boom is ' + boom);
+        }
+        else {
+          console.log('removing');
+          boom = true;
+          places.select('.carcassonne').remove();
+        }
+      }
+
+      function finalTile(move) {
+        console.log("finalTile");
+        console.log(move);
+        var finalTiles = tile.filter(function(d, i, j){
+          return (move.tile.x - offset) == i && (move.tile.y - offset) == j;
+        });
+        scope.final = {
+          direction: move.direction,
+          section: move.tile.sectionOwned
+        };
+
+        finalTiles.append('carcassonne-tile')
+          .attr('tile-size', tileSize)
+          .attr('tile', 'move.tile.type')
+          .attr('class', 'carcassonne')
+          .attr('color', '"red"')
+          .attr('play-move', 'playMove()')
+          .attr('final', 'final')
+          .call(function() {
+            console.log(this[0]);
+            $compile(grid.node())(scope);
+          });
+
+        gameCtrl.moveAdded();
+      }
+
+      scope.$watch('move', function(after, before) {
+        if(after)
+          finalTile(after);
+      });
+
+      scope.$watch('myMove', function(after, before) {
+        appendPossibleTiles();
+      });
+
+      gameCtrl.loaded();
     },
     template: '<div></div>'
   }

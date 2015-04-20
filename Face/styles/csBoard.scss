@@ -4,9 +4,6 @@ html body {
 }
 
 .tile {
-  margin: 1px;
-  width: 19px;
-  height: 19px;
 }
 
 .main {
@@ -17,4 +14,10 @@ md-list-item{
   .list-item{
     padding: 0 16px 0 16px;
   }
+}
+
+.tileContainer {
+  fill: none;
+  stroke:black;
+  stroke-width:1;
 }
