@@ -19,7 +19,7 @@ object Converter {
     }
 
     new GameMove(move.tile.identifier, move.place._1, move.place._2, section,
-      toGamePlayer(move.player), toStringDirection(move.tile.orientation))
+      toGamePlayer(move.player), directionToString(move.tile.orientation))
   }
 
   def toGamePlayer(player : Player) : GamePlayer = {
@@ -32,13 +32,13 @@ object Converter {
   def addMove(moveList : ArrayBuffer[GameNextMove], possibleMove: PossibleMove): Unit = {
     for(move <- moveList) {
       if((move.x, move.y) == possibleMove.place) {
-        move.moves.put(toStringDirection(possibleMove.direction), toOwnToList(possibleMove.toOwnFromTile))
+        move.moves.put(directionToString(possibleMove.direction), toOwnToList(possibleMove.toOwnFromTile))
         return
       }
     }
 
     val map : util.Map[String, util.List[Integer]] = new util.HashMap[String, util.List[Integer]]()
-    map.put(toStringDirection(possibleMove.direction), toOwnToList(possibleMove.toOwnFromTile))
+    map.put(directionToString(possibleMove.direction), toOwnToList(possibleMove.toOwnFromTile))
 
     moveList += new GameNextMove(map, possibleMove.place._1, possibleMove.place._2)
   }
@@ -57,7 +57,7 @@ object Converter {
   }
 
   def toMove(move : GameMove, tile : Tile, player : Player) : Move = {
-    val place = (move.tile.x, move.tile.y)
+    val place = (move.x, move.y)
     val sections = tile.getSections()
 
     var owned : Option[Section] = None
@@ -67,10 +67,22 @@ object Converter {
       }
     }
 
+    tile.orientation = stringToDirection(move.direction)
+
     new Move(tile, place, owned, player)
   }
 
-  private def toStringDirection(direction : Direction): String = {
+  private def stringToDirection(direction : String) : Direction = {
+    direction match {
+      case "Up" => Up
+      case "Down" => Down
+      case "Left" => Left
+      case "Right" => Right
+      case _ => throw new InstantiationError("This is not a valid direction.")
+    }
+  }
+
+  private def directionToString(direction : Direction): String = {
     direction match {
       case Up => "Up"
       case Down => "Down"
