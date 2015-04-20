@@ -11,7 +11,7 @@ var carcassonne = angular.module('carcassonne',[
       templateUrl: '/index',
       controller: 'MainCtrl'
     })
-    .when('/game/:gameName', {
+    .when('/game/:gameName/:slot?', {
       templateUrl: '/gamePartial',
       controller: 'GameCtrl'
     })

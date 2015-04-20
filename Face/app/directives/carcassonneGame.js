@@ -1,23 +1,19 @@
 var carcassonne = angular.module('carcassonne');
 
 carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams', function($socket, $location, $routeParams) {
-
   return {
     restrict: 'A',
     controller: function($scope, $rootScope) {
-      $scope.nextMove = 0;
-      $scope.button = function() {
-        $scope.nextMove++;
-      };
       console.log($routeParams.gameName);
+      console.log("MYSLOT" + $routeParams.slot);
       var host = $location.host();
       //var socket = $socket.io('http://' + host + ':1337/' + $routeParams.gameName);
       var socket = $socket.io('http://' + host + ':1337/');
 
-      if($rootScope.game) {
+      if($routeParams.slot) {
         socket.emit('playerSessionUpdate', {
-          slot: $rootScope.game.slot,
-          token: $rootScope.game.token
+          slot: $routeParams.slot,
+          token: 'token' + $routeParams.slot
         });
       }
 

@@ -96,53 +96,52 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         .attr('width', tileSize - 1)
         .attr('height', tileSize - 1);
       */
-      var boom = false;
       var tilePlaces = {};
       tilePlaces.remove  = function(){};
-
-      // Simply test moves
-      scope.tileMoves = {
-        'UP': {
-          sections: [1, 2, 3]
-        },
-        'LEFT' : {
-          sections: [1, 2, 3, 4]
-        },
-        'DOWN' : {
-          sections: []
-        }
-      };
 
       var places = {};
       scope.playMove = function(){
         svgGroup.selectAll('.follower-place').remove();
-        places.select('.carcassonne').remove();
+        tile.selectAll('.carcassonne').remove();
       };
+      scope.tileMoves = {};
+      var boom;
+      function appendPossibleTiles(newMoves) {
+        console.log("THESE ARE THE MOVES");
+        console.log(newMoves.moveList);
 
-      function appendPossibleTiles() {
-        places = tile.filter(function(d, i, j) {
-          return j == 0;
+        newMoves.moveList.forEach(function(entry, index) {
+          scope.tileMoves[index] = entry.moves;
+
+          tile.each(function(d, i, j){
+            var flagIndex = -1;
+            if((entry.x - offset) == i && (entry.y - offset) == j) {
+              flagIndex = index;
+            }
+
+            if(flagIndex >= 0) {
+              // Tile to append to
+              $d3.select(this).append('carcassonne-tile')
+                .attr('tile-size', tileSize)
+                .attr('tile', '"' + newMoves.tile +'"')
+                .attr('class', 'carcassonne')
+                .attr('moves', 'tileMoves[' + flagIndex + ']')
+                .attr('color', '"red"')
+                .attr('play-move', 'playMove()')
+                .call(function(section) {
+                  $compile(section.node())(scope);
+                });
+            }
+          });
         });
-        console.log('value of boom ' + boom);
-        if(boom) {
-          //places.attr('fill', 'green');
-          //carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
 
-          tilePlaces = places.append('carcassonne-tile')
-            .attr('tile-size', tileSize)
-            .attr('tile', '"D"')
-            .attr('class', 'carcassonne')
-            .attr('moves', 'tileMoves')
-            .attr('color', '"red"')
-            .attr('play-move', 'playMove()')
-            .call(function() {
-              console.log(this[0]);
-              $compile(this[0].parentNode)(scope);
-            });
-          boom = false;
-          console.log('now boom is ' + boom);
-        }
-        else {
+        // Simply test moves
+
+
+        //places.attr('fill', 'green');
+        //carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
+
+        if(boom) {
           console.log('removing');
           boom = true;
           places.select('.carcassonne').remove();
@@ -165,7 +164,6 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
           .attr('tile', 'move.tile.type')
           .attr('class', 'carcassonne')
           .attr('color', '"red"')
-          .attr('play-move', 'playMove()')
           .attr('final', 'final')
           .call(function(section) {
             console.log(this[0]);
@@ -189,10 +187,11 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         }
       });
 
+      //removeFinishedFollower({x:1, y:0, section:1});
       scope.$watch('myMove', function(after, before) {
-
-        removeFinishedFollower({x:1, y:0, section:1});
-        //appendPossibleTiles();
+        if(after) {
+          appendPossibleTiles(after);
+        }
       });
 
       gameCtrl.loaded();
