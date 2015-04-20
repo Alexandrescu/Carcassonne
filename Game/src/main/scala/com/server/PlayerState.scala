@@ -4,13 +4,19 @@ import com.game.Player
 import com.server.json.{GameEnd, RoomDetails}
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable.ArrayBuffer
 
 class PlayerState(room : RoomDetails) {
   var slotMap = Map[Int, Player]()
+  val playerList = ArrayBuffer[Int]()
 
   for(slot <- room.slots.toList) {
-    if(!slot.isAI) {
-      slotMap += (slot.slot -> new Player(slot.slot ,slot.playerName, slot.uuid, "token" + slot.slot))
+    println(slot)
+    if(!slot.isEmpty) {
+      if(!slot.isAI) {
+        slotMap += (slot.slot -> new Player(slot.slot ,slot.playerName, slot.uuid, "token" + slot.slot))
+        playerList += slot.slot
+      }
     }
   }
 
@@ -24,18 +30,21 @@ class PlayerState(room : RoomDetails) {
   }
 
   private var connected = 0
+  private var currentSlot = 0
 
-  def getPlayer(slot : Int): Unit = {
-
+  def doneConnecting : Boolean = {
+    (playerList.size - connected) == 0
   }
 
-  def currentSlot() : Int = ???
+  def nextPlayer : Player = {
+    val result = slotMap.get(playerList(currentSlot)).get
+    currentSlot = (currentSlot + 1) % playerList.length
+    result
+  }
 
-  def doneConnecting : Boolean = (slotMap.size - connected) == 0
-
-  def nextPlayer : Player = ???
-
-  def isCurrentPlayer(id : String) : Boolean = ???
+  def isCurrentPlayer(id : String) : Boolean = {
+    slotMap.get(playerList(currentSlot)).get.uuid == id
+  }
 
   def endGame : GameEnd = ???
 }
