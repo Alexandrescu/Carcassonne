@@ -18,6 +18,8 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
     require: '^carcassonneBoard',
     link: function(scope, element, attrs, boardCtrl) {
       console.group();
+
+      console.log(scope.color);
       /*
         The format of moves should be:
         0 -> up
@@ -33,8 +35,18 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
       var tileVisible = false;
       var tilePlaced = false;
       var tileDirection = DOWN;
-      var tileMoves = scope.moves || {};
       var tileRotation = 0;
+      var tileMoves = {};
+      var tileX = 0;
+      var tileY = 0;
+      if(scope.moves) {
+        tileMoves = scope.moves.moves || {};
+        tileX = scope.moves.x;
+        tileY = scope.moves.y;
+      }
+
+      console.log("These are the coordinates");
+      console.log(tileX + " " + tileY);
 
       var directionMap = ['Up', 'Left', 'Down', 'Right'];
 
@@ -180,9 +192,15 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
               element.off('mouseleave');
 
               // Playing move
-              scope.playMove({
-                section: d
-              });
+              var move = {
+                x : tileX,
+                y : tileY,
+                direction : directionMap[tileDirection],
+                owned: d.section
+              };
+              console.log("Move in the tile");
+              console.log(move);
+              boardCtrl.playMove(move);
             })
             .on('mouseenter', function() {
               $d3.select(this).attr('fill', scope.color);

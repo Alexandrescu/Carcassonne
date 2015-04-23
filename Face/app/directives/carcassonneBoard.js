@@ -11,7 +11,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       myMove: '=',
       tileSize: '='
     },
-    controller : function() {
+    controller : function($scope) {
       this.freezed = false;
       this.placeTile = function() {
         this.freezed = true;
@@ -19,8 +19,23 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       this.unPlaceTile = function() {
         this.freezed = false;
       };
+
+      $scope.playMove = function(data) {
+        console.log("link not ready");
+      };
+
+      this.playMove = function(data){
+        $scope.playMove(data);
+        $d3.select('.cs-board').selectAll('.follower-place').remove();
+        $d3.selectAll('.tile').selectAll('.carcassonne').remove();
+        this.freezed = false;
+
+        console.log("Move in the board");
+        console.log(data);
+      };
     },
     link: function(scope, element, attrs, gameCtrl) {
+      scope.playMove = gameCtrl.playMove;
       var gridSize = 100;
       var offset = -20;
       var zoomLowerBound = 1;
@@ -100,10 +115,6 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       tilePlaces.remove  = function(){};
 
       var places = {};
-      scope.playMove = function(){
-        svgGroup.selectAll('.follower-place').remove();
-        tile.selectAll('.carcassonne').remove();
-      };
       scope.tileMoves = {};
       var boom;
       function appendPossibleTiles(newMoves) {
@@ -111,7 +122,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         console.log(newMoves.moveList);
 
         newMoves.moveList.forEach(function(entry, index) {
-          scope.tileMoves[index] = entry.moves;
+          scope.tileMoves[index] = entry;
 
           tile.each(function(d, i, j){
             var flagIndex = -1;
@@ -126,8 +137,8 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
                 .attr('tile', '"' + newMoves.tile +'"')
                 .attr('class', 'carcassonne')
                 .attr('moves', 'tileMoves[' + flagIndex + ']')
-                .attr('color', '"red"')
-                .attr('play-move', 'playMove()')
+                .attr('color', '"' + gameCtrl.color(-2)+ '"')
+                .attr('play-move', 'playMove')
                 .call(function(section) {
                   $compile(section.node())(scope);
                 });
@@ -150,9 +161,10 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
 
       function finalTile(move) {
         console.log("finalTile");
+        console.log(gameCtrl.color(move.player.slot));
         console.log(move);
         var finalTiles = tile.filter(function(d, i, j){
-          return (move.tile.x - offset) == i && (move.tile.y - offset) == j;
+          return (move.x - offset) == i && (move.y - offset) == j;
         });
         scope.final = {
           direction: move.direction,
@@ -163,7 +175,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
           .attr('tile-size', tileSize)
           .attr('tile', 'move.tile.type')
           .attr('class', 'carcassonne')
-          .attr('color', '"red"')
+          .attr('color', '"'+ gameCtrl.color(move.player.slot) + '"')
           .attr('final', 'final')
           .call(function(section) {
             console.log(this[0]);

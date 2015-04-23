@@ -4,8 +4,17 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
   return {
     restrict: 'A',
     controller: function($scope, $rootScope) {
-      console.log($routeParams.gameName);
-      console.log("MYSLOT" + $routeParams.slot);
+      var colorMap = ['red', 'blue'];
+      this.color = function(slot) {
+        if(slot == -2 && $routeParams.slot) {
+          return colorMap[$routeParams.slot];
+        }
+        if(slot >= 0) {
+          return colorMap[slot];
+        }
+        return 'black';
+      };
+
       var host = $location.host();
       //var socket = $socket.io('http://' + host + ':1337/' + $routeParams.gameName);
       var socket = $socket.io('http://' + host + ':1337/');
@@ -18,6 +27,8 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       }
 
       this.playMove = function(move) {
+        console.log("playing this move");
+        console.log(move);
         socket.emit('playerMove', move);
         $scope.playing = false;
       };
