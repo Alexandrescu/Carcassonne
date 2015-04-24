@@ -2,8 +2,8 @@ package com.server.events
 
 import java.util.UUID
 
-import com.board.Move
-import com.corundumstudio.socketio.annotation.OnEvent
+import com.board.{Move, PossibleMove}
+import com.corundumstudio.socketio.annotation.{OnConnect, OnEvent}
 import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
 import com.game.{Game, GameFactory, Player}
 import com.server.json.{GameClient, GameError, GameMove, GameValid}
@@ -12,20 +12,44 @@ import com.tile.Tile
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
+import scala.collection.mutable.ArrayBuffer
+
 class GameEvents(playerState : PlayerState, name : String = "Game") {
   val logger : Logger = Logger(LoggerFactory.getLogger(name))
   val game : Game = GameFactory.standardGame(callEndOfGame)
   private var currentTile : Tile = null
   private var currentPlayer : Player = null
+  private var currentMoves : Set[PossibleMove] = null
+
+  private var moveQueue : ArrayBuffer[GameMove] = ArrayBuffer()
+
+  @OnConnect
+  def onConnect(client : SocketIOClient): Unit = {
+    logger.info("Client has connected.")
+    logger.info(s"Move queue size is: ")
+
+    if(moveQueue.length > 0) {
+      for(move <- moveQueue) {
+        client.sendEvent("gameMove", move)
+      }
+    }
+  }
 
   @OnEvent("playerSessionUpdate")
   def onPlayerSessionUpdate(client: SocketIOClient, player : GameClient): Unit = {
     logger.info("Connecting player")
     playerState.updateUUID(player.slot, player.token, client.getSessionId.toString)
+
     if(playerState.doneConnecting) {
-      val firstMove = game.setBoard()
-      client.getNamespace.getBroadcastOperations.sendEvent("gameStart", Converter.moveToJson(firstMove))
+      logger.info("Commencing the game.")
+      val firstMove = Converter.moveToJson(game.setBoard())
+      moveQueue += firstMove
+      client.getNamespace.getBroadcastOperations.sendEvent("gameStart", firstMove)
       nextRound(client.getNamespace)
+    }
+    else if(playerState.isCurrentPlayer(client.getSessionId.toString)) {
+      // Send him the tile to move
+      client.sendEvent("gameNext", Converter.toGameNextMoveList(currentTile, currentMoves))
     }
   }
 
@@ -37,7 +61,12 @@ class GameEvents(playerState : PlayerState, name : String = "Game") {
         game.setMove(move)
 
         client.sendEvent("GameValid", new GameValid("Move applied."))
-        client.getNamespace.getBroadcastOperations.sendEvent("gameMove", Converter.moveToJson(move))
+
+        // This is essential, because I am keeping info only on the server side
+        val newMove = Converter.moveToJson(move)
+        moveQueue += newMove
+
+        client.getNamespace.getBroadcastOperations.sendEvent("gameMove", newMove)
 
         nextRound(client.getNamespace)
       }
@@ -57,10 +86,14 @@ class GameEvents(playerState : PlayerState, name : String = "Game") {
     }
     currentTile = game.drawTile()
     currentPlayer = playerState.nextPlayer
-    val availableMoves = game.getMoves(currentTile, currentPlayer)
+    currentMoves = game.getMoves(currentTile, currentPlayer)
 
+    sendNextMove(space)
+  }
+
+  def sendNextMove(space: SocketIONamespace): Unit = {
     space.getClient(UUID.fromString(currentPlayer.uuid)).
-      sendEvent("gameNext", Converter.toGameNextMoveList(currentTile, availableMoves))
+      sendEvent("gameNext", Converter.toGameNextMoveList(currentTile, currentMoves))
     space.getBroadcastOperations.sendEvent("gameDraw", Converter.toGameDraw(currentTile, currentPlayer))
   }
 
