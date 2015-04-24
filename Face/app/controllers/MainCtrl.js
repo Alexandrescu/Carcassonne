@@ -1,13 +1,21 @@
 var carcassonne = angular.module('carcassonne');
 
-carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($scope, $socket, $location) {
+carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScope', function($scope, $socket, $location, $rootScope) {
   $scope.myRoom = {
     roomName : '',
     joined : false
   };
+
   var host = $location.host();
-  console.log('http://' + host + ':1337');
   var socket = $socket.io('http://' + host + ':1337');
+
+  socket.emit('getGame');
+
+  socket.on('availableGames', function(data) {
+    console.log("GAMES");
+    console.log(data);
+    $scope.availableGames = data.rooms;
+  });
 
   socket.on('availableRooms', function (data) {
     console.log(data);
@@ -132,6 +140,16 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($
     console.log("addAI event");
     console.log(data);
     socket.emit('addPlayer', data);
+  };
+
+  $scope.startGame = function() {
+    $rootScope.game = {
+      slot : $scope.myRoom.slot,
+      token : 'token' + $scope.myRoom.slot
+    };
+    console.log($rootScope.game);
+    socket.emit('startGame', {roomName : $scope.myRoom.roomName});
+    $location.path('game/' + $scope.myRoom.roomName);
   };
 
   $scope.$on('$destroy', function() {
