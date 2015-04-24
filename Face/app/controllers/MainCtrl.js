@@ -14,7 +14,14 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScop
   socket.on('availableGames', function(data) {
     console.log("GAMES");
     console.log(data);
-    $scope.availableGames = data.rooms;
+    $scope.availableGames = [];
+    data.rooms.forEach(function(entry) {
+      console.log("Testing this entry");
+      console.log(entry);
+      if(entry.roomName != '') {
+        $scope.availableGames.push(entry);
+      }
+    })
   });
 
   socket.on('availableRooms', function (data) {
@@ -149,7 +156,15 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScop
     };
     console.log($rootScope.game);
     socket.emit('startGame', {roomName : $scope.myRoom.roomName});
-    $location.path('game/' + $scope.myRoom.roomName);
+    $location.path('game/' + $scope.myRoom.roomName + "/" + $scope.myRoom.slot);
+  };
+
+  $scope.joinGame = function(room) {
+    $location.path('game/' + room);
+  };
+
+  $scope.stopGame = function(room) {
+    socket.emit('stopGame', {roomName: room})
   };
 
   $scope.$on('$destroy', function() {
