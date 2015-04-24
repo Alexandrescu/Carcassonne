@@ -18,6 +18,7 @@ class PlayerState(room : RoomDetails) {
         playerList += slot.slot
       }
     }
+    playerList.sortBy(x => x)
   }
 
   def updateUUID(slot : Int, token : String, newUUID : String): Unit = {
@@ -30,19 +31,21 @@ class PlayerState(room : RoomDetails) {
   }
 
   private var connected = 0
-  private var currentSlot = 0
+  private var currentSlot = -1
 
   def doneConnecting : Boolean = {
     (playerList.size - connected) == 0
   }
 
   def nextPlayer : Player = {
-    val result = slotMap.get(playerList(currentSlot)).get
     currentSlot = (currentSlot + 1) % playerList.length
-    result
+    slotMap.get(playerList(currentSlot)).get
   }
 
   def isCurrentPlayer(id : String) : Boolean = {
+    if(currentSlot < 0) {
+      return false
+    }
     slotMap.get(playerList(currentSlot)).get.uuid == id
   }
 
