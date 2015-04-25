@@ -3,6 +3,7 @@ package com.game
 import com.github.nkzawa.emitter.Emitter.Listener
 import com.github.nkzawa.socketio.client.IO.Options
 import com.github.nkzawa.socketio.client.{IO, Socket}
+import com.tile.Follower
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Promise
@@ -12,6 +13,8 @@ class Player(val slot : Int, var name : String, var uuid : String, private var _
   def token : String = _token
 
   private var _followers : Int = 7
+
+  def getFollower : Follower = ???
 
   def followers : Int = _followers
 

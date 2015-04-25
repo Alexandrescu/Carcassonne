@@ -50,7 +50,7 @@ class SectionKeeper {
         throw new Error("Can't own already owned section")
       }
       else {
-        section.addFollowers(Map(player -> 1))
+        section.addFollowers(Set(player.getFollower))
       }
     case _ =>
   }
