@@ -1,0 +1,34 @@
+doctype html
+html
+  head
+    link(href='/css/csBoard.css', type='text/css', rel='stylesheet')
+    link(href='/css/angular-material.css', type='text/css', rel='stylesheet')
+
+    script(src='/js/d3.js')
+
+    script(src='/js/angular.js')
+    script(src='/js/angular-route.js')
+    script(src='/js/angular-messages.js')
+    script(src='/js/angular-resource.js')
+
+    // Angular Material Deps
+    script(src='/js/angular-animate.js')
+    script(src='/js/angular-aria.js')
+    script(src='/js/angular-material.js')
+
+    script(src='/js/socket.io.js')
+    script(src='/js/socket.js')
+
+    script(src='/app/app.js')
+    script(src='/app/controllers.js')
+    script(src='/app/directives.js')
+    script(src='/app/services.js')
+
+
+    base(href='/')
+  body(ng-app='carcassonne', ng-cloak='{{"Loading"}}')
+    // HEADER AND NAVBAR
+    md-toolbar.md-toolbar-tools
+      h3 Carcassonne Deius
+    div
+      div(ng-view)

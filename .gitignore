@@ -12,3 +12,9 @@ project/target/*
 *.cache
 
 game/target/*
+
+Face/.idea/*
+
+Face/node_modules/*
+
+Face/public/*

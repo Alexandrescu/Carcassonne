@@ -19,14 +19,18 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
 
     tileOutline.foreach{place => Direction.values.foreach(direction => {
       // Moving tile in different directions
+      var toOwnList: List[Option[Section]] = List()
       tile.orientation = direction
       sections.foreach(someSection => {
         val move = new Move(tile, place, someSection , player)
         if(isMove(move)) {
-          val possible = new PossibleMove(direction, place, someSection)
-          possibleMoves = possibleMoves + possible
+          toOwnList ::= someSection
         }
       })
+
+      if(toOwnList.nonEmpty) {
+        possibleMoves += new PossibleMove(direction, place, toOwnList)
+      }
     })}
 
     possibleMoves

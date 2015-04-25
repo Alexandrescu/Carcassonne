@@ -8,6 +8,8 @@
 
 package com.game
 
+import com.tile._
+
 class StandardTileBag extends TileBag {
   /*
   val tileList = List(
@@ -59,4 +61,31 @@ class StandardTileBag extends TileBag {
     }
   }
   */
+
+  val dSection1 = new GrassSection(1)
+  val dSection2 = new RoadSection(2)
+  val dSection3 = new GrassSection(3)
+  val dSection4 = new CitySection(4)
+
+  val dTile = new SimpleTile("D",
+    new RoadEdge(dSection1, dSection2, dSection3),
+    new RoadEdge(dSection3, dSection2, dSection1),
+    new GrassEdge(dSection1),
+    new CityEdge(dSection4)
+  )
+
+  val dTile2 = new SimpleTile("D",
+    new RoadEdge(dSection1, dSection2, dSection3),
+    new RoadEdge(dSection3, dSection2, dSection1),
+    new GrassEdge(dSection1),
+    new CityEdge(dSection4)
+  )
+
+  override val startTile: Tile = dTile
+
+  override def getEntireTileBag: Iterable[Tile] = ???
+
+  override def finished: Boolean = false
+
+  override def getTile: Option[Tile] = Some(dTile2)
 }

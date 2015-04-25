@@ -3,7 +3,7 @@ package com.board
 import java.util.concurrent.TimeoutException
 
 import com.board.mocks.MockPlayer
-import com.game.Game
+import com.game.GameFactory
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.{AsyncAssertions, ScalaFutures}
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers, ParallelTestExecution}
@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers, ParallelTestExecution}
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class GameServerTest extends FlatSpec with MockFactory with BeforeAndAfter
+class GameFactoryServerTest extends FlatSpec with MockFactory with BeforeAndAfter
   with Matchers with ScalaFutures with ParallelTestExecution with AsyncAssertions {
 
   val mockGame = new Game
