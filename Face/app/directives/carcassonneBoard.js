@@ -108,22 +108,11 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         .attr('height', tileSize)
         .attr('class', 'tile');
 
-      /* Red rectangles
-      tile.append('rect')
-        .attr('fill', 'red')
-        .attr('width', tileSize - 1)
-        .attr('height', tileSize - 1);
-      */
       var tilePlaces = {};
       tilePlaces.remove  = function(){};
 
-      var places = {};
       scope.tileMoves = {};
-      var boom;
       function appendPossibleTiles(newMoves) {
-        console.log("THESE ARE THE MOVES");
-        console.log(newMoves.moveList);
-
         newMoves.moveList.forEach(function(entry, index) {
           scope.tileMoves[index] = entry;
 
@@ -134,7 +123,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
             }
 
             if(flagIndex >= 0) {
-              // Tile to append to
+              // Tile to append to.
               $d3.select(this).append('carcassonne-tile')
                 .attr('tile-size', tileSize)
                 .attr('tile', '"' + newMoves.tile +'"')
@@ -148,24 +137,9 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
             }
           });
         });
-
-        // Simply test moves
-
-
-        //places.attr('fill', 'green');
-        //carcassonne-tile(tile-size='250', tile='"D"', style='display: -webkit-inline-flex;display:inline-flex')
-
-        if(boom) {
-          console.log('removing');
-          boom = true;
-          places.select('.carcassonne').remove();
-        }
       }
 
       function finalTile(move) {
-        console.log("finalTile");
-        console.log(gameCtrl.color(move.player.slot));
-        console.log(move);
         var finalTiles = tile.filter(function(d, i, j){
           return (move.x - offset) == i && (move.y - offset) == j;
         });
@@ -188,6 +162,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         gameCtrl.moveAdded();
       }
 
+      //removeFinishedFollower({x:1, y:0, section:1});
       function removeFinishedFollower(follower) {
         var finalTiles = tile.filter(function(d, i, j){
           return (follower.x - offset) == i && (follower.y - offset) == j;
@@ -202,7 +177,6 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         }
       });
 
-      //removeFinishedFollower({x:1, y:0, section:1});
       scope.$watch('myMove', function(after, before) {
         if(after) {
           appendPossibleTiles(after);
