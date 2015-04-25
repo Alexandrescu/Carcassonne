@@ -53,34 +53,42 @@ class CitySection(override val frontEndId : Int) extends Section(frontEndId){
   }
 
   override def isOwned: Boolean = {
-    if(_parent.isEmpty) return owners.nonEmpty
+    if(_parent.isEmpty) return followers.nonEmpty
     findRoot().isOwned
   }
 
-  override def addOwners(newOwners: Map[Player, Int]): Unit = {
+  override def addFollowers(newFollowers: Set[Follower]): Unit = {
     val root = findRoot()
-
-    newOwners.foreach{ case (player, followers) =>
-      val newFollowers = root._owners.getOrElse(player, 0) + followers
-      if(newFollowers != 0) {
-        root._owners -= player
-        root._owners += (player -> newFollowers)
-      }
-    }
+    root._followers = root._followers.union(newFollowers)
   }
 
-  override def owners: Map[Player, Int] = findRoot()._owners
+  override def followers: Set[Follower] = findRoot()._followers
 
   override def updateClose(): Unit = {
     val root = findRoot()
     if(root.openEdges == 0) {
-      //closed
+      //closed cities on grass
       root.getGrass().foreach(grass => grass.addClosedCities(Set(root)))
 
-      var maxFollowers = 0
-      root._owners.foreach{case (player, followers) => maxFollowers = Math.max(followers, maxFollowers)}
-      root._owners.filter(p => p._2 == maxFollowers).foreach{case (player, _) => player.addPoints(root.tileCount() * 2)}
-      root._owners.foreach{case (player, followers) => player.addFollowers(followers)}
+      var maxCounter = 0
+      var maxFollowers : Map[Player, Int] = Map()
+      for(follower <- root._followers) {
+        val player = follower.player
+        val counter = maxFollowers.getOrElse(player, 0) + 1
+
+        maxFollowers -= player
+        maxFollowers += (player -> counter)
+
+        if(maxCounter < counter) {
+          maxCounter = counter
+        }
+
+        follower.take()
+      }
+
+      for((player, counter) <- maxFollowers) {
+        if(counter == maxCounter) player.addPoints(root.tileCount())
+      }
     }
   }
 }
