@@ -28,6 +28,21 @@ div.main.game(layout='row', layout-align='center center', layout-padding, layout
                     div(ng-message="required") Room name is required
               div(flex='33', layout='row', layout-align='center')
                 md-button.md-primary(ng-click='createRoom(roomName)', type='submit', ng-disabled='creatingRoom') Create
+    div.md-whiteframe-z1(ng-if='!myRoom.joined', class="animate-if", flex='50',
+    layout='row', layout-align='center center', layout-wrap, layout-padding)
+      md-list(flex='100')
+        md-subheader.md-no-sticky Available games to watch
+        md-list-item(ng-hide='availableGames.length')
+          div.list-item
+            p Sorry, no rooms available.
+        md-list-item(ng-repeat='game in availableGames')
+          div.list-item(layout='row', layout-align='space-around center', layout-sm='column')
+            div(flex='60')
+              p {{game.roomName}}
+            div(flex='40', layout='row', layout-align='center')
+              md-button.md-primary(ng-click='joinGame(game.roomName)', flex) Join
+              md-button.md-warn(ng-click='stopGame(game.roomName)', flex) Stop
+
     // PUT BACK ,
     div.md-whiteframe-z4( class="animate-if", flex='80', ng-if='myRoom.joined',
     layout='row', layout-align='left', layout-padding, layout-wrap, layout-sm='column')
@@ -51,4 +66,6 @@ div.main.game(layout='row', layout-align='center center', layout-padding, layout
           h5 {{slot.isAI? 'AI:' : 'Player' }}&nbsp{{slot.playerName}}
           md-button.md-raised(ng-click='removeSlot($index)', ng-if='slot.isAI || myRoom.slot == $index')
             | {{slot.isAI? 'Remove AI' : 'Leave slot'}}
+      div(flex='100', layout='row', layout-align='center center', ng-show='id.disabled')
+        md-button.md-raised(ng-click='startGame()') Start Game
 
