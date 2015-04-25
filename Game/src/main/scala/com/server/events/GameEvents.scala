@@ -26,7 +26,7 @@ class GameEvents(playerState : PlayerState, name : String = "Game") {
   @OnConnect
   def onConnect(client : SocketIOClient): Unit = {
     logger.info("Client has connected.")
-    logger.info(s"Move queue size is: ")
+    logger.info(s"Move queue size is: ${moveQueue.size}")
 
     if(moveQueue.length > 0) {
       for(move <- moveQueue) {
