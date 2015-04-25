@@ -1,7 +1,5 @@
 package com.tile
 
-import com.game.Player
-
 class CitySection(override val frontEndId : Int) extends Section(frontEndId){
   private var _openEdges : Int = 0
   private var _tileCount : Int = 1
@@ -70,25 +68,13 @@ class CitySection(override val frontEndId : Int) extends Section(frontEndId){
       //closed cities on grass
       root.getGrass().foreach(grass => grass.addClosedCities(Set(root)))
 
-      var maxCounter = 0
-      var maxFollowers : Map[Player, Int] = Map()
-      for(follower <- root._followers) {
-        val player = follower.player
-        val counter = maxFollowers.getOrElse(player, 0) + 1
-
-        maxFollowers -= player
-        maxFollowers += (player -> counter)
-
-        if(maxCounter < counter) {
-          maxCounter = counter
-        }
-
-        follower.take()
+      // Counting points
+      for(player <- majority(root._followers)) {
+        player.addPoints(root.tileCount())
       }
 
-      for((player, counter) <- maxFollowers) {
-        if(counter == maxCounter) player.addPoints(root.tileCount())
-      }
+      // Removing followers from the board
+      removeFollowers(root._followers)
     }
   }
 }
