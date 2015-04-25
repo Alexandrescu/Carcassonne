@@ -28,6 +28,7 @@ class ServerScala {
   server.addEventListener("startGame", classOf[Room], new DataListener[Room]() {
     override def onData(client: SocketIOClient, data: Room, ackRequest: AckRequest): Unit = {
       val namespace = server.addNamespace('/' + data.roomName)
+      logger.info(s"Starting a new game: ${data.roomName}")
       namespace.addListeners(new GameEvents(new PlayerState(rooms.getRoomDetails(data.roomName))))
       availableGames(client)
     }
@@ -35,6 +36,7 @@ class ServerScala {
 
   server.addEventListener("stopGame", classOf[Room], new DataListener[Room]() {
     override def onData(client: SocketIOClient, data: Room, ackRequest: AckRequest): Unit = {
+      logger.info(s"Stopping the game ${data.roomName}")
       server.removeNamespace(data.roomName)
       availableGames(client)
     }

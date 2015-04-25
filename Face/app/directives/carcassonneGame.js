@@ -16,8 +16,8 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       };
 
       var host = $location.host();
-      //var socket = $socket.io('http://' + host + ':1337/' + $routeParams.gameName);
-      var socket = $socket.io('http://' + host + ':1337/');
+      var socket = $socket.io('http://' + host + ':1337/' + $routeParams.gameName);
+      //var socket = $socket.io('http://' + host + ':1337/');
 
       if($routeParams.slot) {
         socket.emit('playerSessionUpdate', {

@@ -3,9 +3,10 @@ package com.server
 object CarcassonneStart {
   def main(args: Array[String]): Unit = {
     val server = new ServerScala
+    //val server = new TestServer
     try {
       server.start
-      server.addRoom("test")
+      //new Server()
       while (System.in.read != 'c') {
         println(Console.BLUE + "[Server] Please press 'c' to stop" + Console.RESET)
       }
