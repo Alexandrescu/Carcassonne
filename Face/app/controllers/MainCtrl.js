@@ -1,23 +1,16 @@
 var carcassonne = angular.module('carcassonne');
 
-carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScope', function($scope, $socket, $location, $rootScope) {
-  $scope.myRoom = {
-    roomName : '',
-    joined : false
-  };
-
+carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($scope, $socket, $location) {
   var host = $location.host();
   var socket = $socket.io('http://' + host + ':1337');
 
+  // This receives all the games. i.e. namespaces
   socket.emit('getGame');
 
   socket.on('availableGames', function(data) {
-    console.log("GAMES");
-    console.log(data);
     $scope.availableGames = [];
     data.rooms.forEach(function(entry) {
-      console.log("Testing this entry");
-      console.log(entry);
+      // Removing the default namespace
       if(entry.roomName != '') {
         $scope.availableGames.push(entry);
       }
@@ -25,13 +18,10 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScop
   });
 
   socket.on('availableRooms', function (data) {
-    console.log(data);
-    console.log($scope.myRoom);
-    console.log($scope.creatingRoom);
-
     $scope.availableRooms = data.rooms;
     // If I am creating room, and my Room has been created then I can join it here.
     // See issue in which I am telling future improvements for this.
+    // This happens because creation of a room does not automatically join it.
     if($scope.creatingRoom) {
       for(var i = 0; i < data.rooms.length; i++) {
         if($scope.myRoom == data.rooms[i].roomName){
@@ -48,17 +38,15 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScop
 
   // Start the progress circle
   socket.on('disconnect', function() {
-    $scope.progressFinish = false;
     $scope.myRoom = {
       joined : false,
       roomName: ''
-    }
+    };
+    $scope.progressFinish = false;
   });
 
   //Joining room
   socket.on('roomConnected', function(data) {
-    console.log("ROOM CONNECTED");
-    console.log(data);
     $scope.myRoom = {
       roomName :data.roomName,
       joined: true
@@ -92,17 +80,17 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScop
   // Create room and join
   $scope.createRoom = function(roomName) {
     if(roomName && roomName != '') {
+      // This flag is used in availableRooms
       $scope.creatingRoom = true;
       socket.emit('addRoom', {roomName: roomName});
     }
   };
+
   $scope.id = {};
   $scope.chooseNickname = function() {
-    console.log($scope.id.disabled);
     if($scope.id.disabled) {
-      console.log("HERE");
       $scope.id.disabled = false;
-      if($scope.myRoom.slot > 0) {
+      if($scope.myRoom.slot >= 0) {
         $scope.removeSlot($scope.myRoom.slot);
       }
     }
@@ -119,8 +107,6 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScop
       slot: index,
       isAI: false
     };
-    console.log("addPlayer event");
-    console.log(data);
     socket.emit('addPlayer', data);
   };
 
@@ -144,23 +130,16 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$rootScop
       slot: index,
       isAI: true
     };
-    console.log("addAI event");
-    console.log(data);
     socket.emit('addPlayer', data);
   };
 
   $scope.startGame = function() {
-    $rootScope.game = {
-      slot : $scope.myRoom.slot,
-      token : 'token' + $scope.myRoom.slot
-    };
-    console.log($rootScope.game);
     socket.emit('startGame', {roomName : $scope.myRoom.roomName});
     $location.path('game/' + $scope.myRoom.roomName + "/" + $scope.myRoom.slot);
   };
 
   $scope.joinGame = function(room) {
-    $location.path('game/' + room);
+    $location.path('game' + room);
   };
 
   $scope.stopGame = function(room) {
