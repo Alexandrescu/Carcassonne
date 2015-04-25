@@ -26,7 +26,11 @@ class Game(board : GameBoard, tileBag : TileBag, callEndOfGame : () => Unit ) {
   }
 
   // Execute first move and it
-  def setBoard() : Move = ???
+  def setBoard() : Move = {
+    val move = new Move(tileBag.startTile, (0, 0), None, null)
+    board.setMove(move)
+    move
+  }
 
   def endGame() = ???
 }
