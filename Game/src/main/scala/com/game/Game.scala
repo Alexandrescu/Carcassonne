@@ -32,5 +32,10 @@ class Game(board : GameBoard, tileBag : TileBag, callEndOfGame : () => Unit ) {
     move
   }
 
-  def endGame() = ???
+  def endGame() = {
+    for(section <- tileBag.allSections) {
+      section.finishSection()
+    }
+
+  }
 }

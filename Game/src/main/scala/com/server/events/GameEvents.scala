@@ -33,6 +33,8 @@ class GameEvents(playerState : PlayerState, name : String = "Game") {
         client.sendEvent("gameMove", move)
       }
     }
+
+    client.sendEvent("gameDraw", Converter.toGameDraw(currentTile, currentPlayer))
   }
 
   @OnEvent("playerSessionUpdate")
@@ -60,6 +62,7 @@ class GameEvents(playerState : PlayerState, name : String = "Game") {
       if(game.isMove(move)) {
         game.setMove(move)
 
+        logger.info(s"Played move: $move")
         client.sendEvent("GameValid", new GameValid("Move applied."))
 
         // This is essential, because I am keeping info only on the server side
