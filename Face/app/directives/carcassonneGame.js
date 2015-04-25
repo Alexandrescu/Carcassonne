@@ -3,7 +3,7 @@ var carcassonne = angular.module('carcassonne');
 carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams', function($socket, $location, $routeParams) {
   return {
     restrict: 'A',
-    controller: function($scope, $rootScope) {
+    controller: function($scope) {
       var colorMap = ['red', 'blue'];
       this.color = function(slot) {
         if(slot == -2 && $routeParams.slot) {
@@ -27,8 +27,6 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       }
 
       this.playMove = function(move) {
-        console.log("playing this move");
-        console.log(move);
         socket.emit('playerMove', move);
         $scope.playing = false;
       };
@@ -55,15 +53,8 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         }
       };
 
-      socket.on('connect', function(){
-
-      });
-
       socket.on('gameMove', function(move) {
         // Should lock the array... might produce errors. Check this.
-        console.log('gameMove');
-        console.log(move);
-
         moveQueue.push(move);
         if(!moveProcessing) {
           moveProcessing = true;
@@ -72,29 +63,23 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       });
 
       socket.on('gameNext', function(nextMove) {
-        console.log('gameNext');
-        console.log(nextMove);
-
         $scope.playing = true;
         $scope.nextMove = nextMove;
       });
 
-      socket.on('gameDraw', function(draw) {
-        // Update everything accordingly
-        console.log('gameDraw');
-        console.log(draw);
-      });
-
       socket.on('gameStart', function(move) {
         // Start the game
-        console.log("gameStart");
-        console.log(move);
-
+        // ADD PROGRESS CIRCLE HERE.
         moveQueue.push(move);
         if(!moveProcessing) {
           moveProcessing = true;
           $scope.newMove = move;
         }
+      });
+
+      // Unimplemented
+      socket.on('connect', function(){
+
       });
 
       socket.on('gameValid', function(valid) {
@@ -103,6 +88,12 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
 
       socket.on('gameError', function(error) {
 
+      });
+
+      socket.on('gameDraw', function(draw) {
+        // Update everything accordingly
+        console.log('gameDraw');
+        console.log(draw);
       });
     }
   }
