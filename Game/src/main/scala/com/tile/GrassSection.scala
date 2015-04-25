@@ -37,7 +37,7 @@ class GrassSection(override val frontEndId : Int) extends Section(frontEndId){
 
   override def followers: Set[Follower] = findRoot()._followers
 
-  override def updateClose(): Unit = {
+  override def closeSection(): Unit = {
     val root = findRoot()
     for(player <- majority(root._followers)) {
       player.addPoints(root.pointCount)

@@ -10,8 +10,20 @@ abstract class Section(val frontEndId : Int) {
   def addFollowers(newFollowers : Set[Follower]): Unit
   def followers : Set[Follower]
 
-  def updateClose()
+  def closeSection()
 
+  def findRoot() : Section
+
+  private var closed : Boolean = false
+
+  def finishSection(): Unit = {
+    val root = findRoot()
+    if(!root.closed) {
+      root.closed = true
+      root.closeSection()
+    }
+  }
+  
   def removeFollowers(followerSet : Set[Follower]): Unit = {
     for(follower <- followerSet) {
       follower.take()

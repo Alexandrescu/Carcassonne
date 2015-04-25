@@ -21,7 +21,7 @@ class MonasterySection(override val frontEndId : Int) extends Section(frontEndId
 
   override def followers: Set[Follower] = _followers
 
-  override def updateClose(): Unit = {
+  override def closeSection(): Unit = {
     if(tileCount == 0) {
       var flagIterated = false
       for(follower <- _followers) {
@@ -33,4 +33,6 @@ class MonasterySection(override val frontEndId : Int) extends Section(frontEndId
       }
     }
   }
+
+  override def findRoot(): Section = this
 }

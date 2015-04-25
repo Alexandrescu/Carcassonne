@@ -8,7 +8,7 @@ class Game(board : GameBoard, tileBag : TileBag, callEndOfGame : () => Unit ) {
   def drawTile() : Tile = {
     val tile = tileBag.getTile.get
     if(tileBag finished) {
-      callEndOfGame
+      callEndOfGame()
     }
     tile
   }
