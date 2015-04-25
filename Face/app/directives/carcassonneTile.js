@@ -198,8 +198,15 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         tilePlaced = true;
         // Adding followers to board
         markFollowers();
+        // Get partial move
+        var partialMove = {
+          x : tileX,
+          y : tileY,
+          direction : directionMap[tileDirection],
+          owned: -1
+        };
         // Let other tiles know this one is placed
-        boardCtrl.placeTile();
+        boardCtrl.placeTile(partialMove);
       }
 
       function unPlaceTile() {
