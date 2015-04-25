@@ -17,9 +17,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
     replace: true,
     require: '^carcassonneBoard',
     link: function(scope, element, attrs, boardCtrl) {
-      console.group();
-
-      console.log(scope.color);
       /*
         The format of moves should be:
         0 -> up
@@ -39,18 +36,14 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
       var tileMoves = {};
       var tileX = 0;
       var tileY = 0;
+
       if(scope.moves) {
         tileMoves = scope.moves.moves || {};
         tileX = scope.moves.x;
         tileY = scope.moves.y;
       }
 
-      console.log("These are the coordinates");
-      console.log(tileX + " " + tileY);
-
       var directionMap = ['Up', 'Left', 'Down', 'Right'];
-
-      console.log(tileMoves);
 
       var containerSVG = $d3.select(element[0]).append('g')
         .attr('width', tileSize)
@@ -62,26 +55,23 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         .attr('class', 'tileContainer');
 
       if(scope.final) {
-        console.log("FINAL TILE");
         var final = scope.final;
-        console.log(final);
         tileMoves[final.direction] = {};
 
-        var finalTile = containerSVG
+        containerSVG
           .append('image')
           .attr('width', tileSize)
           .attr('height', tileSize)
           .attr('xlink:href', '/tiles/' + tileLetter + 'Tile.png');
 
         TileRegions.get({id: tileLetter}, function(tileRegions) {
-          console.log("REGIONS");
           var regions = [];
           tileRegions.forEach(function(entry) {
             if(entry.section == final.section) {
               regions.push(entry);
             }
           });
-          console.log(tileRegions);
+
           $d3.select(containerSVG.node().parentNode)
             .classed({
               'carcassonne-final' : true,
@@ -93,7 +83,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
             .attr('width', tileSize / 10)
             .attr('height', tileSize / 10)
             .attr('x', function(d){
-              console.log(d.x * tileSize);
               return d.x * tileSize;
             })
             .attr('y', function(d) {
@@ -106,11 +95,8 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
 
           rotateTile();
         });
-        console.groupEnd();
         return;
       }
-      console.log("GOING HERE");
-      console.log(tileMoves);
 
       var tile = containerSVG
         .append('image')
@@ -122,23 +108,15 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
       function removeUnavailable(tileRegions) {
         var direction = directionMap[tileDirection];
         var availableRegions = tileMoves[direction];
-        console.log("the regions are:");
-        console.log(availableRegions);
-        console.log("the entries are:");
 
         var result = [];
         tileRegions.forEach(function(entry) {
-          console.log(entry);
           for(var i = 0; i < availableRegions.length; i++) {
-            console.log("comparing " +entry.section + " " + availableRegions[i]);
             if(entry.section == availableRegions[i]) {
-              console.log('true');
               result.push(entry);
             }
           }
         });
-        console.log('result');
-        console.log(tileRegions);
         return result;
       }
 
@@ -151,7 +129,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
        */
       function markFollowers() {
         TileRegions.get({id: tileLetter}, function(tileRegions) {
-          console.log(tileRegions);
 
           var availableRegions = removeUnavailable(tileRegions);
 
@@ -160,7 +137,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
             .attr('width', tileSize / 10)
             .attr('height', tileSize / 10)
             .attr('x', function(d){
-              console.log(d.x * tileSize);
               return d.x * tileSize;
             })
             .attr('y', function(d) {
@@ -198,8 +174,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
                 direction : directionMap[tileDirection],
                 owned: d.section
               };
-              console.log("Move in the tile");
-              console.log(move);
               boardCtrl.playMove(move);
             })
             .on('mouseenter', function() {
@@ -235,9 +209,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
       }
 
       function nextDirection() {
-        console.log(tileDirection);
-        console.log(tileMoves);
-
         for(var it = 1; it <= 4; it++) {
           var newDirection = (tileDirection + it) % 4;
           var direction = directionMap[newDirection];
@@ -294,7 +265,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         tileVisible = !tileVisible;
         tile.attr('opacity', tileVisible? '1' : '0');
       });
-      console.groupEnd();
       rotateTile();
     }
   }
