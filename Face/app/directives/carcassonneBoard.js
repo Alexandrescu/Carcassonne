@@ -20,22 +20,22 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         this.freezed = false;
       };
 
+      // This is going to be hooked in link.
       $scope.playMove = function(data) {
         console.log("link not ready");
       };
 
+      // API function
       this.playMove = function(data){
         $scope.playMove(data);
         $d3.select('.cs-board').selectAll('.follower-place').remove();
         $d3.selectAll('.tile').selectAll('.carcassonne').remove();
         this.freezed = false;
-
-        console.log("Move in the board");
-        console.log(data);
       };
     },
     link: function(scope, element, attrs, gameCtrl) {
       scope.playMove = gameCtrl.playMove;
+
       var gridSize = 100;
       var offset = -20;
       var zoomLowerBound = 1;
@@ -46,13 +46,16 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       var width = scope.width;
       var tileSize = scope.tileSize | 20;
 
+      var initialTranslationX = offset * tileSize * zoomCurrent + width / 2 - 1.5 * tileSize;
+      var initialTranslationY = offset * tileSize * zoomCurrent + height / 2 - 1.5 * tileSize;
+
       // This is the d3 Zoom Behaviour
       // When the event zoom is called then zoomed is triggered
       var zoomBehaviour =
         $d3.behavior.zoom()
           .scaleExtent([zoomLowerBound, zoomUpperBound])
           .scale(zoomCurrent)
-          .translate([offset * tileSize * zoomCurrent, offset * tileSize * zoomCurrent])
+          .translate([initialTranslationX, initialTranslationY])
           .on('zoom', zoomed);
 
       function zoomed() {
@@ -85,7 +88,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         .style('pointer-events', 'all');
 
       var grid = svgGroup.append('g')
-        .attr('transform', "translate(" + (offset * tileSize * zoomCurrent) + ", " + (offset * tileSize * zoomCurrent) + ")scale(" + zoomCurrent + ")");
+        .attr('transform', "translate(" + (initialTranslationX) + ", " + (initialTranslationY) + ")scale(" + zoomCurrent + ")");
 
       var row = grid.selectAll('.row')
           .data($d3.range(0, gridSize, 1))
