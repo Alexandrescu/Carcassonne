@@ -1,7 +1,5 @@
 package com.tile
 
-import com.game.Player
-
 class GrassSection(override val frontEndId : Int) extends Section(frontEndId){
   private var _parent : Option[GrassSection] = None
   private var _closedCities : Set[CitySection] = Set()
@@ -28,23 +26,25 @@ class GrassSection(override val frontEndId : Int) extends Section(frontEndId){
   }
 
   override def isOwned: Boolean = {
-    if(_parent.isEmpty) return owners.nonEmpty
+    if(_parent.isEmpty) return followers.nonEmpty
     findRoot().isOwned
   }
 
-  override def addOwners(newOwners: Map[Player, Int]): Unit = {
+  override def addFollowers(newFollowers: Set[Follower]): Unit = {
     val root = findRoot()
+    root._followers = root._followers.union(newFollowers)
+  }
 
-    newOwners.foreach{ case (player, followers) =>
-      val newFollowers = root._owners.getOrElse(player, 0) + followers
-      if(newFollowers != 0) {
-        root._owners -= player
-        root._owners += (player -> newFollowers)
-      }
+  override def followers: Set[Follower] = findRoot()._followers
+
+  override def updateClose(): Unit = {
+    val root = findRoot()
+    for(player <- majority(root._followers)) {
+      player.addPoints(root.pointCount)
     }
   }
 
-  override def owners: Map[Player, Int] = findRoot()._owners
-
-  override def updateClose(): Unit = {}
+  def pointCount : Int = {
+    _closedCities.size * 3
+  }
 }
