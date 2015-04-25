@@ -12,4 +12,6 @@ class Follower(val player : Player) {
   }
 
   def isPlaced : Boolean = _section.isDefined
+
+  def take() = ???
 }

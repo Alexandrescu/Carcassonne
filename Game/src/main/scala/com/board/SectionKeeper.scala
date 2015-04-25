@@ -15,7 +15,7 @@ class SectionKeeper {
     if(grassA.treeDepth == grassB.treeDepth){
       grassA.treeDepth += 1
     }
-    grassA.addOwners(grassB.owners)
+    grassA.addFollowers(grassB.followers)
 
     grassA.addClosedCities(grassB.closedCities())
     grassB.parent(grassA)
@@ -25,7 +25,7 @@ class SectionKeeper {
     if(cityA.treeDepth == cityB.treeDepth) {
       cityA.treeDepth += 1
     }
-    cityA.addOwners(cityB.owners)
+    cityA.addFollowers(cityB.followers)
 
     cityA.addOpen(cityB.openEdges)
     cityA.addTiles(cityB.tileCount())
@@ -37,7 +37,7 @@ class SectionKeeper {
     if(roadB.treeDepth == roadA.treeDepth) {
       roadA.treeDepth += 1
     }
-    roadA.addOwners(roadB.owners)
+    roadA.addFollowers(roadB.followers)
 
     roadA.addOpen(roadB.openEdges)
     roadA.addTiles(roadB.tileCount())
@@ -50,7 +50,7 @@ class SectionKeeper {
         throw new Error("Can't own already owned section")
       }
       else {
-        section.addOwners(Map(player -> 1))
+        section.addFollowers(Map(player -> 1))
       }
     case _ =>
   }

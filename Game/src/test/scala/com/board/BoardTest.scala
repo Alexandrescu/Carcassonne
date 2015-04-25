@@ -168,7 +168,7 @@ class BoardTest extends FlatSpec {
     assert(!Dsection4.isOwned)
     board.setMove(move2)
     assert(Dsection4.isOwned && Esection1.isOwned &&
-      (Dsection4.owners.map(p => p._1).toSet intersect Esection1.owners.map(p => p._1).toSet) == Set(playerA))
+      (Dsection4.followers.map(p => p._1).toSet intersect Esection1.followers.map(p => p._1).toSet) == Set(playerA))
 
     assert(Dsection4.openEdges == 0 && Esection1.openEdges == 0)
   }
@@ -199,15 +199,15 @@ class BoardTest extends FlatSpec {
     val move4 = new Move(O, (1, -1), None, playerB)
 
     board.setMove(move1)
-    assert(Lsection6.owners.contains(playerA))
+    assert(Lsection6.followers.contains(playerA))
 
     board.setMove(move2)
-    assert(Qsect1.owners.contains(playerB))
+    assert(Qsect1.followers.contains(playerB))
 
     board.setMove(move3)
 
     board.setMove(move4)
-    assert(Qsect1.owners.contains(playerA) && Qsect1.owners.contains(playerB))
+    assert(Qsect1.followers.contains(playerA) && Qsect1.followers.contains(playerB))
 
     assert(Osect1.openEdges == 0)
     assert(playerB.points == 10 && playerA.points == 10)
