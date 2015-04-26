@@ -158,7 +158,7 @@ object TileGenerator {
     val up = RoadEdge(l1, l4, l6)
     val down = RoadEdge(l6, l5, l3)
     val left = RoadEdge(l3, l2, l1)
-    val right = CityEdge(7)
+    val right = CityEdge(l7)
 
     SimpleTile("L", up, down, left, right)
   }
