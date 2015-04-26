@@ -126,6 +126,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       scope.tileMoves = {};
       function appendPossibleTiles(newMoves) {
         newMoves.moveList.forEach(function(entry, index) {
+          entry.y = -entry.y;
           scope.tileMoves[index] = entry;
 
           tile.each(function(d, i, j){
