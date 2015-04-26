@@ -100,18 +100,21 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       $scope.test = function() {
         $scope.playing = true;
         $scope.nextMove = {
-          tile: "D",
+          tile: "X",
           moveList: [
             {
               moves : {
-                'Up' : [1, 2, 3, 4, -1]
+                //'Up' : [1, 2, 3, 4, -1]
+                'Up' : [1, 2, 3, 4, 5, 6, 7, 8, -1]
               },
               x : 0,
               y : 0
             }
           ]
         };
-      }
+      };
+
+      $scope.test();
     }
   }
 }]);
