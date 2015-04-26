@@ -21,4 +21,9 @@ router.get('/tile/:id', function(req, res) {
   res.send(tiles[req.params.id]);
 });
 
+/* Testing */
+router.get('/testTile', function(req, res) {
+  res.render('tileTest');
+});
+
 module.exports = router;

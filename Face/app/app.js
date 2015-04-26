@@ -15,6 +15,9 @@ var carcassonne = angular.module('carcassonne',[
       templateUrl: '/gamePartial',
       controller: 'GameCtrl'
     })
+    .when('/test', {
+      templateUrl: '/testTile'
+    })
     .otherwise({
       // Should redirect to an error page
       redirectTo: '/'

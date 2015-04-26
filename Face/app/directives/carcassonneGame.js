@@ -96,6 +96,22 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         console.log(draw);
         $scope.currentTile = angular.lowercase(draw.tile) + "Tile.png"
       });
+
+      $scope.test = function() {
+        $scope.playing = true;
+        $scope.nextMove = {
+          tile: "D",
+          moveList: [
+            {
+              moves : {
+                'Up' : [1, 2, 3, 4, -1]
+              },
+              x : 0,
+              y : 0
+            }
+          ]
+        };
+      }
     }
   }
 }]);
