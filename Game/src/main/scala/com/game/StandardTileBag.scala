@@ -10,6 +10,9 @@ package com.game
 
 import com.tile._
 
+import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
+
 class StandardTileBag extends TileBag {
   /*
   val tileList = List(
@@ -81,11 +84,46 @@ class StandardTileBag extends TileBag {
     new CityEdge(dSection4)
   )
 
-  override val startTile: Tile = dTile
+  private var tiles : ArrayBuffer[Tile] = new ArrayBuffer()
+  tiles ++= (for(i <- 1 to 2) yield TileGenerator.A)
+  tiles ++= (for(i <- 1 to 4) yield TileGenerator.B)
+  tiles ++= (for(i <- 1 to 1) yield TileGenerator.C)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.D)
+  tiles ++= (for(i <- 1 to 5) yield TileGenerator.E)
+  tiles ++= (for(i <- 1 to 2) yield TileGenerator.F)
+
+  tiles ++= (for(i <- 1 to 1) yield TileGenerator.G)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.H)
+  tiles ++= (for(i <- 1 to 2) yield TileGenerator.I)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.J)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.K)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.L)
+
+  tiles ++= (for(i <- 1 to 2) yield TileGenerator.M)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.N)
+  tiles ++= (for(i <- 1 to 2) yield TileGenerator.O)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.P)
+  tiles ++= (for(i <- 1 to 1) yield TileGenerator.Q)
+  tiles ++= (for(i <- 1 to 3) yield TileGenerator.R)
+
+  tiles ++= (for(i <- 1 to 2) yield TileGenerator.S)
+  tiles ++= (for(i <- 1 to 1) yield TileGenerator.T)
+  tiles ++= (for(i <- 1 to 8) yield TileGenerator.U)
+  tiles ++= (for(i <- 1 to 9) yield TileGenerator.V)
+  tiles ++= (for(i <- 1 to 4) yield TileGenerator.W)
+  tiles ++= (for(i <- 1 to 1) yield TileGenerator.X)
+
+
+  override val startTile: Tile = TileGenerator.D
 
   override def getEntireTileBag: Iterable[Tile] = ???
 
   override def finished: Boolean = false
 
-  override def getTile: Option[Tile] = Some(dTile2)
+  override def getTile: Option[Tile] = {
+    val random = Random.nextInt(tiles.length)
+    Some(tiles.remove(random))
+  }
+
+  override def allSections: Set[Section] = ???
 }
