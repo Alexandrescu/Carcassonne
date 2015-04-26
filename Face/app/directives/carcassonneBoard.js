@@ -15,19 +15,13 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       this.freezed = false;
       this.placeTile = function(partialMove) {
         this.freezed = true;
-        $scope.partialMove(partialMove);
       };
       this.unPlaceTile = function() {
         this.freezed = false;
-        $scope.removePartialMove();
       };
 
       // These are going to be hooked in link.
       $scope.playMove = function(data) {
-        console.log("link not ready");
-      };
-
-      $scope.partialMove = function(partialMove) {
         console.log("link not ready");
       };
 
@@ -41,12 +35,6 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
     },
     link: function(scope, element, attrs, gameCtrl) {
       scope.playMove = gameCtrl.playMove;
-      scope.partialMove = function(partialMove) {
-        gameCtrl.noFollowerMove(partialMove);
-      };
-      scope.removePartialMove = function() {
-        gameCtrl.removeTilePlaced();
-      };
 
       var gridSize = 100;
       var offset = -20;
@@ -153,6 +141,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       }
 
       function finalTile(move) {
+        move.y = -move.y;
         var finalTiles = tile.filter(function(d, i, j){
           return (move.x - offset) == i && (move.y - offset) == j;
         });

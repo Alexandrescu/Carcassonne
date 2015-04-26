@@ -31,21 +31,6 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         $scope.playing = false;
       };
 
-      $scope.playPartialMove = function() {
-        socket.emit('playerMove', $scope.partialMove);
-        $scope.playing = false;
-      };
-
-      $scope.tilePlaced = false;
-      this.noFollowerMove = function(move) {
-        $scope.partialMove = move;
-        $scope.tilePlaced = true;
-      };
-
-      this.removeTilePlaced = function() {
-        $scope.tilePlaced = false;
-      };
-
       var moveQueue = [];
       var moveProcessing = true;
 

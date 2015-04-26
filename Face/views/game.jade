@@ -7,6 +7,4 @@ div(flex='100', layout='row', carcassonne-game)
       h1(class="md-toolbar-tools") Sidenav Right {{tilePlaced}}
     div(flex, layout="column", layout-align="start center")
       div(flex)
-        md-button.md-raised.md-warn(ng-click='playPartialMove()', ng-disabled='tilePlaced == false') No follower
-      div(flex)
         img(ng-src='tiles/{{currentTile}}', width='200', height='200')

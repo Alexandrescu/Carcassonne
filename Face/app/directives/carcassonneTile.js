@@ -40,7 +40,7 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
       if(scope.moves) {
         tileMoves = scope.moves.moves || {};
         tileX = scope.moves.x;
-        tileY = scope.moves.y;
+        tileY = -scope.moves.y;
       }
 
       var directionMap = ['Up', 'Left', 'Down', 'Right'];
@@ -129,8 +129,14 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
        */
       function markFollowers() {
         TileRegions.get({id: tileLetter}, function(tileRegions) {
+          var noFollower = {
+            section : -1,
+            x: 0,
+            y: 0
+          };
 
           var availableRegions = removeUnavailable(tileRegions);
+          availableRegions.push(noFollower);
 
           containerSVG.selectAll('.follower-place').data(availableRegions).enter()
             .append('rect')
@@ -176,7 +182,11 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
               };
               boardCtrl.playMove(move);
             })
-            .on('mouseenter', function() {
+            .on('mouseenter', function(d) {
+              if(d.section == -1) {
+                $d3.select(this).attr('fill', 'white');
+                return;
+              }
               $d3.select(this).attr('fill', scope.color);
             })
             .on('mouseleave', function() {
@@ -198,15 +208,8 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         tilePlaced = true;
         // Adding followers to board
         markFollowers();
-        // Get partial move
-        var partialMove = {
-          x : tileX,
-          y : tileY,
-          direction : directionMap[tileDirection],
-          owned: -1
-        };
         // Let other tiles know this one is placed
-        boardCtrl.placeTile(partialMove);
+        boardCtrl.placeTile();
       }
 
       function unPlaceTile() {
