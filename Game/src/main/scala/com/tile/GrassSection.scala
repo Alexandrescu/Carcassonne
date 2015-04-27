@@ -1,5 +1,7 @@
 package com.tile
 
+import com.player.Follower
+
 class GrassSection(override val frontEndId : Int) extends Section(frontEndId){
   private var _parent : Option[GrassSection] = None
   private var _closedCities : Set[CitySection] = Set()

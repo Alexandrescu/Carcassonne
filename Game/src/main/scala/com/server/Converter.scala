@@ -4,7 +4,7 @@ import java.util
 
 import com.board.{Move, PossibleMove}
 import com.game.Direction._
-import com.game.Player
+import com.player.Player
 import com.server.json._
 import com.tile.{Section, Tile}
 

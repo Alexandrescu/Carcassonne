@@ -5,7 +5,8 @@ import java.util.UUID
 import com.board.{Move, PossibleMove}
 import com.corundumstudio.socketio.annotation.{OnConnect, OnEvent}
 import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
-import com.game.{Game, GameFactory, Player}
+import com.game.{Game, GameFactory}
+import com.player.Player
 import com.server.json.{GameClient, GameError, GameMove, GameValid}
 import com.server.{Converter, PlayerState}
 import com.tile.Tile

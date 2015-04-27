@@ -1,6 +1,7 @@
 package com.game
 
 import com.board.{PossibleMove, Move, GameBoard}
+import com.player.Player
 import com.tile.Tile
 
 class Game(board : GameBoard, tileBag : TileBag, callEndOfGame : () => Unit ) {

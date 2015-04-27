@@ -1,5 +1,7 @@
 package com.tile
 
+import com.player.Follower
+
 class CitySection(override val frontEndId : Int) extends Section(frontEndId){
   private var closed : Boolean = false
   private var _openEdges : Int = 0

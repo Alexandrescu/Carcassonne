@@ -1,5 +1,7 @@
 package com.tile
 
+import com.player.Follower
+
 class RoadSection(override val frontEndId : Int) extends Section(frontEndId){
   private var _openEdges : Int = 0
   private var _tileCount : Int = 1

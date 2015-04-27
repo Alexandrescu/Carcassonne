@@ -1,6 +1,4 @@
-package com.game
-
-import com.tile.Follower
+package com.player
 
 class Player(val slot : Int, var name : String, var uuid : String, private var _token : String) {
   def token : String = _token

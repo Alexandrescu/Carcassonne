@@ -1,6 +1,6 @@
 package com.server
 
-import com.game.Player
+import com.player.Player
 import com.server.json.{GameEnd, RoomDetails}
 
 import scala.collection.JavaConversions._

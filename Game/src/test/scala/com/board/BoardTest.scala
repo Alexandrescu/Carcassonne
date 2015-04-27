@@ -1,6 +1,6 @@
 package com.board
 
-import com.game.Player
+import com.player.Player
 import com.tile._
 import org.scalatest.FlatSpec
 import com.game.Direction._

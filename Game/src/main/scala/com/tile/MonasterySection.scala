@@ -1,5 +1,7 @@
 package com.tile
 
+import com.player.Follower
+
 class MonasterySection(override val frontEndId : Int) extends Section(frontEndId) {
   private var tileCount : Int = 0
 

@@ -1,6 +1,6 @@
 package com.tile
 
-import com.game.Player
+import com.player.{Player, Follower}
 
 abstract class Section(val frontEndId : Int) {
   var treeDepth : Int = 1

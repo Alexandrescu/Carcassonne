@@ -1,6 +1,7 @@
 package com.board
 
-import com.game.{Player, Direction}
+import com.game.Direction
+import com.player.Player
 import com.tile._
 import Direction.{Direction, _}
 
