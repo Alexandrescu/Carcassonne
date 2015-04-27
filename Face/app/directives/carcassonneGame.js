@@ -114,7 +114,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         };
       };
 
-      $scope.test();
+      //$scope.test();
     }
   }
 }]);
