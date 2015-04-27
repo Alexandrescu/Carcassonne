@@ -1,6 +1,6 @@
 package com.board
 
-import com.game.Direction
+import Direction
 import com.tile._
 import Direction.Direction
 

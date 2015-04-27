@@ -2,8 +2,8 @@ package com.server
 
 import java.util
 
-import com.board.{Move, PossibleMove}
-import com.game.Direction._
+import com.board.{Direction, Move, PossibleMove}
+import Direction._
 import com.player.Player
 import com.server.json._
 import com.tile.{Section, Tile}
