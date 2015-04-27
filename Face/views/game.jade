@@ -1,0 +1,10 @@
+div(flex='100', layout='row', carcassonne-game)
+  div(flex)
+    div
+      carcassonne-board(height='600', width='900', move='newMove', my-move='nextMove', tile-size='50')
+  md-sidenav(class="md-sidenav-right md-whiteframe-z2", md-component-id="right", md-is-locked-open="$mdMedia('gt-md')")
+    md-toolbar(class="md-theme-light")
+      h1(class="md-toolbar-tools") Sidenav Right {{tilePlaced}}
+    div(flex, layout="column", layout-align="start center")
+      div(flex)
+        img(ng-src='tiles/{{currentTile}}', width='200', height='200')
