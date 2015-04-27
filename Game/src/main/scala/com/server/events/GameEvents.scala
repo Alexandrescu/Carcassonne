@@ -16,7 +16,8 @@ import scala.collection.mutable.ArrayBuffer
 
 class GameEvents(playerState : PlayerState, name : String = "Game") {
   val logger : Logger = Logger(LoggerFactory.getLogger(name))
-  val game : Game = GameFactory.standardGame(callEndOfGame)
+  //val game : Game = GameFactory.standardGame(callEndOfGame)
+  val game : Game = GameFactory.testGame(callEndOfGame)
   private var currentTile : Tile = null
   private var currentPlayer : Player = null
   private var currentMoves : Set[PossibleMove] = null

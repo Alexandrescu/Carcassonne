@@ -14,7 +14,7 @@ object TileGenerator {
     val left = GrassEdge(a1)
     val right = GrassEdge(a1)
 
-    SimpleTile("A", up, down, left, right)
+    Monastery("A", up, down, left, right, a2)
   }
 
   def B : Tile = {
@@ -26,7 +26,7 @@ object TileGenerator {
     val left = GrassEdge(b1)
     val right = GrassEdge(b1)
 
-    SimpleTile("B", up, down, left, right)
+    Monastery("B", up, down, left, right, b2)
   }
 
   def C : Tile = {
