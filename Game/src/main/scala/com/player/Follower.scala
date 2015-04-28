@@ -14,6 +14,7 @@ class Follower(val player : Player) {
 
   def section() : Option[Section] = _section
   def section_= (newSection : Section) : Unit = {
+    player.followerRemoved(this)
     _section = Some(newSection)
   }
 

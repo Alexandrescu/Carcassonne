@@ -1,12 +1,8 @@
 package com.player
 
-class Player(val slot : Int, var name : String, var uuid : String, private var _token : String) {
-  def token : String = _token
-
+class Player(val observer: PlayerObserver) {
   private var followerBag : Set[Follower] = Set()
-  for(i <- 1 to 7) {
-    followerBag += new Follower(this)
-  }
+  for(i <- 1 to 7) followerBag += new Follower(this)
 
   def getFollower : Follower = {
     for(follower <- followerBag) {
@@ -34,7 +30,12 @@ class Player(val slot : Int, var name : String, var uuid : String, private var _
 
   def addPoints(i: Int): Unit = {
     _points += i
+    observer.playerUpdate(this)
   }
 
   def points : Int = _points
+
+  def followerRemoved(follower: Follower): Unit = {
+    observer.followerUpdate(follower)
+  }
 }
