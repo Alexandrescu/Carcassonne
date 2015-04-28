@@ -1,8 +1,7 @@
 package com.board
 
-import Direction
+import com.board.Direction._
 import com.tile._
-import Direction._
 
 class StandardLogic extends Logic{
 

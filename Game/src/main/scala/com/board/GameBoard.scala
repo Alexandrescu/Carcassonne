@@ -1,9 +1,8 @@
 package com.board
 
-import Direction
+import com.board.Direction.{Direction, _}
 import com.player.Player
 import com.tile._
-import Direction.{Direction, _}
 
 class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   type Dependency = Map[Section, Set[Section]]
