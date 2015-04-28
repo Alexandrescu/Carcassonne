@@ -14,7 +14,6 @@ class Follower(val player : Player) {
 
   def section() : Option[Section] = _section
   def section_= (newSection : Section) : Unit = {
-    player.followerRemoved(this)
     _section = Some(newSection)
   }
 
@@ -27,7 +26,18 @@ class Follower(val player : Player) {
 
   def isPlaced : Boolean = _section.isDefined
 
+  private var _removedPlace : Place = (0, 0)
+  private var _removedFrontEnd : Int = 0
+
+  def removedPlace : Place = _removedPlace
+  def removedFrontEndId = _removedFrontEnd
+
   def take() = {
+    _removedFrontEnd = _section.get.frontEndId
+    _removedPlace = _place.get
+
+    player.followerRemoved(this)
+
     _section = None
   }
 }

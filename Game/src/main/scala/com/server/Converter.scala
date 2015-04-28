@@ -2,8 +2,8 @@ package com.server
 
 import java.util
 
-import com.board.{Direction, Move, PossibleMove}
-import Direction._
+import com.board.Direction._
+import com.board.{Move, PossibleMove}
 import com.player.Player
 import com.server.json._
 import com.tile.{Section, Tile}
@@ -12,7 +12,11 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
 object Converter {
-  def moveToJson(move: Move): GameMove = {
+  def toGameRemoveFollower(place : (Int, Int), section : Int): GameRemoveFollower = {
+    new GameRemoveFollower(place._1, place._2, section)
+  }
+
+  def toGameMove(move: Move): GameMove = {
     val section : Int = move.toOwnFromTile match {
       case Some(s) => s.frontEndId
       case None => -1
@@ -29,7 +33,16 @@ object Converter {
     new GamePlayer(player.slot, player.followers, player.points)
   }
 
-  def addMove(moveList : ArrayBuffer[GameNextMove], possibleMove: PossibleMove): Unit = {
+  def toGameNextMoveList(tile : Tile, moves : Set[PossibleMove]) : GameNextMoveList = {
+    val moveList = new ArrayBuffer[GameNextMove]()
+    for(move <- moves) {
+      addMove(moveList, move)
+    }
+
+    new GameNextMoveList(tile.identifier, moveList.toList.toList : util.List[GameNextMove])
+  }
+
+  private def addMove(moveList : ArrayBuffer[GameNextMove], possibleMove: PossibleMove): Unit = {
     for(move <- moveList) {
       if((move.x, move.y) == possibleMove.place) {
         move.moves.put(directionToString(possibleMove.direction), toOwnToList(possibleMove.toOwnFromTile))
@@ -41,15 +54,6 @@ object Converter {
     map.put(directionToString(possibleMove.direction), toOwnToList(possibleMove.toOwnFromTile))
 
     moveList += new GameNextMove(map, possibleMove.place._1, possibleMove.place._2)
-  }
-
-  def toGameNextMoveList(tile : Tile, moves : Set[PossibleMove]) : GameNextMoveList = {
-    val moveList = new ArrayBuffer[GameNextMove]()
-    for(move <- moves) {
-      addMove(moveList, move)
-    }
-
-    new GameNextMoveList(tile.identifier, moveList.toList.toList : util.List[GameNextMove])
   }
 
   def toGameDraw(tile : Tile, player : Player) : GameDraw = {

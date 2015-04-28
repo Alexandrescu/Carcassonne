@@ -30,7 +30,7 @@ class ServerScala {
     override def onData(client: SocketIOClient, data: Room, ackRequest: AckRequest): Unit = {
       val namespace = server.addNamespace('/' + data.roomName)
       logger.info(s"Starting a new game: ${data.roomName}")
-      namespace.addListeners(new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName))))
+      namespace.addListeners(new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName), namespace)))
       availableGames(client)
     }
   })

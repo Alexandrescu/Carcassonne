@@ -90,6 +90,10 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
 
       });
 
+      socket.on("followerRemoved", function(removed) {
+        $scope.removed = removed;
+      });
+
       socket.on('gameDraw', function(draw) {
         // Update everything accordingly
         console.log('gameDraw');

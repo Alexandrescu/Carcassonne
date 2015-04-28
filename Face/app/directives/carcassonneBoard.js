@@ -9,7 +9,8 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       width: '=',
       move: '=',
       myMove: '=',
-      tileSize: '='
+      tileSize: '=',
+      followerRemoved: '='
     },
     controller : function($scope) {
       this.freezed = false;
@@ -181,6 +182,12 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       scope.$watch('myMove', function(after, before) {
         if(after) {
           appendPossibleTiles(after);
+        }
+      });
+
+      scope.$watch("followerRemove", function(after, before) {
+        if(after) {
+          removeFinishedFollower(after);
         }
       });
 
