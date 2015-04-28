@@ -1,6 +1,6 @@
 package com.player
 
-class Player(val observer: PlayerObserver) {
+class Player(val observer: PlayerObserver, val slot : Int) {
   private var followerBag : Set[Follower] = Set()
   for(i <- 1 to 7) followerBag += new Follower(this)
 
