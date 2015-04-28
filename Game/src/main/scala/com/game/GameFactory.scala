@@ -1,31 +1,26 @@
 package com.game
 
-import java.util.UUID
-
 import com.board.{GameBoard, SectionKeeper, StandardLogic}
 import com.client.{AiClient, Client, RealClient}
-import com.corundumstudio.socketio.SocketIONamespace
 import com.server.json.RoomDetails
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
 object GameFactory {
-  def standardGame(roomDetails: RoomDetails, socketSpace : SocketIONamespace) : Game =
-    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new StandardTileBag,
-      roomDetailsToPlayerTurn(roomDetails, socketSpace))
+  def standardGame(roomDetails: RoomDetails) : Game =
+    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new StandardTileBag, roomDetails)
 
-  def testGame(roomDetails: RoomDetails, socketSpace : SocketIONamespace) : Game =
-    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new TestTileBag,
-             roomDetailsToPlayerTurn(roomDetails, socketSpace))
+  def testGame(roomDetails: RoomDetails) : Game =
+    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new TestTileBag, roomDetails)
 
-  def roomDetailsToPlayerTurn(roomDetails: RoomDetails, socketSpace: SocketIONamespace) : ClientTurn = {
+  implicit def roomDetailsToPlayerTurn(roomDetails: RoomDetails) : ClientTurn = {
     val clientList = ArrayBuffer[Client]()
     for(slot <- roomDetails.slots.toList) {
       if(!slot.isEmpty) {
         val client =
           if(slot.isAI) new AiClient
-          else new RealClient(slot.slot, slot.token, slot.playerName, socketSpace.getClient(UUID.fromString(slot.uuid)))
+          else new RealClient(slot.slot, "token" + slot.slot, slot.playerName)
         clientList += client
       }
     }
