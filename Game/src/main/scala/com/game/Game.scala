@@ -3,6 +3,7 @@ package com.game
 import com.board.{GameBoard, Move}
 import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
+import com.player.Player
 import com.server.json.GameClient
 import com.tile.Tile
 
@@ -18,7 +19,9 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
    */
   def next: Unit = {
     // MAYBE CHECK IF THE GAME IS DONE
-    clientTurn.next(tileBag.next())
+    val gameClient = clientTurn.next()
+    val currentTile = tileBag.next()
+    gameClient.turn(currentTile, board.getMoves(currentTile, gameClient.player))
   }
 
   /* State handlers */
@@ -43,12 +46,22 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     gameClient.currentState(moveQueue.clone())
   }
 
+  private var started = false
   def updateClient(client : SocketIOClient, info : GameClient): Unit = {
-    clientTurn.updateClient(client, info)
+    val thisClient = clientTurn.updateClient(client, info)
+    if(!started && clientTurn.doneConnecting) {
+      started = true
+      next
+    }
+    if(isCurrentPlayer(thisClient)) {
+      val thisTile = tileBag.current
+      thisClient.turn(thisTile, board.getMoves(thisTile, thisClient.player))
+    }
   }
 
   def getClient(client : SocketIOClient) : Client = clientTurn.current
 
-
   def isCurrentPlayer(gameClient : Client): Boolean = clientTurn.current == gameClient
+
+  def currentPlayer : Player = clientTurn.current.player
 }
