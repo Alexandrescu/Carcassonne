@@ -2,6 +2,7 @@ package com.server
 
 import com.corundumstudio.socketio._
 import com.corundumstudio.socketio.listener.DataListener
+import com.game.GameFactory
 import com.server.events.{GameEvents, RoomEvents}
 import com.server.json.{Room, RoomList}
 import com.typesafe.scalalogging.Logger
@@ -29,7 +30,7 @@ class ServerScala {
     override def onData(client: SocketIOClient, data: Room, ackRequest: AckRequest): Unit = {
       val namespace = server.addNamespace('/' + data.roomName)
       logger.info(s"Starting a new game: ${data.roomName}")
-      namespace.addListeners(new GameEvents(new PlayerState(rooms.getRoomDetails(data.roomName))))
+      namespace.addListeners(new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName))))
       availableGames(client)
     }
   })

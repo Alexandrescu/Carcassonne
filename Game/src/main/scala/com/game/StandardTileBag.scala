@@ -48,7 +48,7 @@ class StandardTileBag extends TileBag {
 
   override def getEntireTileBag: Iterable[Tile] = ???
 
-  override def finished: Boolean = false
+  override def hasNext: Boolean = false
 
   override def getTile: Option[Tile] = {
     val random = Random.nextInt(tiles.length)

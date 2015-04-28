@@ -11,7 +11,7 @@ class TestTileBag extends TileBag{
 
   override def getEntireTileBag: Iterable[Tile] = ???
 
-  override def finished: Boolean = false
+  override def hasNext: Boolean = false
 
   val bag = ArrayBuffer[Tile]()
 

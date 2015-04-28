@@ -20,7 +20,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       //var socket = $socket.io('http://' + host + ':1337/');
 
       if($routeParams.slot) {
-        socket.emit('playerSessionUpdate', {
+        socket.emit('connectAs', {
           slot: $routeParams.slot,
           token: 'token' + $routeParams.slot
         });

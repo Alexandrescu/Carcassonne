@@ -5,8 +5,9 @@ import com.tile.{Section, Tile}
 trait TileBag {
 
   val startTile : Tile
-  def getTile : Option[Tile]
+  def next() : Tile
+  def current : Tile
+  def hasNext : Boolean
   def getEntireTileBag : Iterable[Tile]
-  def finished : Boolean
   def allSections : Set[Section]
 }
