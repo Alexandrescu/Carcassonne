@@ -2,16 +2,15 @@ package com.game
 
 import com.board.{GameBoard, Move}
 import com.client.Client
-import com.player.Player
+import com.corundumstudio.socketio.SocketIOClient
+import com.server.json.GameClient
 import com.tile.Tile
 
 import scala.collection.mutable.ArrayBuffer
 
-class Game(board : GameBoard, tileBag : TileBag, playerTurns: PlayerTurns) {
+class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   private var moveQueue : ArrayBuffer[Move] = ArrayBuffer(new Move(tileBag.startTile, (0, 0), None, null))
   board.setMove(moveQueue(0))
-
-  def currentTile : Tile = tileBag.current
 
   /*
       PRE: Game not ended
@@ -19,12 +18,15 @@ class Game(board : GameBoard, tileBag : TileBag, playerTurns: PlayerTurns) {
    */
   def next: Unit = {
     // MAYBE CHECK IF THE GAME IS DONE
-    playerTurns.next(tileBag.next())
+    clientTurn.next(tileBag.next())
   }
+
+  /* State handlers */
+  def currentTile : Tile = tileBag.current
 
   def finished: Boolean = tileBag.hasNext
 
-  def isCurrentPlayer(player: Player): Boolean = playerTurns.current == player
+  def moveList : List[Move] = moveQueue.clone().toList
 
   def isMove(move : Move): Boolean = {
     board.isMove(move)
@@ -36,7 +38,17 @@ class Game(board : GameBoard, tileBag : TileBag, playerTurns: PlayerTurns) {
     moveQueue += move
   }
 
+  /* Informing a client when connecting to the game */
   def informClient(gameClient : Client): Unit = {
     gameClient.currentState(moveQueue.clone())
   }
+
+  def updateClient(client : SocketIOClient, info : GameClient): Unit = {
+    clientTurn.updateClient(client, info)
+  }
+
+  def getClient(client : SocketIOClient) : Client = clientTurn.current
+
+
+  def isCurrentPlayer(gameClient : Client): Boolean = clientTurn.current == gameClient
 }

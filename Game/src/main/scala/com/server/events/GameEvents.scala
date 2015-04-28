@@ -4,8 +4,8 @@ import com.board.Move
 import com.corundumstudio.socketio.annotation.{OnConnect, OnEvent}
 import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
 import com.game.Game
+import com.server.Converter
 import com.server.json.{GameClient, GameError, GameMove, GameValid}
-import com.server.{ClientState, Converter}
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
@@ -16,36 +16,28 @@ class GameEvents(val game : Game, name : String = "Game") {
   def onConnect(client : SocketIOClient): Unit = {
     logger.info("Client has connected.")
 
-    /* SEND INFO TO CLIENT
+    /* SEND INFO TO CLIENT */
 
-    logger.info(s"Move queue size is: ${moveQueue.size}")
+    //logger.info(s"Move queue size is: ${moveQueue.size}.")
 
-    if(moveQueue.length > 0) {
-      for(move <- moveQueue) {
-        client.sendEvent("gameMove", move)
-      }
+    for(move <- game.moveList) {
+      client.sendEvent("gameMove", Converter.moveToJson(move))
     }
-    client.sendEvent("gameDraw", Converter.toGameDraw(currentTile, currentPlayer))
 
-    */
+    /* Send current turn information */
+    //client.sendEvent("gameDraw", Converter.toGameDraw(currentTile, currentPlayer))
   }
 
-  private val clientState : ClientState = new ClientState()
   @OnEvent("connectAs")
   def onPlayerSessionUpdate(client: SocketIOClient, player : GameClient): Unit = {
     logger.info(s"Connecting as player on slot: ${player.slot}.")
-    val gameClient = clientState.setUUID(player.slot, player.token, client.getSessionId.toString)
-
-    if(game.isCurrentPlayer(gameClient.player)) {
-      // Send him the tile to move
-      //client.sendEvent("gameNext", Converter.toGameNextMoveList(game.currentTile, game.currentMoves))
-    }
+    game.updateClient(client, player)
   }
 
   @OnEvent("playerMove")
   def onPlayerMove(client : SocketIOClient, gameMove : GameMove): Unit = {
-    val gameClient = clientState.get(client.getSessionId.toString)
-    if(game.isCurrentPlayer(gameClient.player)) {
+    val gameClient = game.getClient(client)
+    if(game.isCurrentPlayer(gameClient)) {
       val move : Move = Converter.toMove(gameMove, game.currentTile, gameClient.player)
 
       if(game.isMove(move)) {
