@@ -9,23 +9,22 @@ import com.server.json.{GameClient, GameError, GameMove, GameValid}
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
-class GameEvents(val game : Game, name : String = "Game") {
+class GameEvents(val game : Game, name : String = "Game Event") {
   val logger : Logger = Logger(LoggerFactory.getLogger(name))
 
   @OnConnect
   def onConnect(client : SocketIOClient): Unit = {
-    logger.info("Client has connected.")
+    logger.info("Spectator has connected.")
 
     /* SEND INFO TO CLIENT */
-
-    //logger.info(s"Move queue size is: ${moveQueue.size}.")
-
     for(move <- game.moveList) {
-      client.sendEvent("gameMove", Converter.moveToJson(move))
+      client.sendEvent("gameMove", Converter.toGameMove(move))
     }
 
     /* Send current turn information */
-    //client.sendEvent("gameDraw", Converter.toGameDraw(currentTile, currentPlayer))
+    if(game started) {
+      client.sendEvent("gameDraw", Converter.toGameDraw(game.currentTile, game.currentPlayer))
+    }
   }
 
   @OnEvent("connectAs")
@@ -46,7 +45,7 @@ class GameEvents(val game : Game, name : String = "Game") {
         client.sendEvent("GameValid", new GameValid("Move applied."))
 
         // This is essential, because I am keeping info only on the server side
-        val newMove = Converter.moveToJson(move)
+        val newMove = Converter.toGameMove(move)
         client.getNamespace.getBroadcastOperations.sendEvent("gameMove", newMove)
 
         nextRound(client.getNamespace)
@@ -65,6 +64,6 @@ class GameEvents(val game : Game, name : String = "Game") {
       // End the game.
       return
     }
-    game.next
+    game.next()
   }
 }

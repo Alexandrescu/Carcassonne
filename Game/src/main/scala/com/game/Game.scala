@@ -4,23 +4,31 @@ import com.board.{GameBoard, Move}
 import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
 import com.player.Player
+import com.server.Converter
 import com.server.json.GameClient
 import com.tile.Tile
+import com.typesafe.scalalogging.Logger
+import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ArrayBuffer
 
 class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
+  val logger : Logger = Logger(LoggerFactory.getLogger("Game"))
   private var moveQueue : ArrayBuffer[Move] = ArrayBuffer(new Move(tileBag.startTile, (0, 0), None, null))
-  board.setMove(moveQueue(0))
+  board.setMove(moveQueue.head)
 
   /*
       PRE: Game not ended
       POST: Game in the next stage: tile removed, player informed
    */
-  def next: Unit = {
+  def next(): Unit = {
     // MAYBE CHECK IF THE GAME IS DONE
     val gameClient = clientTurn.next()
     val currentTile = tileBag.next()
+    // Sending the draw to people
+    gameClient.socketClient.getNamespace.getBroadcastOperations.
+      sendEvent("gameDraw", Converter.toGameDraw(currentTile, gameClient.player))
+
     gameClient.turn(currentTile, board.getMoves(currentTile, gameClient.player))
   }
 
@@ -46,14 +54,18 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     gameClient.currentState(moveQueue.clone())
   }
 
-  private var started = false
+  private var _started = false
+
+  def started : Boolean = _started
+
   def updateClient(client : SocketIOClient, info : GameClient): Unit = {
     val thisClient = clientTurn.updateClient(client, info)
-    if(!started && clientTurn.doneConnecting) {
-      started = true
-      next
+    if(!_started && clientTurn.doneConnecting) {
+      logger.info("Starting the game.")
+      _started = true
+      next()
     }
-    if(isCurrentPlayer(thisClient)) {
+    else if(_started && isCurrentPlayer(thisClient)) {
       val thisTile = tileBag.current
       thisClient.turn(thisTile, board.getMoves(thisTile, thisClient.player))
     }
