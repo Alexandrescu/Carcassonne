@@ -185,7 +185,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         }
       });
 
-      scope.$watch("followerRemove", function(after, before) {
+      scope.$watch("followerRemoved", function(after, before) {
         if(after) {
           removeFinishedFollower(after);
         }
