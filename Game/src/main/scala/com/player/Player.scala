@@ -2,7 +2,7 @@ package com.player
 
 import com.tile.Section
 
-class Player(val observer: PlayerObserver, val slot : Int) {
+class Player(val slot : Int, private var observers: Set[PlayerObserver] = Set()) {
   private var followerBag : Set[Follower] = Set()
   for(i <- 1 to 7) followerBag += new Follower(this)
 
@@ -29,17 +29,27 @@ class Player(val observer: PlayerObserver, val slot : Int) {
 
   def hasFollower : Boolean = followers > 0
 
-  // Handling points
+  /* Handling points */
   private var _points : Int = 0
 
-  def addPoints(i: Int): Unit = {
+  private def addPoints(i: Int): Unit = {
     _points += i
-    observer.playerUpdate(this)
   }
 
   def points : Int = _points
 
-  def followerRemoved(follower: Follower): Unit = {
-    observer.followerUpdate(follower)
+  /* Follower events */
+  def followerRemoved(follower: Follower, pointsAdded : Int): Unit = {
+    addPoints(pointsAdded)
+    observers.foreach(_.followerUpdate(follower))
+  }
+
+  /* Observing the player */
+  def registerObserver(observer: PlayerObserver) = {
+    observers += observer
+  }
+
+  def removeObserver(observer: PlayerObserver) = {
+    observers -= observer
   }
 }

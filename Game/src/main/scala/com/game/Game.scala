@@ -1,9 +1,9 @@
 package com.game
 
-import com.board.{GameBoard, Move}
+import com.board.{RemovedFollower, GameBoard, Move}
 import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
-import com.player.Player
+import com.player.{Follower, PlayerObserver, Player}
 import com.server.Converter
 import com.server.json.GameClient
 import com.tile.Tile
@@ -13,9 +13,23 @@ import org.slf4j.LoggerFactory
 import scala.collection.mutable.ArrayBuffer
 
 class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
+  type EitherMove = Either[Move, RemovedFollower]
+
+  /* Observing follower moves */
+  private val observer = new PlayerObserver {
+    override def followerUpdate(follower: Follower): Unit = {
+      val newRF = new RemovedFollower(follower.removedPlace, follower.removedFrontEndId, follower.player)
+      logger.info(newRF.toString)
+      announceClients(Right(newRF))
+      moveQueue += Right(newRF)
+    }
+  }
+  clientTurn.clients.foreach(_.player.registerObserver(observer))
+
   val logger : Logger = Logger(LoggerFactory.getLogger("Game"))
-  private var moveQueue : ArrayBuffer[Move] = ArrayBuffer(new Move(tileBag.startTile, (0, 0), None, null))
-  board.setMove(moveQueue.head)
+  private var moveQueue : ArrayBuffer[EitherMove] =
+    ArrayBuffer(Left(new Move(tileBag.startTile, (0, 0), None, null)))
+  board.setMove(moveQueue.head.left.get)
 
   /*
       PRE: Game not ended
@@ -25,6 +39,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     // MAYBE CHECK IF THE GAME IS DONE
     val gameClient = clientTurn.next()
     val currentTile = tileBag.next()
+
     // Sending the draw to people
     gameClient.socketClient.getNamespace.getBroadcastOperations.
       sendEvent("gameDraw", Converter.toGameDraw(currentTile, gameClient.player))
@@ -37,16 +52,23 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
 
   def finished: Boolean = tileBag.hasNext
 
-  def moveList : List[Move] = moveQueue.clone().toList
+  def moveList : List[EitherMove] = moveQueue.clone().toList
 
   def isMove(move : Move): Boolean = {
     board.isMove(move)
   }
 
-  def setMove(move : Move): Unit = {
-    //logger.info(s"Played move: $move.")
+  def setMove(move : Move): Array[EitherMove] = {
+    logger.info(s"Played move: $move.")
+
+    val startPoint = moveQueue.size
+
+    moveQueue += Left(move)
+    announceClients(Left(move))
+
     board.setMove(move)
-    moveQueue += move
+
+    moveQueue.takeRight(moveQueue.size - startPoint).toArray
   }
 
   /* Informing a client when connecting to the game */
@@ -76,4 +98,8 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   def isCurrentPlayer(gameClient : Client): Boolean = clientTurn.current == gameClient
 
   def currentPlayer : Player = clientTurn.current.player
+
+  private def announceClients(move : EitherMove): Unit = {
+    clientTurn.clients.foreach(_.movePlayed(move))
+  }
 }

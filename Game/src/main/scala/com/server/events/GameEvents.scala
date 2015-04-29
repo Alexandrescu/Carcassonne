@@ -17,8 +17,9 @@ class GameEvents(val game : Game, name : String = "Game Event") {
     logger.info("Spectator has connected.")
 
     /* SEND INFO TO CLIENT */
-    for(move <- game.moveList) {
-      client.sendEvent("gameMove", Converter.toGameMove(move))
+    for(move <- game.moveList) move match {
+      case Left(m) => client.sendEvent("gameMove", Converter.toGameMove(m))
+      case Right(f) => client.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
     }
 
     /* Send current turn information */
@@ -40,13 +41,17 @@ class GameEvents(val game : Game, name : String = "Game Event") {
       val move : Move = Converter.toMove(gameMove, game.currentTile, gameClient.player)
 
       if(game.isMove(move)) {
-        game.setMove(move)
+        val newMoveList = game.setMove(move)
 
         client.sendEvent("GameValid", new GameValid("Move applied."))
 
-        // This is essential, because I am keeping info only on the server side
-        val newMove = Converter.toGameMove(move)
-        client.getNamespace.getBroadcastOperations.sendEvent("gameMove", newMove)
+        // Telling people what has happened
+        for(move <- newMoveList) move match {
+          case Left(m) =>
+            client.getNamespace.getBroadcastOperations.sendEvent("gameMove", Converter.toGameMove(m))
+          case Right(f) =>
+            client.getNamespace.getBroadcastOperations.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
+        }
 
         nextRound(client.getNamespace)
       }

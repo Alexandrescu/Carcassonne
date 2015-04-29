@@ -17,6 +17,7 @@ class Follower(val player : Player) {
     _section = Some(newSection)
   }
 
+  /* Why do I need this now? */
   private var _place : Option[Place] = None
 
   def place : Option[Place] = _place
@@ -26,18 +27,18 @@ class Follower(val player : Player) {
 
   def isPlaced : Boolean = _section.isDefined
 
+  /* Needed to identify it on the front end */
   private var _removedPlace : Place = (0, 0)
   private var _removedFrontEnd : Int = 0
 
   def removedPlace : Place = _removedPlace
   def removedFrontEndId = _removedFrontEnd
 
-  def take() = {
+  def take(points : Int) = {
     _removedFrontEnd = _section.get.frontEndId
     _removedPlace = _place.get
-
-    player.followerRemoved(this)
-
     _section = None
+
+    player.followerRemoved(this, points)
   }
 }

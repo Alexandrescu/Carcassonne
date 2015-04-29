@@ -3,7 +3,7 @@ package com.server
 import java.util
 
 import com.board.Direction._
-import com.board.{Move, PossibleMove}
+import com.board.{RemovedFollower, Move, PossibleMove}
 import com.player.Player
 import com.server.json._
 import com.tile.{Section, Tile}
@@ -12,8 +12,8 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
 object Converter {
-  def toGameRemoveFollower(place : (Int, Int), section : Int): GameRemoveFollower = {
-    new GameRemoveFollower(place._1, place._2, section)
+  def toGameRemoveFollower(move : RemovedFollower): GameRemoveFollower = {
+    new GameRemoveFollower(move.place._1, move.place._2, move.sectionId)
   }
 
   def toGameMove(move: Move): GameMove = {

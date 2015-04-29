@@ -4,7 +4,7 @@ import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
 import com.server.json.GameClient
 
-class ClientTurn(clients : Array[Client]) {
+class ClientTurn(val clients : Array[Client]) {
   var nextClient = 0
   var client : Client = clients(nextClient)
 
