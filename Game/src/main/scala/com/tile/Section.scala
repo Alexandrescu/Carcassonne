@@ -10,27 +10,46 @@ abstract class Section(val frontEndId : Int) {
   def addFollowers(newFollowers : Set[Follower]): Unit
   def followers : Set[Follower]
 
-  def closeSection()
-
   def findRoot() : Section
 
   private var closed : Boolean = false
+  protected def closeInGame()
+  protected def closeAtEnd()
+  protected def canClose() : Boolean
+
+  def closeSection(): Unit = {
+    val root = findRoot()
+    if(!root.closed && canClose()) {
+      root.closed = true
+      root.closeInGame()
+    }
+  }
 
   def finishSection(): Unit = {
     val root = findRoot()
     if(!root.closed) {
       root.closed = true
-      root.closeSection()
-    }
-  }
-  
-  def removeFollowers(followerSet : Set[Follower]): Unit = {
-    for(follower <- followerSet) {
-      follower.take()
+      root.closeAtEnd()
     }
   }
 
-  def majority(followerSet : Set[Follower]) : Set[Player] = {
+  protected def closeWithPoints(points : Int): Unit = {
+    val root = findRoot()
+
+    for(follower <- root._followers) {
+      for(player <- majority(root._followers)) {
+        if(player == follower.player) {
+          follower.take(points)
+        }
+      }
+
+      if(follower.isPlaced) {
+        follower.take(0)
+      }
+    }
+  }
+
+  private def majority(followerSet : Set[Follower]) : Set[Player] = {
     var maxCounter = 0
     var maxFollowers : Map[Player, Int] = Map()
     for(follower <- followerSet) {
