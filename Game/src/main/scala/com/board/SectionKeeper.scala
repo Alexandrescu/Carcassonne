@@ -1,6 +1,5 @@
 package com.board
 
-import com.player.Player
 import com.tile._
 
 class SectionKeeper {
@@ -44,13 +43,13 @@ class SectionKeeper {
     roadB.parent(roadA)
   }
 
-  def own(sectionOption : Option[Section], player : Player) : Unit = sectionOption match {
+  def own(move : Move) : Unit = move.toOwnFromTile match {
     case Some(section) =>
       if(section.isOwned) {
         throw new Error("Can't own already owned section")
       }
       else {
-        section.addFollowers(Set(player.getFollower))
+        section.addFollowers(Set(move.player.getFollower(section, move.place)))
       }
     case _ =>
   }

@@ -1,12 +1,16 @@
 package com.player
 
+import com.tile.Section
+
 class Player(val observer: PlayerObserver, val slot : Int) {
   private var followerBag : Set[Follower] = Set()
   for(i <- 1 to 7) followerBag += new Follower(this)
 
-  def getFollower : Follower = {
+  def getFollower(section : Section, place : (Int, Int)) : Follower = {
     for(follower <- followerBag) {
       if(!follower.isPlaced) {
+        follower.place = place
+        follower.section = section
         return follower
       }
     }

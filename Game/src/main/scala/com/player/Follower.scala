@@ -12,14 +12,14 @@ class Follower(val player : Player) {
 
   private var _section : Option[Section] = None
 
-  def section() : Option[Section] = _section
+  def section : Option[Section] = _section
   def section_= (newSection : Section) : Unit = {
     _section = Some(newSection)
   }
 
   private var _place : Option[Place] = None
 
-  def place() : Option[Place] = _place
+  def place : Option[Place] = _place
   def place_= (newPlace : Place) : Unit = {
     _place = Some(newPlace)
   }
