@@ -42,20 +42,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', '$timeout', functi
         return coordinates.x + 'x' + coordinates.y;
       };
 
-      this.tileDoneRendering = function(coordinates) {
-        $scope.tilePlaced[$scope.key(coordinates)] = true;
-
-        // Cheking to remove followers
-        $scope.removeQueue.forEach(function(entry) {
-          if($scope.tilePlaced.hasOwnProperty($scope.key(entry))) {
-            $scope.removeFinishedFollower(entry);
-          }
-        });
-
-        $scope.removeQueue = $scope.removeQueue.filter(function(entry) {
-          return !$scope.tilePlaced.hasOwnProperty($scope.key(entry));
-        });
-      };
+      this.tileDoneRendering = function(coordinates) {};
 
       $scope.removeFinishedFollower = function(){};
     },
@@ -215,10 +202,7 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', '$timeout', functi
       scope.$watch("followerRemoved", function(after, before) {
         $timeout(function() {
           if(after) {
-            if(scope.tilePlaced.hasOwnProperty(scope.key(after))) {
-              scope.removeFinishedFollower(after);
-            }
-            else scope.removeQueue.push(after);
+            scope.removeFinishedFollower(after);
           }
         }, 500);
       });
