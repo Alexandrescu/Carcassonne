@@ -5,9 +5,11 @@ import com.corundumstudio.socketio.annotation.{OnConnect, OnEvent}
 import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
 import com.game.Game
 import com.server.Converter
-import com.server.json.{GameClient, GameError, GameMove, GameValid}
+import com.server.json._
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
+
+import scala.collection.JavaConversions._
 
 class GameEvents(val game : Game, name : String = "Game Event") {
   val logger : Logger = Logger(LoggerFactory.getLogger(name))
@@ -26,6 +28,7 @@ class GameEvents(val game : Game, name : String = "Game Event") {
     if(game started) {
       client.sendEvent("gameDraw", Converter.toGameDraw(game.currentTile, game.currentPlayer))
     }
+    client.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
   }
 
   @OnEvent("connectAs")

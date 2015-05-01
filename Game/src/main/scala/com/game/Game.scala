@@ -1,11 +1,11 @@
 package com.game
 
-import com.board.{RemovedFollower, GameBoard, Move}
+import com.board.{GameBoard, Move, RemovedFollower}
 import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
-import com.player.{Follower, PlayerObserver, Player}
+import com.player.{Follower, Player, PlayerObserver}
 import com.server.Converter
-import com.server.json.GameClient
+import com.server.json.{GameClient, GameClientPlayer}
 import com.tile.Tile
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
@@ -101,5 +101,10 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
 
   private def announceClients(move : EitherMove): Unit = {
     clientTurn.clients.foreach(_.movePlayed(move))
+  }
+
+  def getSlots : List[GameClientPlayer] = {
+    clientTurn.clients.map(client =>
+      new GameClientPlayer(client.slot, client.player.followers, client.player.points, client.name)).toList
   }
 }
