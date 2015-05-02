@@ -6,9 +6,15 @@ div(flex='100', layout='row', carcassonne-game)
     md-toolbar(class="md-theme-light")
       h1(class="md-toolbar-tools") Sidenav Right {{tilePlaced}}
     div(flex, layout="column", layout-align="start center")
-      div(flex, ng-repeat='slot in slots')
-        | {{slot | json}}
-        div(ng-show='slot.slot == currentSlot') This guy's playing.
+      div(flex, ng-repeat='slot in slots', layout='row', layout-align='start start', layout-wrap,
+      style='width:100%; text-align:center;', ng-class='{"current-player" : slot.slot == currentSlot}')
+        div(flex='100', style='padding:8px') <b> Player:  {{slot.nickname}} </b>
+        div(flex='50') Points: {{slot.points}}
+        div(flex='50') Followers: {{slot.followers}}
+
+
+        //div(ng-show='slot.slot == currentSlot') This guy's playing.
+
       div(flex)
         img(ng-src='tiles/{{currentTile}}', width='200', height='200')
         md-button(ng-click='testRemove()') Remove
