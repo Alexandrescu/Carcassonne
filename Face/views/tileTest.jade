@@ -1,0 +1,5 @@
+div(flex='100', layout='row', carcassonne-game)
+  div(flex)
+    md-button.md-raised(ng-click='test()') Test tile
+    div
+      carcassonne-board(height='600', width='900', move='newMove', my-move='nextMove', tile-size='50')
