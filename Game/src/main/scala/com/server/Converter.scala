@@ -62,17 +62,8 @@ object Converter {
 
   def toMove(move : GameMove, tile : Tile, player : Player) : Move = {
     val place = (move.x, move.y)
-    val sections = tile.getSections()
-
-    var owned : Option[Section] = None
-    for(section <- sections) {
-      if(section.frontEndId == move.tile.owned) {
-        owned = Some(section)
-      }
-    }
-
+    val owned: Option[Section] = tile.getSectionById(move.tile.owned)
     tile.orientation = stringToDirection(move.direction)
-
     new Move(tile, place, owned, player)
   }
 

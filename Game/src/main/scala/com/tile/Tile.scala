@@ -1,8 +1,6 @@
 package com.tile
 
-import com.board.Direction
-import Direction._
-import com.board.Direction
+import com.board.Direction._
 
 abstract class Tile(val identifier : String,
                     private var _up : TileEdge,
@@ -12,16 +10,32 @@ abstract class Tile(val identifier : String,
 
   private var _orientation : Direction = Up
 
+  /**
+   * @param edge Will add one open edge to each road and city sections that it will find.
+   * @return The set of updated sections on that tile edge.
+   */
   private def getSectionsEdge(edge : TileEdge) : Set[Section] = edge match {
     case GrassEdge(s1) => Set(s1)
-    case RoadEdge(s1, s2, s3) => Set(s1, s2, s3)
-    case CityEdge(s1) => Set(s1)
+    case RoadEdge(s1, s2, s3) =>
+      s2.addOpen()
+      Set(s1, s2, s3)
+    case CityEdge(s1) =>
+      s1.addOpen()
+      Set(s1)
     case _ => throw new Error("Initialization of tile with non TileEdge not permitted")
   }
 
   protected var sections : Set[Section] = Set()
   def getSections(): Set[Section] = sections
   sections = getSectionsEdge(_up) ++ getSectionsEdge(_down) ++ getSectionsEdge(_left) ++getSectionsEdge(_right)
+
+  def getSectionById(id : Int) : Option[Section] = {
+    for(section <- sections) {
+      if(section.frontEndId == id)
+        return Some(section)
+    }
+    None
+  }
 
   def orientation_=(aOrientation : Direction): Unit = {
     // I should probably throw an error or remove the if statement
