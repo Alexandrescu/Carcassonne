@@ -9,18 +9,31 @@ trait StandardStateBehaviour { this: FlatSpec =>
   val state = new State(new StandardTileBag())
   val startTile = SimpleTile("D", RoadEdge(0, 0, 1), RoadEdge(1, 0, 0), GrassEdge(1), CityEdge(0))
 
-  def firstPossibleMoves(moves : Integer, placedTile : Tile): Unit = {
+  def firstPossibleMoves(moves : Integer, toBePlacedTile : Tile): Unit = {
 
     it should "have the Start Tile when instantiated" in {
       val firstTile: Option[Tile] = state.getBoard().get(0, 0)
       assert(firstTile.get == startTile)
     }
 
-    ignore should s"have $moves for adding $placedTile" in {
-      val moveCollection = state.getPossibleMoves(placedTile)
+    ignore should s"have $moves for adding $toBePlacedTile" in {
+      val moveCollection = state.getPossibleMoves(toBePlacedTile)
       assert(moves == moveCollection.size)
     }
+  }
+  
+  def afterFirstMove(moves : Integer, placedTile : Tile, position : (Integer, Integer)) : Unit = {
+    it should s"allow to place tile $placedTile at $position" in {
+      assert(state.playMove(placedTile, position))
+    }
 
+    it should "have 2 tiles after the tile has been placed" in {
+      assert(state.getBoard().size == 2)
+    }
+
+    it should s"have 6 edges after placing $placedTile" in {
+      assert(state.getBorderEdges().size == 6)
+    }
   }
 }
 

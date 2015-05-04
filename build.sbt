@@ -9,7 +9,12 @@ lazy val carcassonne = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "Carcassonne",
-    libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1"
+    libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1",
+    libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test",
+    libraryDependencies += "com.github.nkzawa" % "socket.io-client" % "0.4.1",
+    libraryDependencies += "com.corundumstudio.socketio" % "netty-socketio" % "1.7.6",
+    libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.10",
+    libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.10"
   )
 
 lazy val game = (project in file("./game/.")).
