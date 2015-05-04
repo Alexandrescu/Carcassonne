@@ -11,14 +11,17 @@ class TestTileBag extends TileBag{
 
   override def getEntireTileBag: Iterable[Tile] = ???
 
-  override def finished: Boolean = false
+  override def hasNext: Boolean = false
 
   val bag = ArrayBuffer[Tile]()
-
   bag += TileGenerator.A
   bag += TileGenerator.B
 
-  override def getTile: Option[Tile] = {
-    Some(bag.remove(0))
+  private var thisTile : Tile = startTile
+  override def next(): Tile = {
+    thisTile = bag.remove(0)
+    thisTile
   }
+
+  override def current: Tile = thisTile
 }

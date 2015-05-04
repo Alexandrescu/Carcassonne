@@ -1,8 +1,8 @@
 package com.board
 
-import com.game.{Player, Direction}
+import com.board.Direction.{Direction, _}
+import com.player.Player
 import com.tile._
-import Direction.{Direction, _}
 
 class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   type Dependency = Map[Section, Set[Section]]
@@ -73,7 +73,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   }
   private def solveDependencies(move: Move, maybeDependency: Dependency): Unit = {
     maybeDependency.foreach{case (thisSection, theSections) => sectionKeeper.union(thisSection, theSections)}
-    sectionKeeper.own(move.toOwnFromTile, move.player)
+    sectionKeeper.own(move)
   }
 
   private def addOutline(move: Move) = {

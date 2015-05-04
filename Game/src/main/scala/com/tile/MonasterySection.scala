@@ -1,5 +1,7 @@
 package com.tile
 
+import com.player.Follower
+
 class MonasterySection(override val frontEndId : Int) extends Section(frontEndId) {
   private var tileCount : Int = 0
 
@@ -21,18 +23,17 @@ class MonasterySection(override val frontEndId : Int) extends Section(frontEndId
 
   override def followers: Set[Follower] = _followers
 
-  override def closeSection(): Unit = {
-    if(tileCount == 0) {
-      var flagIterated = false
-      for(follower <- _followers) {
-        if(flagIterated) throw new Error("Monastery should only have one owner")
-        flagIterated = true
+  override def findRoot(): Section = this
 
-        follower.player.addPoints(9)
-        follower.take()
-      }
-    }
+  override protected def canClose(): Boolean = tileCount == 0
+
+  override protected def closeInGame(): Unit = testClosing()
+
+  override protected def closeAtEnd(): Unit = testClosing()
+
+  private def testClosing(): Unit = {
+    if(_followers.size > 1) throw new Error("Monastery should only have one owner")
+    closeWithPoints(9 - tileCount)
   }
 
-  override def findRoot(): Section = this
 }

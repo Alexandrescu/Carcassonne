@@ -1,5 +1,7 @@
 package com.tile
 
+import com.player.Follower
+
 class RoadSection(override val frontEndId : Int) extends Section(frontEndId){
   private var _openEdges : Int = 0
   private var _tileCount : Int = 1
@@ -45,16 +47,16 @@ class RoadSection(override val frontEndId : Int) extends Section(frontEndId){
     val root = findRoot()
     root._followers = root._followers.union(newFollowers)
   }
+
   override def followers: Set[Follower] = findRoot()._followers
 
-  override def closeSection(): Unit = {
-    val root = findRoot()
-    if(root.openEdges == 0) {
-      //closed
-      for(player <- majority(root._followers)) {
-        player.addPoints(root.tileCount())
-      }
-      removeFollowers(root._followers)
-    }
+  override protected def closeInGame(): Unit = {
+    closeWithPoints(tileCount())
   }
+
+  override protected def closeAtEnd(): Unit = {
+    closeWithPoints(tileCount())
+  }
+
+  override protected def canClose(): Boolean = openEdges == 0
 }

@@ -1,7 +1,8 @@
 package com.tile
 
+import com.player.Follower
+
 class CitySection(override val frontEndId : Int) extends Section(frontEndId){
-  private var closed : Boolean = false
   private var _openEdges : Int = 0
   private var _tileCount : Int = 1
   private var _parent : Option[CitySection] = None
@@ -63,28 +64,9 @@ class CitySection(override val frontEndId : Int) extends Section(frontEndId){
 
   override def followers: Set[Follower] = findRoot()._followers
 
-  override def closeSection(): Unit = {
-    val root = findRoot()
-    if(root.openEdges == 0) {
-      //closed cities on grass
-      root.getGrass().foreach(grass => grass.addClosedCities(Set(root)))
+  override protected def canClose(): Boolean = openEdges == 0
 
-      // Counting points
-      for(player <- majority(root._followers)) {
-        player.addPoints(root.tileCount() * 2)
-      }
+  override protected def closeInGame(): Unit = closeWithPoints(tileCount() * 2)
 
-      // Removing followers from the board
-      removeFollowers(root._followers)
-    }
-    else {
-      // Counting points
-      for(player <- majority(root._followers)) {
-        player.addPoints(root.tileCount())
-      }
-
-      // Removing followers from the board
-      removeFollowers(root._followers)
-    }
-  }
+  override protected def closeAtEnd(): Unit = closeWithPoints(tileCount())
 }

@@ -1,6 +1,6 @@
 var carcassonne = angular.module('carcassonne');
 
-carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $compile) {
+carcassonne.directive('carcassonneBoard', ['$d3', '$compile', '$timeout', function($d3, $compile, $timeout) {
   return {
     require: '^carcassonneGame',
     restrict: 'E',
@@ -9,7 +9,8 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       width: '=',
       move: '=',
       myMove: '=',
-      tileSize: '='
+      tileSize: '=',
+      followerRemoved: '='
     },
     controller : function($scope) {
       this.freezed = false;
@@ -32,6 +33,18 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         $d3.selectAll('.tile').selectAll('.carcassonne').remove();
         this.freezed = false;
       };
+
+      // Counting tiles
+      $scope.removeQueue = [];
+      $scope.tilePlaced = {};
+
+      $scope.key = function(coordinates) {
+        return coordinates.x + 'x' + coordinates.y;
+      };
+
+      this.tileDoneRendering = function(coordinates) {};
+
+      $scope.removeFinishedFollower = function(){};
     },
     link: function(scope, element, attrs, gameCtrl) {
       scope.playMove = gameCtrl.playMove;
@@ -147,7 +160,9 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         });
         scope.final = {
           direction: move.direction,
-          section: move.tile.sectionOwned
+          section: move.tile.sectionOwned,
+          x: move.x,
+          y: move.y
         };
 
         finalTiles.append('carcassonne-tile')
@@ -164,13 +179,13 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
       }
 
       //removeFinishedFollower({x:1, y:0, section:1});
-      function removeFinishedFollower(follower) {
+      scope.removeFinishedFollower = function(follower) {
         var finalTiles = tile.filter(function(d, i, j){
           return (follower.x - offset) == i && (follower.y - offset) == j;
         });
 
         finalTiles.select('.section' + follower.section).remove();
-      }
+      };
 
       scope.$watch('move', function(after, before) {
         if(after) {
@@ -182,6 +197,14 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', function($d3, $com
         if(after) {
           appendPossibleTiles(after);
         }
+      });
+
+      scope.$watch("followerRemoved", function(after, before) {
+        $timeout(function() {
+          if(after) {
+            scope.removeFinishedFollower(after);
+          }
+        }, 500);
       });
 
       gameCtrl.loaded();

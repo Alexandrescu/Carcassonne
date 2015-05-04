@@ -1,7 +1,8 @@
 package com.tile
 
-import com.game.Direction
+import com.board.Direction
 import Direction._
+import com.board.Direction
 
 abstract class Tile(val identifier : String,
                     private var _up : TileEdge,

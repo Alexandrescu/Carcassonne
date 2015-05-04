@@ -48,12 +48,17 @@ class StandardTileBag extends TileBag {
 
   override def getEntireTileBag: Iterable[Tile] = ???
 
-  override def finished: Boolean = false
-
-  override def getTile: Option[Tile] = {
-    val random = Random.nextInt(tiles.length)
-    Some(tiles.remove(random))
-  }
+  override def hasNext: Boolean = false
 
   override def allSections: Set[Section] = ???
+
+  private var thisTile : Tile = startTile
+
+  override def next(): Tile = {
+    val random = Random.nextInt(tiles.length)
+    thisTile = tiles.remove(random)
+    thisTile
+  }
+
+  override def current: Tile = thisTile
 }

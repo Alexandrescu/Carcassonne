@@ -1,6 +1,6 @@
 var carcassonne = angular.module('carcassonne');
 
-carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams', function($socket, $location, $routeParams) {
+carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams', '$timeout', function($socket, $location, $routeParams, $timeout) {
   return {
     restrict: 'A',
     controller: function($scope) {
@@ -20,7 +20,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       //var socket = $socket.io('http://' + host + ':1337/');
 
       if($routeParams.slot) {
-        socket.emit('playerSessionUpdate', {
+        socket.emit('connectAs', {
           slot: $routeParams.slot,
           token: 'token' + $routeParams.slot
         });
@@ -53,7 +53,16 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         }
       };
 
+      $scope.slots = [];
       socket.on('gameMove', function(move) {
+        // Updating the slot for this player
+        for(var i = 0; i < $scope.slots.length; i++){
+          if($scope.slots[i].slot == move.player.slot) {
+            $scope.slots[i].followers = move.player.followers;
+            $scope.slots[i].points = move.player.points;
+          }
+        }
+
         // Should lock the array... might produce errors. Check this.
         moveQueue.push(move);
         if(!moveProcessing) {
@@ -77,6 +86,15 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         }
       });
 
+      socket.on('gameSlots', function(list) {
+        // This is quite a hack... should be ack the messages and then run this.
+        $timeout(function() {
+          console.log('gameSlots');
+          console.log(list);
+          $scope.slots = list.slots;
+        }, 1000);
+      });
+
       // Unimplemented
       socket.on('connect', function(){
 
@@ -90,12 +108,19 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
 
       });
 
+      socket.on("followerRemoved", function(removed) {
+        $scope.removed = removed;
+      });
+
       socket.on('gameDraw', function(draw) {
         // Update everything accordingly
-        console.log('gameDraw');
-        console.log(draw);
+        $scope.currentSlot = draw.slot;
         $scope.currentTile = angular.lowercase(draw.tile) + "Tile.png"
       });
+
+      $scope.testRemove = function() {
+        $scope.removed = {x: 1, y: 0, section: 2};
+      };
 
       $scope.test = function() {
         $scope.playing = true;

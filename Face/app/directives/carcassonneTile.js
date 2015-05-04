@@ -55,6 +55,10 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         .attr('class', 'tileContainer');
 
       if(scope.final) {
+        angular.element(element).ready(function() {
+          boardCtrl.tileDoneRendering({x : final.x, y : final.y});
+        });
+
         var final = scope.final;
         tileMoves[final.direction] = {};
 
