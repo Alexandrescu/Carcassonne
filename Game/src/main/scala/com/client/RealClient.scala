@@ -1,8 +1,8 @@
 package com.client
 
-import com.board.{PossibleMove, Move}
+import com.board.{Move, PossibleMove, RemovedFollower}
 import com.corundumstudio.socketio.SocketIOClient
-import com.player.{Follower, Player}
+import com.player.Player
 import com.server.Converter
 import com.tile.Tile
 
@@ -16,7 +16,7 @@ class RealClient(private val _slot : Int, private val _token : String, private v
 
   override def name: String = _name
 
-  private val _player = new Player(this, slot)
+  private val _player = new Player(slot)
   override def player: Player = _player
 
   /* State methods */
@@ -24,9 +24,10 @@ class RealClient(private val _slot : Int, private val _token : String, private v
     socketClient.sendEvent("gameNext", Converter.toGameNextMoveList(tile, moves))
   }
 
-  override def currentState(moves: ArrayBuffer[Move]): Unit = {
-    for(move <- moves) {
-      socketClient.sendEvent("gameMove", Converter.toGameMove(move))
+  override def currentState(moves: ArrayBuffer[Either[Move, RemovedFollower]]): Unit = {
+    for(move <- moves) move match {
+      case Left(m) => socketClient.sendEvent("gameMove", Converter.toGameMove(m))
+      case Right(f) => socketClient.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
     }
   }
 
@@ -41,14 +42,5 @@ class RealClient(private val _slot : Int, private val _token : String, private v
     client = Some(newClient)
   }
 
-  /* PlayerObserver updates */
-  override def playerUpdate(player: Player): Unit = {
-    socketClient.getNamespace.getBroadcastOperations.sendEvent("playerUpdate", Converter.toGamePlayer(_player))
-  }
-
-  override def followerUpdate(follower: Follower): Unit = {
-    socketClient.getNamespace.getBroadcastOperations.sendEvent("followerRemoved",
-      Converter.toGameRemoveFollower(follower.removedPlace, follower.removedFrontEndId))
-    socketClient.getNamespace.getBroadcastOperations.sendEvent("playerUpdate", Converter.toGamePlayer(_player))
-  }
+  override def movePlayed(move: Either[Move, RemovedFollower]): Unit = {}
 }
