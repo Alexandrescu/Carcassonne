@@ -19,7 +19,7 @@ abstract class Section(val frontEndId : Int) {
 
   def closeSection(): Unit = {
     val root = findRoot()
-    if(!root.closed && canClose()) {
+    if(!root.closed && root.canClose()) {
       root.closed = true
       root.closeInGame()
     }
