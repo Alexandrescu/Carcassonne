@@ -11,17 +11,13 @@ abstract class Tile(val identifier : String,
   private var _orientation : Direction = Up
 
   /**
-   * @param edge Will add one open edge to each road and city sections that it will find.
+   * @param edge
    * @return The set of updated sections on that tile edge.
    */
   private def getSectionsEdge(edge : TileEdge) : Set[Section] = edge match {
     case GrassEdge(s1) => Set(s1)
-    case RoadEdge(s1, s2, s3) =>
-      s2.addOpen()
-      Set(s1, s2, s3)
-    case CityEdge(s1) =>
-      s1.addOpen()
-      Set(s1)
+    case RoadEdge(s1, s2, s3) => Set(s1, s2, s3)
+    case CityEdge(s1) => Set(s1)
     case _ => throw new Error("Initialization of tile with non TileEdge not permitted")
   }
 
@@ -56,11 +52,11 @@ abstract class Tile(val identifier : String,
     case Right => 3
   }
 
-  implicit def intToDirection(value : Int) : Direction = (value % 4) match {
+  implicit def intToDirection(value : Int) : Direction = (value + 4) % 4 match {
     case 0 => Up
     case 1 => Left
     case 2 => Down
-    case 3=> Right
+    case 3 => Right
   }
 
   def getEdge(direction : Direction) : TileEdge = {
@@ -76,6 +72,39 @@ abstract class Tile(val identifier : String,
     case Right => _right
     case Left => _left
   }
+
+  /**
+   * Updating the grass for each city section.
+   */
+
+  private def getBeforeEdge(direction: Direction) : TileEdge = {
+    getEdge(direction - 1)
+  }
+
+  private def getAfterEdge(direction : Direction) : TileEdge = {
+    getEdge(directionToInt(direction)+ 1)
+  }
+
+  private def addGrass(direction: Direction): Unit = {
+    getEdge(direction) match {
+      case CityEdge(c) =>
+        getBeforeEdge(direction) match {
+          case GrassEdge(g) => c.addGrass(Set(g))
+          case RoadEdge(_, _, g) => c.addGrass(Set(g))
+          case _ =>
+        }
+
+        getAfterEdge(direction) match {
+          case GrassEdge(g) => c.addGrass(Set(g))
+          case RoadEdge(g, _, _) => c.addGrass(Set(g))
+          case _ =>
+        }
+      case _ =>
+    }
+  }
+
+  // Initialising the grass
+  for(i <- 0 to 3) addGrass(i)
 }
 
 case class SimpleTile(override val identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)

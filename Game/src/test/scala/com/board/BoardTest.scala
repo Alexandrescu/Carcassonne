@@ -9,12 +9,7 @@ import Direction._
 class BoardTest extends FlatSpec {
   trait GameCollection {
     val D = TileGenerator.D
-
-    //Dsection2.addOpen(2)
-    //Dsection4.addGrass(Set(Dsection3))
-
     val E = TileGenerator.E
-    // Esection1.addGrass(Set(Esection2))
 
     val playerA = new Player(0)
     val playerB = new Player(1)
