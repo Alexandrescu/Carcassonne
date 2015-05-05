@@ -57,6 +57,7 @@ class GameEvents(val game : Game, val name : String = "Game Event") {
         for(move <- newMoveList) move match {
           case Left(m) =>
             client.getNamespace.getBroadcastOperations.sendEvent("gameMove", Converter.toGameMove(m))
+            client.getNamespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
           case Right(f) =>
             client.getNamespace.getBroadcastOperations.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
             client.getNamespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
