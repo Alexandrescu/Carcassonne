@@ -4,6 +4,8 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
   return {
     restrict: 'A',
     controller: function($scope) {
+
+      $scope.gameEnded = false;
       var colorMap = ['red', 'blue'];
       this.color = function(slot) {
         if(slot == -2 && $routeParams.slot) {
@@ -104,11 +106,17 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       });
 
       socket.on('gameValid', function(valid) {
-
+        console.log("[Valid]", valid);
       });
 
       socket.on('gameError', function(error) {
+        console.log("[Error]", error);
+      });
 
+      socket.on('gameEnd', function(slots) {
+        console.log("[The End]", slots);
+        $scope.gameEnded = true;
+        $scope.gameSummary = slots.slots;
       });
 
       socket.on("followerRemoved", function(removed) {
