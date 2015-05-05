@@ -8,7 +8,8 @@ div(flex='100', layout='row', carcassonne-game)
     div(flex, layout="column", layout-align="start center")
       div(flex, ng-repeat='slot in slots', layout='row', layout-align='start start', layout-wrap,
       style='width:100%; text-align:center;', ng-class='{"current-player" : slot.slot == currentSlot}')
-        div(flex='100', style='padding:8px') <b> Player:  {{slot.nickname}} </b>
+        div(flex='100', style='padding:8px', ng-style='{color: color(slot.slot)}')
+          | <b> Player:  {{slot.nickname}} {{slot.slot == mySlot?'(You)':''}} </b>
         div(flex='50') Points: {{slot.points}}
         div(flex='50') Followers: {{slot.followers}}
 

@@ -15,11 +15,13 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         return 'black';
       };
 
+      $scope.color = this.color;
       var host = $location.host();
       var socket = $socket.io('http://' + host + ':1337/' + $routeParams.gameName);
       //var socket = $socket.io('http://' + host + ':1337/');
 
       if($routeParams.slot) {
+        $scope.mySlot = $routeParams.slot;
         socket.emit('connectAs', {
           slot: $routeParams.slot,
           token: 'token' + $routeParams.slot
