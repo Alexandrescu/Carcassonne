@@ -53,7 +53,7 @@ class StandardTileBag extends TileBag {
 
   override def getEntireTileBag: Iterable[Tile] = ???
 
-  override def hasNext: Boolean = false
+  override def hasNext: Boolean = tiles.size > 0
 
   override def allSections: Set[Section] = sections
 

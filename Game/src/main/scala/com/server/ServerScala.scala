@@ -33,7 +33,7 @@ class ServerScala {
         val namespace = server.addNamespace('/' + data.roomName)
         logger.info(s"Starting a new game: ${data.roomName}")
 
-        val gameEvent = new GameEvents(GameFactory.testGame(rooms.getRoomDetails(data.roomName)), '/' + data.roomName)
+        val gameEvent = new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName)), '/' + data.roomName)
         gameSet += gameEvent
 
         namespace.addListeners(gameEvent)
