@@ -43,6 +43,11 @@ class StandardTileBag extends TileBag {
   tiles ++= (for(i <- 1 to 4) yield TileGenerator.W)
   tiles ++= (for(i <- 1 to 1) yield TileGenerator.X)
 
+  private var sections : Set[Section] = Set()
+
+  for(tile <- tiles) {
+    sections ++= tile.getSections()
+  }
 
   override val startTile: Tile = TileGenerator.D
 
@@ -50,7 +55,7 @@ class StandardTileBag extends TileBag {
 
   override def hasNext: Boolean = false
 
-  override def allSections: Set[Section] = ???
+  override def allSections: Set[Section] = sections
 
   private var thisTile : Tile = startTile
 
