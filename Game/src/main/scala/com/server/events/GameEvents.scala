@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConversions._
 
-class GameEvents(val game : Game, name : String = "Game Event") {
+class GameEvents(val game : Game, val name : String = "Game Event") {
   val logger : Logger = Logger(LoggerFactory.getLogger(name))
 
   @OnConnect

@@ -1,6 +1,6 @@
 package com.game
 
-import com.board.{GameBoard, Move, RemovedFollower}
+import com.board.{PossibleMove, GameBoard, Move, RemovedFollower}
 import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
 import com.player.{Follower, Player, PlayerObserver}
@@ -31,6 +31,8 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     ArrayBuffer(Left(new Move(tileBag.startTile, (0, 0), None, null)))
   board.setMove(moveQueue.head.left.get)
 
+  private var currentMoves : Set[PossibleMove] = Set()
+
   /*
       PRE: Game not ended
       POST: Game in the next stage: tile removed, player informed
@@ -44,7 +46,8 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     gameClient.socketClient.getNamespace.getBroadcastOperations.
       sendEvent("gameDraw", Converter.toGameDraw(currentTile, gameClient.player))
 
-    gameClient.turn(currentTile, board.getMoves(currentTile, gameClient.player))
+    currentMoves = board.getMoves(currentTile, gameClient.player)
+    gameClient.turn(currentTile, currentMoves)
   }
 
   /* State handlers */
@@ -88,8 +91,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
       next()
     }
     else if(_started && isCurrentPlayer(thisClient)) {
-      val thisTile = tileBag.current
-      thisClient.turn(thisTile, board.getMoves(thisTile, thisClient.player))
+      thisClient.turn(tileBag.current, currentMoves)
     }
   }
 
@@ -103,6 +105,8 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     throw new Error("No such client in the game. Please register first.")
   }
 
+  def currentClient : Client = clientTurn.current
+
   def isCurrentPlayer(gameClient : Client): Boolean = clientTurn.current == gameClient
 
   def currentPlayer : Player = clientTurn.current.player
@@ -115,4 +119,6 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     clientTurn.clients.map(client =>
       new GameClientPlayer(client.slot, client.player.followers, client.player.points, client.name)).toList
   }
+
+  def getCurrentMoves : Set[PossibleMove] = currentMoves
 }

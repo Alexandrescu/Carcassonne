@@ -7,16 +7,30 @@ object CarcassonneStart {
     try {
       server.start
       //new Server()
-      while (System.in.read != 'c') {
-        println(Console.BLUE + "[Server] Please press 'c' to stop" + Console.RESET)
+
+      var stopIntercept = false
+      while(!stopIntercept) {
+        val command = System.in.read
+        command match {
+          case 'c' =>
+            println(Console.GREEN + "Stopping the game." + Console.RESET)
+            stopIntercept = true
+          case 'm' =>
+            println(Console.BLUE + "Logging possible moves: ")
+            server.logCurrentMove()
+          case 'l' =>
+            println(Console.BLUE + "Logging game: ")
+            server.logGames()
+          case _ =>
+        }
       }
     }
     catch {
       case e: Throwable => {
-        println(Console.RED + "Caught Exception" + e.toString + Console.RESET)
+        println(Console.RED + "Caught Exception " + e.toString + Console.RESET)
       }
       case e: java.lang.Exception => {
-        println(Console.RED + "Other exception" + e.toString + Console.RESET)
+        println(Console.RED + "Other exception " + e.toString + Console.RESET)
       }
     }
 

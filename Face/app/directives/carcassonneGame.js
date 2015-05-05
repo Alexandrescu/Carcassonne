@@ -55,6 +55,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
 
       $scope.slots = [];
       socket.on('gameMove', function(move) {
+        console.log('[gameMove]', move);
         // Updating the slot for this player
         for(var i = 0; i < $scope.slots.length; i++){
           if($scope.slots[i].slot == move.player.slot) {
@@ -72,6 +73,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       });
 
       socket.on('gameNext', function(nextMove) {
+        console.log("[Possible moves] ", nextMove);
         $scope.playing = true;
         $scope.nextMove = nextMove;
       });
@@ -89,8 +91,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       socket.on('gameSlots', function(list) {
         // This is quite a hack... should be ack the messages and then run this.
         $timeout(function() {
-          console.log('gameSlots');
-          console.log(list);
+          console.log('[gameSlots]', list);
           $scope.slots = list.slots;
         }, 1000);
       });

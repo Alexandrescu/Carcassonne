@@ -22,6 +22,7 @@ class ServerScala {
   def start() = server.start()
   def stop() = server.stop()
 
+  var gameSet : Set[GameEvents] = Set()
   val rooms = new RoomSet()
 
   server.addListeners(new RoomEvents(rooms))
@@ -30,7 +31,11 @@ class ServerScala {
     override def onData(client: SocketIOClient, data: Room, ackRequest: AckRequest): Unit = {
       val namespace = server.addNamespace('/' + data.roomName)
       logger.info(s"Starting a new game: ${data.roomName}")
-      namespace.addListeners(new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName))))
+
+      val gameEvent = new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName)), '/' + data.roomName)
+      gameSet += gameEvent
+
+      namespace.addListeners(gameEvent)
       availableGames(client)
     }
   })
@@ -40,6 +45,12 @@ class ServerScala {
       logger.info(s"Stopping the game ${data.roomName}")
       server.removeNamespace(data.roomName)
       availableGames(client)
+
+      for(game <- gameSet) {
+        if(game.name == data.roomName) {
+          gameSet -= game
+        }
+      }
     }
   })
 
@@ -55,4 +66,26 @@ class ServerScala {
     client.getNamespace.getBroadcastOperations.sendEvent("availableGames", roomList)
   }
 
+  def logGames(): Unit = {
+    println(s"${Console.BLUE}")
+    for(game <- gameSet) {
+      println(s"Logging the game: ${game.name}")
+      for(move <- game.game.moveList) {
+        println(s"$move")
+      }
+    }
+    println(s"${Console.RESET}")
+  }
+
+  def logCurrentMove(): Unit = {
+    println(s"${Console.YELLOW}")
+    for(game <- gameSet) {
+      println(s"Next player on game: ${game.name} is at slot ${game.game.currentClient.slot}")
+      println(s"His next tile ${game.game.currentTile.identifier} and possible moves are: ")
+      for(move <- game.game.getCurrentMoves) {
+        println(move)
+      }
+    }
+    println(s"${Console.RESET}")
+  }
 }
