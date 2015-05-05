@@ -13,14 +13,20 @@ object CarcassonneStart {
         val command = System.in.read
         command match {
           case 'c' =>
-            println(Console.GREEN + "Stopping the game." + Console.RESET)
+            println(Console.RED + "Stopping the game." + Console.RESET)
             stopIntercept = true
           case 'm' =>
             println(Console.BLUE + "Logging possible moves: ")
             server.logCurrentMove()
+            println(Console.RESET)
           case 'l' =>
-            println(Console.BLUE + "Logging game: ")
+            println(Console.YELLOW + "Logging game: ")
             server.logGames()
+            println(Console.RESET)
+          case 'p' =>
+            println(Console.GREEN + "Player information: ")
+            server.logPlayers()
+            println(Console.RESET)
           case _ =>
         }
       }

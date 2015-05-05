@@ -126,11 +126,13 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     throw new Error("No such client in the game. Please register first.")
   }
 
+  def currentClient : Client = clientTurn.current
+
+  def getClients : Array[Client] = clientTurn.clients
+
   def isCurrentPlayer(gameClient : Client): Boolean = clientTurn.current == gameClient
 
   def currentPlayer : Player = clientTurn.current.player
-
-  def currentClient : Client = clientTurn.current
 
   private def announceClients(move : EitherMove): Unit = {
     clientTurn.clients.foreach(_.movePlayed(move))

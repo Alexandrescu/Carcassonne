@@ -33,7 +33,7 @@ class ServerScala {
         val namespace = server.addNamespace('/' + data.roomName)
         logger.info(s"Starting a new game: ${data.roomName}")
 
-        val gameEvent = new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName)), '/' + data.roomName)
+        val gameEvent = new GameEvents(GameFactory.testGame(rooms.getRoomDetails(data.roomName)), '/' + data.roomName)
         gameSet += gameEvent
 
         namespace.addListeners(gameEvent)
@@ -69,18 +69,15 @@ class ServerScala {
   }
 
   def logGames(): Unit = {
-    println(s"${Console.BLUE}")
     for(game <- gameSet) {
       println(s"Logging the game: ${game.name}")
       for(move <- game.game.moveList) {
         println(s"$move")
       }
     }
-    println(s"${Console.RESET}")
   }
 
   def logCurrentMove(): Unit = {
-    println(s"${Console.YELLOW}")
     for(game <- gameSet) {
       println(s"Next player on game: ${game.name} is at slot ${game.game.currentClient.slot}")
       println(s"His next tile ${game.game.currentTile.identifier} and possible moves are: ")
@@ -88,6 +85,16 @@ class ServerScala {
         println(move)
       }
     }
-    println(s"${Console.RESET}")
+  }
+
+  def logPlayers(): Unit = {
+    for(game <- gameSet) {
+      println(s"Players in the game: ${game.name}")
+
+      for(client <- game.game.getClients) {
+        println(s"Client ${client.name} @ ${client.slot} has" +
+          s"${client.player.points} points and ${client.player.followers} followers")
+      }
+    }
   }
 }
