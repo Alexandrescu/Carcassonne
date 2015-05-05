@@ -29,14 +29,16 @@ class ServerScala {
 
   server.addEventListener("startGame", classOf[Room], new DataListener[Room]() {
     override def onData(client: SocketIOClient, data: Room, ackRequest: AckRequest): Unit = {
-      val namespace = server.addNamespace('/' + data.roomName)
-      logger.info(s"Starting a new game: ${data.roomName}")
+      if(gameSet.forall(game => game.name != ('/' + data.roomName))) {
+        val namespace = server.addNamespace('/' + data.roomName)
+        logger.info(s"Starting a new game: ${data.roomName}")
 
-      val gameEvent = new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName)), '/' + data.roomName)
-      gameSet += gameEvent
+        val gameEvent = new GameEvents(GameFactory.standardGame(rooms.getRoomDetails(data.roomName)), '/' + data.roomName)
+        gameSet += gameEvent
 
-      namespace.addListeners(gameEvent)
-      availableGames(client)
+        namespace.addListeners(gameEvent)
+        availableGames(client)
+      }
     }
   })
 
