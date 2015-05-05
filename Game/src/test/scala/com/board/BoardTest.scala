@@ -35,10 +35,6 @@ class BoardTest extends FlatSpec {
   }
 
   trait MiniGame {
-
-    //Dsection2.addOpen(2)
-    //Dsection4.addGrass(Set(Dsection3))
-
     val board : Board = new GameBoard(new StandardLogic(), new SectionKeeper())
     board.setMove(new Move(TileGenerator.D, (0, 0), None, null))
 
@@ -104,13 +100,13 @@ class BoardTest extends FlatSpec {
 
   it should "get available moves" in new MiniGame {
     val moves1 = board.getMoves(J, playerA)
-    assert(moves1.size == 30)
+    assert(moves1.toSeq.map(_.toOwnFromTile.size).sum == 30)
 
-    val moves2 = board.getMoves(L, playerA).size
-    assert(moves2 == 49)
+    val moves2 = board.getMoves(L, playerA)
+    assert(moves2.toSeq.map(_.toOwnFromTile.size).sum == 56)
 
-    val moves3 = board.getMoves(B, playerA).size
-    assert(moves3 == 12)
+    val moves3 = board.getMoves(B, playerA)
+    assert(moves3.toSeq.map(_.toOwnFromTile.size).sum == 12)
   }
   it should "know how to union cities" in new MiniGame {
     val move1 = new Move(L, (0, -1), Some(L7), playerA)
