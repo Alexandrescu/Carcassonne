@@ -112,7 +112,10 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       });
 
       socket.on("followerRemoved", function(removed) {
-        $scope.removed = removed;
+        $timeout(function() {
+          console.log("[Remove Move]", removed);
+          $scope.removed = removed;
+        }, 0);
       });
 
       socket.on('gameDraw', function(draw) {
@@ -122,7 +125,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       });
 
       $scope.testRemove = function() {
-        $scope.removed = {x: 1, y: 0, section: 2};
+        $scope.removed =  {x: 1, y: 0, section: 2};
       };
 
       $scope.test = function() {

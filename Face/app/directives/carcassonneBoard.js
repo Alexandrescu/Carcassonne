@@ -35,14 +35,30 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', '$timeout', functi
       };
 
       // Counting tiles
-      $scope.removeQueue = [];
       $scope.tilePlaced = {};
 
       $scope.key = function(coordinates) {
         return coordinates.x + 'x' + coordinates.y;
       };
 
-      this.tileDoneRendering = function(coordinates) {};
+      this.tileDoneRendering = function(coordinates) {
+        coordinates.y = -coordinates.y;
+        var key = $scope.key(coordinates);
+
+        console.log("Done rendering", key, coordinates, $scope.tilePlaced[key]);
+        if ($scope.tilePlaced[key]) {
+          $scope.tilePlaced[key].rendered = true;
+
+          // Removing followers
+          while($scope.tilePlaced[key].followers) {
+            var follower = $scope.tilePlaced[key].followers.pop();
+            $scope.removeFinishedFollower(follower);
+          }
+        }
+        else {
+          $scope.tilePlaced[key] = {rendered: true, followers : []}
+        }
+      };
 
       $scope.removeFinishedFollower = function(){};
     },
@@ -180,6 +196,8 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', '$timeout', functi
 
       //removeFinishedFollower({x:1, y:0, section:1});
       scope.removeFinishedFollower = function(follower) {
+        follower.y = -follower.y;
+        console.log("[Remove]", follower);
         var finalTiles = tile.filter(function(d, i, j){
           return (follower.x - offset) == i && (follower.y - offset) == j;
         });
@@ -200,11 +218,24 @@ carcassonne.directive('carcassonneBoard', ['$d3', '$compile', '$timeout', functi
       });
 
       scope.$watch("followerRemoved", function(after, before) {
-        $timeout(function() {
-          if(after) {
-            scope.removeFinishedFollower(after);
+        if(after) {
+          var key = scope.key({x: after.x, y: after.y});
+          console.log("[Key in Remove]", key, scope.tilePlaced[key]);
+          if(scope.tilePlaced[key]) {
+            if(scope.tilePlaced[key].rendered) {
+              scope.removeFinishedFollower(after);
+            }
+            else {
+              scope.tilePlaced.followers.push(after);
+            }
           }
-        }, 500);
+          else {
+            scope.tilePlaced[key] = {
+              rendered: false,
+              followers: [after]
+            }
+          }
+        }
       });
 
       gameCtrl.loaded();

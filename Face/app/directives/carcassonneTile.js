@@ -155,23 +155,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
             .attr('opacity', '1')
             .attr('class', 'follower-place')
             .on('mousedown', function(d) {
-              // Marking tile not to be removed
-              $d3.select(containerSVG.node().parentNode)
-                .classed({
-                  'carcassonne-final' : true,
-                  'carcassonne' : false
-                });
-
-              // Marking follower not to be removed
-              $d3.select(this)
-                .attr('class', function(d) {
-                  return 'follower section' + d.section;
-                })
-                .attr('fill', scope.color)
-                .on('mouseleave', null)
-                .on('mouseenter', null)
-                .on('mousedown', null);
-
               // Removing event listeners
               element.off('mouseenter');
               element.off('mousedown');
