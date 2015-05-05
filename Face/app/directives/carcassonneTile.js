@@ -55,10 +55,6 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         .attr('class', 'tileContainer');
 
       if(scope.final) {
-        angular.element(element).ready(function() {
-          boardCtrl.tileDoneRendering({x : final.x, y : final.y});
-        });
-
         var final = scope.final;
         tileMoves[final.direction] = {};
 
@@ -95,7 +91,12 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
             .attr('class', function(d) {
               return 'follower section' + d.section;
             })
-            .attr('fill', scope.color);
+            .attr('fill', scope.color)
+            .call(function(follower) {
+              angular.element(follower.node()).ready(function() {
+                boardCtrl.tileDoneRendering({x : final.x, y : final.y});
+              });
+            });
 
           rotateTile();
         });
