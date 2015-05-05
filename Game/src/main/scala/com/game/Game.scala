@@ -93,7 +93,15 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     }
   }
 
-  def getClient(client : SocketIOClient) : Client = clientTurn.current
+  def getClient(client : SocketIOClient) : Client = {
+    for(gameClient <- clientTurn.clients) {
+      if(gameClient.socketClient.getSessionId == client.getSessionId) {
+        return gameClient
+      }
+    }
+
+    throw new Error("No such client in the game. Please register first.")
+  }
 
   def isCurrentPlayer(gameClient : Client): Boolean = clientTurn.current == gameClient
 
