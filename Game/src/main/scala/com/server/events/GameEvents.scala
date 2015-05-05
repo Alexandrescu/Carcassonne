@@ -28,7 +28,12 @@ class GameEvents(val game : Game, val name : String = "Game Event") {
     if(game started) {
       client.sendEvent("gameDraw", Converter.toGameDraw(game.currentTile, game.currentPlayer))
     }
-    client.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
+    if(game finished) {
+      client.sendEvent("gameEnd", new GameSlots(game.getSlots.toList))
+    }
+    else {
+      client.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
+    }
   }
 
   @OnEvent("connectAs")
@@ -69,7 +74,7 @@ class GameEvents(val game : Game, val name : String = "Game Event") {
 
   def nextRound(space : SocketIONamespace) : Unit = {
     if(game finished) {
-      // End the game.
+      space.getBroadcastOperations.sendEvent("gameEnd", new GameSlots((game summary).toList))
       return
     }
     game.next()

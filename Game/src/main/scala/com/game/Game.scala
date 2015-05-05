@@ -1,6 +1,6 @@
 package com.game
 
-import com.board.{PossibleMove, GameBoard, Move, RemovedFollower}
+import com.board.{GameBoard, Move, PossibleMove, RemovedFollower}
 import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
 import com.player.{Follower, Player, PlayerObserver}
@@ -32,6 +32,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   board.setMove(moveQueue.head.left.get)
 
   private var currentMoves : Set[PossibleMove] = Set()
+  private var playedTile = false
 
   /*
       PRE: Game not ended
@@ -39,6 +40,12 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
    */
   def next(): Unit = {
     // MAYBE CHECK IF THE GAME IS DONE
+    if(!tileBag.hasNext) {
+      println("GAME HAS ENDED")
+      return
+    }
+
+    playedTile = false
     val gameClient = clientTurn.next()
     val currentTile = tileBag.next()
 
@@ -53,7 +60,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   /* State handlers */
   def currentTile : Tile = tileBag.current
 
-  def finished: Boolean = tileBag.hasNext
+  def finished: Boolean = !tileBag.hasNext && playedTile
 
   def moveList : List[EitherMove] = moveQueue.clone().toList
 
@@ -71,6 +78,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
 
     board.setMove(move)
 
+    playedTile = true
     moveQueue.takeRight(moveQueue.size - startPoint).toArray
   }
 
@@ -95,6 +103,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     }
   }
 
+  /* Getters */
   def getClient(client : SocketIOClient) : Client = {
     for(gameClient <- clientTurn.clients) {
       if(gameClient.socketClient.getSessionId == client.getSessionId) {
@@ -105,11 +114,11 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     throw new Error("No such client in the game. Please register first.")
   }
 
-  def currentClient : Client = clientTurn.current
-
   def isCurrentPlayer(gameClient : Client): Boolean = clientTurn.current == gameClient
 
   def currentPlayer : Player = clientTurn.current.player
+
+  def currentClient : Client = clientTurn.current
 
   private def announceClients(move : EitherMove): Unit = {
     clientTurn.clients.foreach(_.movePlayed(move))
@@ -121,4 +130,14 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   }
 
   def getCurrentMoves : Set[PossibleMove] = currentMoves
+
+
+  /* Ending a game */
+  def summary : List[GameClientPlayer] = {
+    for(section <- tileBag.allSections) {
+      section.finishSection()
+    }
+
+    getSlots
+  }
 }
