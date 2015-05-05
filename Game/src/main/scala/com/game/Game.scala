@@ -5,12 +5,13 @@ import com.client.Client
 import com.corundumstudio.socketio.SocketIOClient
 import com.player.{Follower, Player, PlayerObserver}
 import com.server.Converter
-import com.server.json.{GameClient, GameClientPlayer}
+import com.server.json.{GameSlots, GameClient, GameClientPlayer}
 import com.tile.Tile
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.JavaConversions._
 
 class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   type EitherMove = Either[Move, RemovedFollower]
@@ -47,13 +48,24 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
 
     playedTile = false
     val gameClient = clientTurn.next()
-    val currentTile = tileBag.next()
+    var currentTile = tileBag.next()
+
+    currentMoves = board.getMoves(currentTile, gameClient.player)
+    while(currentMoves.size == 0 && tileBag.hasNext) {
+      currentTile = tileBag.next()
+    }
+
+    if(currentMoves.size == 0) {
+      playedTile = true
+      gameClient.socketClient.getNamespace.getBroadcastOperations
+        .sendEvent("gameEnd", new GameSlots(summary.toList))
+      return
+    }
 
     // Sending the draw to people
     gameClient.socketClient.getNamespace.getBroadcastOperations.
       sendEvent("gameDraw", Converter.toGameDraw(currentTile, gameClient.player))
 
-    currentMoves = board.getMoves(currentTile, gameClient.player)
     gameClient.turn(currentTile, currentMoves)
   }
 

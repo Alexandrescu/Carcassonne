@@ -17,7 +17,7 @@ class TestTileBag extends TileBag{
 
   val bag = ArrayBuffer[Tile]()
   bag += TileGenerator.D
-  bag += TileGenerator.F
+  bag += TileGenerator.C
 
   var result : Set[Section] = Set()
   for(tile <- bag) {
@@ -27,7 +27,6 @@ class TestTileBag extends TileBag{
   private var thisTile : Tile = startTile
   override def next(): Tile = {
     thisTile = bag.remove(0)
-    println(s"We have ${bag.size} elements left")
     thisTile
   }
 
