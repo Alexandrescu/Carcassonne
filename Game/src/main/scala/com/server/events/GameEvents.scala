@@ -25,13 +25,13 @@ class GameEvents(val game : Game, val name : String = "Game Event") {
     }
 
     /* Send current turn information */
-    if(game started) {
-      client.sendEvent("gameDraw", Converter.toGameDraw(game.currentTile, game.currentPlayer))
-    }
     if(game finished) {
       client.sendEvent("gameEnd", new GameSlots(game.getSlots.toList))
     }
     else {
+      if(game started) {
+        client.sendEvent("gameDraw", Converter.toGameDraw(game.currentTile, game.currentPlayer))
+      }
       client.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
     }
   }
@@ -59,6 +59,7 @@ class GameEvents(val game : Game, val name : String = "Game Event") {
             client.getNamespace.getBroadcastOperations.sendEvent("gameMove", Converter.toGameMove(m))
           case Right(f) =>
             client.getNamespace.getBroadcastOperations.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
+            client.getNamespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
         }
 
         nextRound(client.getNamespace)

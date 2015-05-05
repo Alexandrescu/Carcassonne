@@ -60,13 +60,6 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       $scope.slots = [];
       socket.on('gameMove', function(move) {
         console.log('[gameMove]', move);
-        // Updating the slot for this player
-        for(var i = 0; i < $scope.slots.length; i++){
-          if($scope.slots[i].slot == move.player.slot) {
-            $scope.slots[i].followers = move.player.followers;
-            $scope.slots[i].points = move.player.points;
-          }
-        }
 
         // Should lock the array... might produce errors. Check this.
         moveQueue.push(move);
@@ -97,7 +90,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         $timeout(function() {
           console.log('[gameSlots]', list);
           $scope.slots = list.slots;
-        }, 1000);
+        }, 0);
       });
 
       // Unimplemented

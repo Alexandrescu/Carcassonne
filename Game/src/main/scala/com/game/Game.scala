@@ -42,7 +42,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   def next(): Unit = {
     // MAYBE CHECK IF THE GAME IS DONE
     if(!tileBag.hasNext) {
-      println("GAME HAS ENDED")
+      logger.info("GAME HAS ENDED")
       return
     }
 
@@ -148,6 +148,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
 
   /* Ending a game */
   def summary : List[GameClientPlayer] = {
+    logger.info("GAME ENDING.")
     for(section <- tileBag.allSections) {
       section.finishSection()
     }
