@@ -6,6 +6,16 @@ import com.tile._
 
 class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   type Dependency = Map[Section, Set[Section]]
+  /**
+   * board : keeps the set of placed tiles
+   * board(i,j) : tile that is in the game at position (i,j)
+   *
+   * boardOutline: Keeps track of the sections that need updated when a
+   * tile is added there.
+   * boardOutline(i, j): Places that get points when a tile is placed there.
+   *
+   * tileOutline: Knows where the next tiles can be placed
+   */
   private var board : Map[Place, Tile] = Map()
   private var boardOutline : Map[Place, Set[Section]] = Map()
   private var tileOutline : Set[Place] = Set((0, 0))
@@ -54,7 +64,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     isMoveByDependencies(move, moveDep)
   }
 
-  def updateTileOutline(move: Move) = {
+  private def updateTileOutline(move: Move) = {
     tileOutline -= move.place
     Direction.values.foreach(direction => {
       val newPlace = add(move.place, direction)
@@ -82,7 +92,6 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
         // Getting existing outline and removing it to update
         val outlinePlace = add(move.place, direction)
         var outline = boardOutline.getOrElse(outlinePlace, Set())
-        boardOutline = boardOutline - outlinePlace
 
         move.tile.getEdge(direction) match {
           case RoadEdge(_, roadSection : RoadSection, _) =>
@@ -94,6 +103,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
           case _ =>
         }
 
+        boardOutline = boardOutline - outlinePlace
         if(outline.nonEmpty)
           boardOutline = boardOutline + (outlinePlace -> outline)
       case Some(_) =>
@@ -114,12 +124,12 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
 
             monasteryOutline.foreach(place => get(place) match {
               case Some(_) =>
+                playerSection.removeOpen()
               case None =>
                 var outline = boardOutline.getOrElse(place, Set())
-                boardOutline = boardOutline - move.place
-
                 outline = outline + playerSection
-                playerSection.addOpen()
+
+                boardOutline = boardOutline - place
                 boardOutline = boardOutline + (place -> outline)
             })
           case _ =>
@@ -128,11 +138,13 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     }
   }
 
+  /* CAN CHANGE THIS */
   private def removeOutline(move: Move): Unit = {
     boardOutline.get(move.place) match {
       case None =>
-      case Some(sections) => sections.foreach(sectionKeeper.removeOpen)
+      case Some(sections) => sections.foreach(_.removeOpen())
     }
+    boardOutline -= move.place
   }
 
   private def isMoveByDependencies(move : Move, moveDep : Option[Dependency]) : Boolean = {
