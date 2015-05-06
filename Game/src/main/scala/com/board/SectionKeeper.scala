@@ -3,13 +3,6 @@ package com.board
 import com.tile._
 
 class SectionKeeper {
-  def removeOpen(section: Section): Unit = section match {
-    case citySection : CitySection => citySection.removeOpen()
-    case roadSection : RoadSection => roadSection.removeOpen()
-    case monasterySection : MonasterySection => monasterySection.removeOpen()
-    case _ => throw new NoSuchElementException("There should only be these type of sections")
-  }
-
   def union(grassA : GrassSection, grassB : GrassSection) : Unit = {
     if(grassA.treeDepth == grassB.treeDepth){
       grassA.treeDepth += 1

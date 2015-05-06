@@ -3,14 +3,12 @@ package com.tile
 import com.player.Follower
 
 class MonasterySection(override val frontEndId : Int) extends Section(frontEndId) {
-  private var tileCount : Int = 0
+  private var surroundTiles : Int = 0
 
-  def addOpen() : Unit = {
-    tileCount += 1
-  }
+  def addOpen(x : Int = 1) : Unit = {}
 
-  def removeOpen() : Unit = {
-    tileCount -= 1
+  def removeOpen(x : Int = 1) : Unit = {
+    surroundTiles += x
   }
 
   override def isOwned: Boolean = followers.nonEmpty
@@ -25,7 +23,8 @@ class MonasterySection(override val frontEndId : Int) extends Section(frontEndId
 
   override def findRoot(): Section = this
 
-  override protected def canClose(): Boolean = tileCount == 0
+  // Can close when it's surrounded
+  override protected def canClose(): Boolean = surroundTiles == 8
 
   override protected def closeInGame(): Unit = testClosing()
 
@@ -33,7 +32,7 @@ class MonasterySection(override val frontEndId : Int) extends Section(frontEndId
 
   private def testClosing(): Unit = {
     if(_followers.size > 1) throw new Error("Monastery should only have one owner")
-    closeWithPoints(9 - tileCount)
+    closeWithPoints(surroundTiles + 1)
   }
 
 }

@@ -49,4 +49,8 @@ class GrassSection(override val frontEndId : Int) extends Section(frontEndId){
   private def pointCount : Int = {
     _closedCities.size * 3
   }
+
+  override def addOpen(x: Int): Unit = ???
+
+  override def removeOpen(x: Int): Unit = ???
 }

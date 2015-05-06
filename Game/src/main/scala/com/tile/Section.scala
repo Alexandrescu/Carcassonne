@@ -4,31 +4,35 @@ import com.player.{Player, Follower}
 
 abstract class Section(val frontEndId : Int) {
   var treeDepth : Int = 1
-
   protected var _followers : Set[Follower] = Set()
+
   def isOwned : Boolean
   def addFollowers(newFollowers : Set[Follower]): Unit
   def followers : Set[Follower]
 
   def findRoot() : Section
 
-  private var closed : Boolean = false
+  def addOpen(x : Int = 1) : Unit
+  def removeOpen(x : Int = 1) : Unit
+
+  private var _closed : Boolean = false
+  def closed : Boolean = findRoot()._closed
   protected def closeInGame()
   protected def closeAtEnd()
   protected def canClose() : Boolean
 
   def closeSection(): Unit = {
     val root = findRoot()
-    if(!root.closed && root.canClose()) {
-      root.closed = true
+    if(!root._closed && root.canClose()) {
+      root._closed = true
       root.closeInGame()
     }
   }
 
   def finishSection(): Unit = {
     val root = findRoot()
-    if(!root.closed) {
-      root.closed = true
+    if(!root._closed) {
+      root._closed = true
       root.closeAtEnd()
     }
   }
