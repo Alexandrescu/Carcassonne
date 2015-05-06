@@ -101,8 +101,8 @@ class GameBoardTest extends FlatSpec with BeforeAndAfter with PrivateMethodTeste
     assert(player.points == 4 && player.followers == 7)
     assert(L.getSectionById(7).isDefined && L.getSectionById(7).get.closed)
 
-    L.getSectionById(7).get.finishSection()
-    L.getSectionById(7).get.closeSection()
+    L.getSectionById(7).get.closeAtEnd()
+    L.getSectionById(7).get.closeInGame()
 
     assert(player.points == 4 && player.followers == 7)
     assert(observer.follower.isDefined)
@@ -155,7 +155,7 @@ class GameBoardTest extends FlatSpec with BeforeAndAfter with PrivateMethodTeste
     assert(tileOutline.size == 7)
 
     assert(player.points == 4 && player.followers == 6)
-    A.getSectionById(2).get.finishSection()
+    A.getSectionById(2).get.closeAtEnd()
     assert(player.points == 7 && player.followers == 7)
   }
 }

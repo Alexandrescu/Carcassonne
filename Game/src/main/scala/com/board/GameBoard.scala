@@ -79,11 +79,11 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     addOutline(move)
     removeOutline(move)
     updateTileOutline(move)
-    move.tile.getSections().foreach(section => section.closeSection())
+    move.tile.getSections().foreach(section => section.closeInGame())
   }
   private def solveDependencies(move: Move, maybeDependency: Dependency): Unit = {
-    maybeDependency.foreach{case (thisSection, theSections) => sectionKeeper.union(thisSection, theSections)}
     sectionKeeper.own(move)
+    maybeDependency.foreach{case (thisSection, theSections) => sectionKeeper.union(thisSection, theSections)}
   }
 
   private def addOutline(move: Move) = {
@@ -96,10 +96,10 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
         move.tile.getEdge(direction) match {
           case RoadEdge(_, roadSection : RoadSection, _) =>
             outline = outline + roadSection
-            roadSection.addOpen()
+            roadSection.addOpen(1)
           case CityEdge(citySection : CitySection) =>
             outline = outline + citySection
-            citySection.addOpen()
+            citySection.addOpen(1)
           case _ =>
         }
 
@@ -124,7 +124,7 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
 
             monasteryOutline.foreach(place => get(place) match {
               case Some(_) =>
-                playerSection.removeOpen()
+                playerSection.removeOpen(1)
               case None =>
                 var outline = boardOutline.getOrElse(place, Set())
                 outline = outline + playerSection
@@ -138,11 +138,10 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
     }
   }
 
-  /* CAN CHANGE THIS */
   private def removeOutline(move: Move): Unit = {
     boardOutline.get(move.place) match {
       case None =>
-      case Some(sections) => sections.foreach(_.removeOpen())
+      case Some(sections) => sections.foreach(_.removeOpen(1))
     }
     boardOutline -= move.place
   }

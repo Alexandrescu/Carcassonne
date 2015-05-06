@@ -6,15 +6,15 @@ class Player(val slot : Int, private var observers: Set[PlayerObserver] = Set())
   private var followerBag : Set[Follower] = Set()
   for(i <- 1 to 7) followerBag += new Follower(this)
 
-  def getFollower(section : Section, place : (Int, Int)) : Follower = {
+  def placeFollower(section : Section, place : (Int, Int)) : Unit = {
     for(follower <- followerBag) {
       if(!follower.isPlaced) {
         follower.place = place
         follower.section = section
-        return follower
+        section.addFollowers(Set(follower))
+        return
       }
     }
-    null
   }
 
   def followers : Int = {

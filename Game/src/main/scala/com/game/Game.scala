@@ -150,7 +150,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   def summary : List[GameClientPlayer] = {
     logger.info("GAME ENDING.")
     for(section <- tileBag.allSections) {
-      section.finishSection()
+      section.closeAtEnd()
     }
 
     getSlots

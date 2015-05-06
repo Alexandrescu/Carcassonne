@@ -1,38 +1,36 @@
 package com.tile
 
-import com.player.Follower
+class MonasterySection(override val frontEndId : Int, initialValue : Int = 1) extends Section(frontEndId, initialValue){
+  private var _surrounding = 8
+  /**
+   * Adds things that stop sections from finishing:
+   * City: open edges
+   * Road: open edges
+   * Grass: n/a
+   * Monastery: n/a
+   * @param x How many of them
+   */
+  override def addOpen(x: Int): Unit = {}
 
-class MonasterySection(override val frontEndId : Int) extends Section(frontEndId) {
-  private var surroundTiles : Int = 0
+  override protected def canClose: Boolean = _surrounding == 0
 
-  def addOpen(x : Int = 1) : Unit = {}
+  /* Methods which return the points per unit that count at the end */
+  override protected def pointsInGame: Int = 1
 
-  def removeOpen(x : Int = 1) : Unit = {
-    surroundTiles += x
+  /**
+   * Removes things that stops sections form closing:
+   * City: open edges
+   * Road: open edges
+   * Grass: n/a
+   * Monastery: surrounding space
+   * @param x How many of them
+   */
+  override def removeOpen(x: Int): Unit = {
+    _surrounding -= x
+    addValue(x)
   }
 
-  override def isOwned: Boolean = followers.nonEmpty
+  override protected def pointsAtEnd: Int = 1
 
-  override def addFollowers(newOwners: Set[Follower]): Unit = {
-    if(newOwners.size > 1)
-      throw new Exception("Can't have more than one owner on Monastery")
-    _followers = newOwners
-  }
-
-  override def followers: Set[Follower] = _followers
-
-  override def findRoot(): Section = this
-
-  // Can close when it's surrounded
-  override protected def canClose(): Boolean = surroundTiles == 8
-
-  override protected def closeInGame(): Unit = testClosing()
-
-  override protected def closeAtEnd(): Unit = testClosing()
-
-  private def testClosing(): Unit = {
-    if(_followers.size > 1) throw new Error("Monastery should only have one owner")
-    closeWithPoints(surroundTiles + 1)
-  }
-
+  override def open: Int = _surrounding
 }

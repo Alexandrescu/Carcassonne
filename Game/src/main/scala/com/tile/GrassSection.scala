@@ -1,56 +1,32 @@
 package com.tile
 
-import com.player.Follower
+class GrassSection(override val frontEndId : Int, initialValue : Int = 1) extends Section(frontEndId, initialValue){
+  /**
+   * Adds things that stop sections from finishing:
+   * City: open edges
+   * Road: open edges
+   * Grass: n/a
+   * Monastery: n/a
+   * @param x How many of them
+   */
+  override def addOpen(x: Int): Unit = {}
 
-class GrassSection(override val frontEndId : Int) extends Section(frontEndId){
-  private var _parent : Option[GrassSection] = None
-  private var _closedCities : Set[CitySection] = Set()
+  override protected def canClose: Boolean = false
 
-  def parent(grassSection: GrassSection): Unit = {
-    val parentRoot = grassSection.findRoot()
-    val root = this.findRoot()
+  /* Methods which return the points per unit that count at the end */
+  override protected def pointsInGame: Int = 0
 
-    root._parent = Some(parentRoot)
-  }
+  /**
+   * Removes things that stops sections form closing:
+   * City: open edges
+   * Road: open edges
+   * Grass: n/a
+   * Monastery: surrounding space
+   * @param x How many of them
+   */
+  override def removeOpen(x: Int): Unit = {}
 
-  def addClosedCities(cities : Set[CitySection]): Unit = {
-    findRoot()._closedCities ++= cities
-  }
+  override protected def pointsAtEnd: Int = 3
 
-  def closedCities() : Set[CitySection] = _closedCities
-
-  def findRoot() : GrassSection = {
-    var root = this
-    while(root._parent.isDefined) {
-      root = root._parent.get
-    }
-    root
-  }
-
-  override def isOwned: Boolean = {
-    if(_parent.isEmpty) return followers.nonEmpty
-    findRoot().isOwned
-  }
-
-  override def addFollowers(newFollowers: Set[Follower]): Unit = {
-    val root = findRoot()
-    root._followers = root._followers.union(newFollowers)
-  }
-
-  override def followers: Set[Follower] = findRoot()._followers
-
-
-  override protected def canClose(): Boolean = false
-
-  override protected def closeInGame(): Unit = {}
-
-  override protected def closeAtEnd(): Unit = closeWithPoints(pointCount)
-
-  private def pointCount : Int = {
-    _closedCities.size * 3
-  }
-
-  override def addOpen(x: Int): Unit = ???
-
-  override def removeOpen(x: Int): Unit = ???
+  override def open: Int = 0
 }

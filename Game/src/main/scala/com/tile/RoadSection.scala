@@ -1,62 +1,34 @@
 package com.tile
 
-import com.player.Follower
-
-class RoadSection(override val frontEndId : Int) extends Section(frontEndId){
+class RoadSection(override val frontEndId : Int, initialValue : Int = 1) extends Section(frontEndId, initialValue){
   private var _openEdges : Int = 0
-  private var _tileCount : Int = 1
-  private var _parent : Option[RoadSection] = None
 
-  def parent(roadSection: RoadSection): Unit = {
-    val parentRoot = roadSection.findRoot()
-    val root = this.findRoot()
+  override protected def canClose: Boolean = _openEdges == 0
 
-    root._parent = Some(parentRoot)
-  }
+  /**
+   * Adds things that stop sections from finishing:
+   * City: open edges
+   * Road: open edges
+   * Grass: n/a
+   * Monastery: n/a
+   * @param x How many of them
+   */
+  override def addOpen(x: Int): Unit = _openEdges += x
 
-  def openEdges : Int = _openEdges
+  /**
+   * Removes things that stops sections form closing:
+   * City: open edges
+   * Road: open edges
+   * Grass: n/a
+   * Monastery: surrounding space
+   * @param x How many of them
+   */
+  override def removeOpen(x: Int): Unit = _openEdges -= x
 
-  def findRoot() : RoadSection = {
-    var root = this
-    while(root._parent.isDefined) {
-      root = root._parent.get
-    }
-    root
-  }
+  /* Methods which return the points per unit that count at the end */
+  override protected def pointsInGame: Int = 1
 
-  def tileCount() : Int = _tileCount
+  override protected def pointsAtEnd: Int = 1
 
-  def addTiles(x : Int) : Unit = {
-    findRoot()._tileCount += x
-  }
-
-  def addOpen(x : Int = 1) : Unit = {
-    findRoot()._openEdges += x
-  }
-
-  def removeOpen(x : Int = 1) : Unit = {
-    findRoot()._openEdges -= x
-  }
-
-  override def isOwned: Boolean = {
-    if(_parent.isEmpty) return followers.nonEmpty
-    findRoot().isOwned
-  }
-
-  override def addFollowers(newFollowers: Set[Follower]): Unit = {
-    val root = findRoot()
-    root._followers = root._followers.union(newFollowers)
-  }
-
-  override def followers: Set[Follower] = findRoot()._followers
-
-  override protected def closeInGame(): Unit = {
-    closeWithPoints(tileCount())
-  }
-
-  override protected def closeAtEnd(): Unit = {
-    closeWithPoints(tileCount())
-  }
-
-  override protected def canClose(): Boolean = openEdges == 0
+  override def open: Int = _openEdges
 }
