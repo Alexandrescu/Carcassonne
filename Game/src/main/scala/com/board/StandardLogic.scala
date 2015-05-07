@@ -4,7 +4,6 @@ import com.board.Direction._
 import com.tile._
 
 class StandardLogic extends Logic{
-
   private def reverse(direction: Direction): Direction = direction match {
     case Up => Down
     case Down => Up
@@ -12,7 +11,7 @@ class StandardLogic extends Logic{
     case Right => Left
   }
 
-  def placeTile(thisTile : Tile, tiles : Map[Direction, Tile]): Option[Map[Section, Set[Section]]] = {
+  private def placeTile(thisTile : Tile, tiles : Map[Direction, Tile]): Option[Map[Section, Set[Section]]] = {
     // Unions has all the mappings from the sections to the boardSections
     var unions : Map[Section, Set[Section]] = Map()
 
@@ -26,7 +25,7 @@ class StandardLogic extends Logic{
       }}
     }}
 
-    return Some(unions)
+    Some(unions)
   }
 
   private def tileMatch(tile: Tile, direction : Direction, that : Tile) : Option[Map[Section, Section]] = {

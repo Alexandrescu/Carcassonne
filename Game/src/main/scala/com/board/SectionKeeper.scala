@@ -14,7 +14,7 @@ class SectionKeeper {
     case _ =>
   }
 
-  def optimizeUnion(sections: Set[Section]) : (Section, Set[Section]) = {
+  private def optimizeUnion(sections: Set[Section]) : (Section, Set[Section]) = {
     var maxDepth : Section = sections.toList.head
     for(section <- sections) {
       if(section.treeDepth > maxDepth.treeDepth) {
@@ -35,7 +35,7 @@ class SectionKeeper {
 
   private def union(sectionA : Section, sectionB : Section): Unit = {
     if(sectionA.treeDepth == sectionB.treeDepth) {
-      sectionA.treeDepth += 1
+      sectionA.increaseDepth(1)
     }
     sectionB.makeParent(sectionA)
     sectionA.closeInGame()

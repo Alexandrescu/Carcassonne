@@ -10,9 +10,9 @@ class CitySection(override val frontEndId : Int, initialValue : Int = 1) extends
    * Monastery: n/a
    * @param x How many of them
    */
-  override def addOpen(x: Int): Unit = _openEdges += x
+  override def addOpenInternal(x: Int): Unit = _openEdges += x
 
-  override protected def canClose: Boolean = _openEdges == 0
+  override protected def canCloseInternal: Boolean = _openEdges == 0
 
   /* Methods which return the points per unit that count at the end */
   override protected def pointsInGame: Int = 2
@@ -25,11 +25,11 @@ class CitySection(override val frontEndId : Int, initialValue : Int = 1) extends
    * Monastery: surrounding space
    * @param x How many of them
    */
-  override def removeOpen(x: Int): Unit = _openEdges -= x
+  override def removeOpenInternal(x: Int): Unit = _openEdges -= x
 
   override protected def pointsAtEnd: Int = 1
 
-  override def open: Int = _openEdges
+  override def openInternal: Int = _openEdges
 
   private var surroundingGrass : Set[GrassSection] = Set()
   def addGrass(grass : Set[GrassSection]): Unit = {

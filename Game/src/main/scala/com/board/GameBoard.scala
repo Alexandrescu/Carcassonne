@@ -83,7 +83,9 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   }
   private def solveDependencies(move: Move, maybeDependency: Dependency): Unit = {
     sectionKeeper.own(move)
-    maybeDependency.foreach{case (thisSection, theSections) => sectionKeeper.union(thisSection, theSections)}
+    for((section, sectionSet) <- maybeDependency) {
+      sectionKeeper.union(section, sectionSet)
+    }
   }
 
   private def addOutline(move: Move) = {
@@ -141,7 +143,11 @@ class GameBoard(logic: Logic, sectionKeeper: SectionKeeper) extends Board{
   private def removeOutline(move: Move): Unit = {
     boardOutline.get(move.place) match {
       case None =>
-      case Some(sections) => sections.foreach(_.removeOpen(1))
+      case Some(sections) =>
+        for(section <- sections) {
+          section.removeOpen(1)
+          section.closeInGame()
+        }
     }
     boardOutline -= move.place
   }

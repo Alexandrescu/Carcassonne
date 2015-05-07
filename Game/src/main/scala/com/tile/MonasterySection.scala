@@ -10,9 +10,9 @@ class MonasterySection(override val frontEndId : Int, initialValue : Int = 1) ex
    * Monastery: n/a
    * @param x How many of them
    */
-  override def addOpen(x: Int): Unit = {}
+  override def addOpenInternal(x: Int): Unit = {}
 
-  override protected def canClose: Boolean = _surrounding == 0
+  override protected def canCloseInternal: Boolean = _surrounding == 0
 
   /* Methods which return the points per unit that count at the end */
   override protected def pointsInGame: Int = 1
@@ -25,12 +25,12 @@ class MonasterySection(override val frontEndId : Int, initialValue : Int = 1) ex
    * Monastery: surrounding space
    * @param x How many of them
    */
-  override def removeOpen(x: Int): Unit = {
+  override def removeOpenInternal(x: Int): Unit = {
     _surrounding -= x
     addValue(x)
   }
 
   override protected def pointsAtEnd: Int = 1
 
-  override def open: Int = _surrounding
+  override def openInternal: Int = _surrounding
 }

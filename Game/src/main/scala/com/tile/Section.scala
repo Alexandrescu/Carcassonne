@@ -3,15 +3,17 @@ package com.tile
 import com.player.{Player, Follower}
 
 abstract class Section(val frontEndId : Int, private var _value : Int) {
-  var treeDepth : Int = 1
+  var _treeDepth : Int = 1
+  def treeDepth : Int = findRoot()._treeDepth
+  def increaseDepth(x: Int) = findRoot()._treeDepth += x
 
   /* Handling ownership */
   protected var _followers : Set[Follower] = Set()
-  def isOwned : Boolean = _followers.nonEmpty
+  def isOwned : Boolean = findRoot()._followers.nonEmpty
   def addFollowers(newFollowers : Set[Follower]): Unit = {
-    _followers ++= newFollowers
+    findRoot()._followers ++= newFollowers
   }
-  def followers : Set[Follower] = _followers
+  def followers : Set[Follower] = findRoot()._followers
 
   /* This is to be able to get the 'parent' */
   private var _parent : Option[Section] = None
@@ -33,12 +35,15 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
     val thisRoot = this.findRoot()
     val thatRoot = that.findRoot()
 
+    if(thisRoot == thatRoot) {
+      return
+    }
+
     union(thatRoot, thisRoot)
   }
 
   private def union[A <: Section, B <: Section](parent: A, child: B)(implicit m: Manifest[B]) = parent match {
     case x : B =>
-      child._parent = Some(parent)
       parent.addFollowers(child.followers)
       parent.addValue(child.value)
       parent.addOpen(child.open)
@@ -47,6 +52,7 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
           parentCity.addGrass(childCity.getGrass)
         case _ =>
       }
+      child._parent = Some(parent)
     case _ =>
       throw new MatchError("Trying to union different kinds of sections.")
   }
@@ -59,7 +65,9 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
    * Monastery: n/a
    * @param x How many of them
    */
-  def addOpen(x : Int) : Unit
+  def addOpen(x : Int) : Unit = {
+    findRoot().addOpenInternal(x)
+  }
 
   /**
    * Removes things that stops sections form closing:
@@ -69,9 +77,20 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
    * Monastery: surrounding space
    * @param x How many of them
    */
-  def removeOpen(x : Int) : Unit
+  def removeOpen(x : Int) : Unit = {
+    findRoot().removeOpenInternal(x)
+  }
 
-  def open : Int
+  def open : Int = findRoot().openInternal
+
+  /**
+   * Helpers
+   */
+
+  protected def addOpenInternal(x : Int)
+  protected def removeOpenInternal(x : Int)
+  protected def openInternal : Int
+  protected def canCloseInternal : Boolean
 
   /**
    * Value is the value of the section:
@@ -88,7 +107,7 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
   /* Methods which return the points per unit that count at the end */
   protected def pointsInGame : Int
   protected def pointsAtEnd : Int
-  protected def canClose : Boolean
+  protected def canClose : Boolean = findRoot().canCloseInternal
 
   private var _closed : Boolean = false
   def closed : Boolean = findRoot()._closed

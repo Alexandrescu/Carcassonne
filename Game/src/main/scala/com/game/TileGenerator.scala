@@ -30,7 +30,7 @@ object TileGenerator {
   }
 
   def C : Tile = {
-    val c1 = new CitySection(1)
+    val c1 = new CitySection(1, 2)
 
     val up = CityEdge(c1)
     val down = CityEdge(c1)
@@ -68,7 +68,7 @@ object TileGenerator {
 
   def F : Tile = {
     val f1 = new GrassSection(1)
-    val f2 = new CitySection(2)
+    val f2 = new CitySection(2, 2)
     val f3 = new GrassSection(3)
 
     val up = GrassEdge(f3)
@@ -164,7 +164,7 @@ object TileGenerator {
   }
 
   def M : Tile = {
-    val m1 = new CitySection(1)
+    val m1 = new CitySection(1, 2)
     val m2 = new GrassSection(2)
 
     val up = CityEdge(m1)
@@ -188,7 +188,7 @@ object TileGenerator {
   }
 
   def O : Tile = {
-    val o1 = new CitySection(1)
+    val o1 = new CitySection(1, 2)
     val o2 = new GrassSection(2)
     val o3 = new RoadSection(3)
     val o4 = new GrassSection(4)
@@ -216,7 +216,7 @@ object TileGenerator {
   }
 
   def Q : Tile = {
-    val q1 = new CitySection(1)
+    val q1 = new CitySection(1, 2)
     val q2 = new GrassSection(2)
 
     val up = CityEdge(q1)
@@ -240,7 +240,7 @@ object TileGenerator {
   }
 
   def S : Tile = {
-    val s1 = new CitySection(1)
+    val s1 = new CitySection(1, 2)
     val s2 = new GrassSection(2)
     val s3 = new RoadSection(3)
     val s4 = new GrassSection(4)
@@ -254,7 +254,7 @@ object TileGenerator {
   }
 
   def T : Tile = {
-    val t1 = new CitySection(1)
+    val t1 = new CitySection(1, 2)
     val t2 = new GrassSection(2)
     val t3 = new RoadSection(3)
     val t4 = new GrassSection(4)

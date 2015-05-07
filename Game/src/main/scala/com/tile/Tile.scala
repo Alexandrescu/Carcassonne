@@ -6,7 +6,7 @@ abstract class Tile(val identifier : String,
                     private var _up : TileEdge,
                     private var _down : TileEdge,
                     private var _left : TileEdge,
-                    private var _right :TileEdge, value : Int) {
+                    private var _right :TileEdge) {
 
   private var _orientation : Direction = Up
 
@@ -103,17 +103,17 @@ abstract class Tile(val identifier : String,
     }
   }
 
-  // Initialising the grass
+  // Initialising the grass; The loop is over directions
   for(i <- 0 to 3) addGrass(i)
 }
 
 case class SimpleTile(override val identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
-  extends Tile(identifier, _up, _down, _left, _right, 1)
+  extends Tile(identifier, _up, _down, _left, _right)
 
 case class Monastery(override val identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge, monastery: MonasterySection)
-  extends Tile(identifier, _up, _down, _left, _right, 1) {
+  extends Tile(identifier, _up, _down, _left, _right) {
   sections = sections + monastery
 }
 
 case class BannerTile(override val identifier : String, _up : TileEdge, _down : TileEdge, _left : TileEdge, _right :TileEdge)
-  extends Tile(identifier, _up, _down, _left, _right, 2)
+  extends Tile(identifier, _up, _down, _left, _right)

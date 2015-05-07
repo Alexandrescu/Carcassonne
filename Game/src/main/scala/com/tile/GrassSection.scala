@@ -1,6 +1,6 @@
 package com.tile
 
-class GrassSection(override val frontEndId : Int, initialValue : Int = 1) extends Section(frontEndId, initialValue){
+class GrassSection(override val frontEndId : Int, initialValue : Int = 0) extends Section(frontEndId, initialValue){
   /**
    * Adds things that stop sections from finishing:
    * City: open edges
@@ -9,9 +9,9 @@ class GrassSection(override val frontEndId : Int, initialValue : Int = 1) extend
    * Monastery: n/a
    * @param x How many of them
    */
-  override def addOpen(x: Int): Unit = {}
+  override def addOpenInternal(x: Int): Unit = {}
 
-  override protected def canClose: Boolean = false
+  override protected def canCloseInternal: Boolean = false
 
   /* Methods which return the points per unit that count at the end */
   override protected def pointsInGame: Int = 0
@@ -24,9 +24,9 @@ class GrassSection(override val frontEndId : Int, initialValue : Int = 1) extend
    * Monastery: surrounding space
    * @param x How many of them
    */
-  override def removeOpen(x: Int): Unit = {}
+  override def removeOpenInternal(x: Int): Unit = {}
 
   override protected def pointsAtEnd: Int = 3
 
-  override def open: Int = 0
+  override def openInternal: Int = 0
 }
