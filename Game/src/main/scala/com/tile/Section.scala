@@ -137,11 +137,13 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
   private def closeWithPoints(points : Int): Unit = {
     val root = findRoot()
     val maj = majority(root._followers)
+    var scored:Set[Player] = Set()
 
     for(follower <- root._followers) {
       for(player <- maj) {
-        if(player == follower.player) {
+        if(player == follower.player && !scored.contains(player)) {
           follower.take(points * value)
+          scored += player
         }
       }
 
