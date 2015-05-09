@@ -4,9 +4,17 @@
 
 target/*
 
-Game/Game.iml
+com.game.com.game.Game/com.game.com.game.Game.iml
 
-Game/target/*
+com.game.com.game.Game/target/*
 project/target/*
 
 *.cache
+
+game/target/*
+
+Face/.idea/*
+
+Face/node_modules/*
+
+Face/public/*

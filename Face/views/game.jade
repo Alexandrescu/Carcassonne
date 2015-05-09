@@ -1,0 +1,30 @@
+div(flex='100', layout='row', carcassonne-game, layout-wrap)
+  div(flex, ng-hide='gameEnded')
+    div
+      carcassonne-board(height='600', width='900', move='newMove', my-move='nextMove', tile-size='50', follower-removed='removed')
+  md-sidenav(ng-hide='gameEnded', class="md-sidenav-right md-whiteframe-z2", md-component-id="right", md-is-locked-open="$mdMedia('gt-md')")
+    md-toolbar(class="md-theme-light")
+      h1(class="md-toolbar-tools") Sidenav Right {{tilePlaced}}
+    div(flex, layout="column", layout-align="start center")
+      div(flex, ng-repeat='slot in slots', layout='row', layout-align='start start', layout-wrap,
+      style='width:100%; text-align:center;', ng-class='{"current-player" : slot.slot == currentSlot}')
+        div(flex='100', style='padding:8px', ng-style='{color: color(slot.slot)}')
+          | <b> Player:  {{slot.nickname}} {{slot.slot == mySlot?'(You)':''}} </b>
+        div(flex='50') Points: {{slot.points}}
+        div(flex='50') Followers: {{slot.followers}}
+
+
+        //div(ng-show='slot.slot == currentSlot') This guy's playing.
+
+      div(flex)
+        img(ng-src='tiles/{{currentTile}}', width='200', height='200')
+        md-button(ng-click='testRemove()') Remove
+        | {{gameEnded}}
+
+  md-card(flex='100', ng-show='gameEnded')
+    div(class='md-whiteframe-z1', layout='column', layout-align='center center')
+      md-list
+        md-list-item.md-2-line(ng-repeat='player in gameSummary | orderBy:"-points" track by $index')
+          h3(ng-style='{color:color(player.slot)}') {{$index + 1}} {{player.nickname}}
+          h4 Points: {{player.points}}
+          md-divider

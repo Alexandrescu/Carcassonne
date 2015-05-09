@@ -1,9 +1,27 @@
-name := "Carcassonne"
+import sbt.Keys._
 
-version := "1.0"
+autoScalaLibrary := false
 
-scalaVersion := "2.11.5"
+lazy val commonSettings = Seq(
+  version := "1.0",
+  scalaVersion := "2.11.5"
+)
 
-libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
+lazy val carcassonne = (project in file(".")).
+  settings(commonSettings: _*).
+  settings(
+    name := "Carcassonne",
+    libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1",
+    libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test",
+    libraryDependencies += "com.github.nkzawa" % "socket.io-client" % "0.4.1",
+    libraryDependencies += "com.corundumstudio.socketio" % "netty-socketio" % "1.7.7",
+    libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.10",
+    libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.10",
+    libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.2.10",
+    libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
+  )
 
-lazy val game = (project in file("./game/.")).settings(name := "game")
+lazy val game = (project in file("./game/.")).
+  settings(commonSettings: _*).
+  settings(name := "game").
+  dependsOn(carcassonne % "compile->compile;test->test")
