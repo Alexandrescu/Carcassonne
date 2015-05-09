@@ -22,7 +22,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
       var socket = $socket.io('http://' + host + ':1337/' + $routeParams.gameName);
       //var socket = $socket.io('http://' + host + ':1337/');
 
-      if($routeParams.slot) {
+      if($routeParams.slot && $routeParams.slot != "undefined") {
         $scope.mySlot = $routeParams.slot;
         socket.emit('connectAs', {
           slot: $routeParams.slot,
