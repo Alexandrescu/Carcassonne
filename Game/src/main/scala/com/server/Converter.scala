@@ -77,7 +77,7 @@ object Converter {
     }
   }
 
-  private def directionToString(direction : Direction): String = {
+  def directionToString(direction : Direction): String = {
     direction match {
       case Up => "Up"
       case Down => "Down"

@@ -1,28 +1,51 @@
 package com.client
 
-import com.board.{Move, PossibleMove, RemovedFollower}
-import com.corundumstudio.socketio.SocketIOClient
+import com.ai.AiFlag
+import com.ai.random.RandomAI
+import com.board.{PossibleMove, RemovedFollower, Move}
+import com.game.Game
 import com.player.Player
+import com.server.json.GameClientPlayer
 import com.tile.Tile
 
 import scala.collection.mutable.ArrayBuffer
 
-class AiClient extends Client{
-  override def slot: Int = ???
+class AiClient(flag : Int, private val _slot : Int, private val _token : String, private val _name : String) extends Client{
+  var game : Option[Game] = None
 
-  override def token: String = ???
+  val ai = flag match {
+    case AiFlag.Random => new RandomAI(this)
+    case _ => new RandomAI(this)
+  }
 
-  override def name: String = ???
+  private val _player = new Player(slot)
+  override def player: Player = _player
 
-  override def player: Player = ???
+  /* Turn is my turn */
+  override def turn(tile: Tile, moves: Set[PossibleMove]): Unit = {
+    game.get.aiMove(ai.getMove(tile, moves), this)
+  }
 
-  override def socketClient: SocketIOClient = ???
+  /* Current state is when you connect, might be able to remove this */
+  override def currentState(moves: ArrayBuffer[Either[Move, RemovedFollower]]): Unit = {}
 
-  override def socketClient_=(socketIOClient: SocketIOClient): Unit = ???
+  /* Inform on a draw */
+  override def draw(currentTile: Tile, player: Player): Unit = {}
 
-  override def turn(tile: Tile, moves: Set[PossibleMove]): Unit = ???
+  /* Move that someone played */
+  override def movePlayed(move: Either[Move, RemovedFollower]): Unit = {}
 
-  override def currentState(moves: ArrayBuffer[Either[Move, RemovedFollower]]): Unit = ???
+  /* Callback on the move, if something happened */
+  override def playedMoveInfo(valid: Boolean): Unit = {}
 
-  override def movePlayed(move: Either[Move, RemovedFollower]): Unit = ???
+  /* End of game results */
+  override def endGame(summary: List[GameClientPlayer]): Unit = {}
+
+  override def slot: Int = _slot
+
+  override def name: String = _name
+
+  def registerGame(game: Game): Unit = {
+    this.game = Some(game)
+  }
 }

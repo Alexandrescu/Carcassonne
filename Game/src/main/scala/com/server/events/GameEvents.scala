@@ -1,6 +1,7 @@
 package com.server.events
 
 import com.board.Move
+import com.client.Client
 import com.corundumstudio.socketio.annotation.{OnConnect, OnEvent}
 import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
 import com.game.Game
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConversions._
 
-class GameEvents(val game : Game, val name : String = "Game Event") {
+class GameEvents(val game : Game, val namespace: SocketIONamespace, val name : String = "Game Event") {
   val logger : Logger = Logger(LoggerFactory.getLogger(name))
 
   @OnConnect
@@ -45,40 +46,44 @@ class GameEvents(val game : Game, val name : String = "Game Event") {
   @OnEvent("playerMove")
   def onPlayerMove(client : SocketIOClient, gameMove : GameMove): Unit = {
     val gameClient = game.getClient(client)
-    if(game.isCurrentPlayer(gameClient)) {
-      val move : Move = Converter.toMove(gameMove, game.currentTile, gameClient.player)
+    runMove(gameMove, gameClient)
+  }
 
+  def nextRound() : Unit = {
+    if(game finished) {
+      namespace.getBroadcastOperations.sendEvent("gameEnd", new GameSlots((game summary).toList))
+      return
+    }
+    game.next()
+  }
+
+  def runMove(gameMove : GameMove, client : Client): Unit = {
+    if(game.isCurrentPlayer(client)) {
+      val move : Move = Converter.toMove(gameMove, game.currentTile, client.player)
       if(game.isMove(move)) {
         val newMoveList = game.setMove(move)
 
-        client.sendEvent("GameValid", new GameValid("Move applied."))
+        client.playedMoveInfo(valid = true)
 
         // Telling people what has happened
         for(move <- newMoveList) move match {
           case Left(m) =>
-            client.getNamespace.getBroadcastOperations.sendEvent("gameMove", Converter.toGameMove(m))
-            client.getNamespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
+            namespace.getBroadcastOperations.sendEvent("gameMove", Converter.toGameMove(m))
+            namespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
           case Right(f) =>
-            client.getNamespace.getBroadcastOperations.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
-            client.getNamespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
+            namespace.getBroadcastOperations.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
+            namespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
         }
 
-        nextRound(client.getNamespace)
+        nextRound()
       }
       else {
-        client.sendEvent("GameError", new GameError("Not a valid move."))
+        client.playedMoveInfo(valid = false)
       }
     }
     else {
-      client.sendEvent("GameError", new GameError("Not your turn."))
+      client.playedMoveInfo(valid = false)
     }
-  }
 
-  def nextRound(space : SocketIONamespace) : Unit = {
-    if(game finished) {
-      space.getBroadcastOperations.sendEvent("gameEnd", new GameSlots((game summary).toList))
-      return
-    }
-    game.next()
   }
 }

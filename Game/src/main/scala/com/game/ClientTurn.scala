@@ -1,6 +1,6 @@
 package com.game
 
-import com.client.Client
+import com.client.{RealClient, Client}
 import com.corundumstudio.socketio.SocketIOClient
 import com.server.json.GameClient
 
@@ -11,11 +11,13 @@ class ClientTurn(val clients : Array[Client]) {
   val gameSize = clients.length
 
   def updateClient(socketClient: SocketIOClient, info: GameClient): Client = {
-    for(client <- clients) {
-      if(info.slot == client.slot && info.token == client.token) {
-        client.socketClient = socketClient
-        client.connected = true
-        return client
+    for(client <- clients) client match {
+      case realClient : RealClient => {
+        if (info.slot == realClient.slot && info.token == realClient.token) {
+          realClient.socketClient = socketClient
+          realClient.connected = true
+          return realClient
+        }
       }
     }
     throw UninitializedFieldError("No client with this slot and token.")
