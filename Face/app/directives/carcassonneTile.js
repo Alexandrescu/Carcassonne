@@ -24,14 +24,13 @@ carcassonne.directive('carcassonneTile', ['$d3', 'TileRegions', function($d3, Ti
         1 -> left
         3 -> right
        */
-      var UP = 0;
-      var DOWN = 2;
+      var RIGHT = 3;
 
       var tileLetter = angular.lowercase(scope.tile);
       var tileSize = scope.tileSize;
       var tileVisible = false;
       var tilePlaced = false;
-      var tileDirection = DOWN;
+      var tileDirection = RIGHT;
       var tileRotation = 0;
       var tileMoves = {};
       var tileX = 0;

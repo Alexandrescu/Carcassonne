@@ -14,7 +14,6 @@ class ServerScala {
   val logger = Logger(LoggerFactory.getLogger("Carcassonne Server"))
 
   val config = new Configuration()
-  //config.setHostname("localhost")
   config.setPort(1337)
 
   val server : SocketIOServer = new SocketIOServer(config)

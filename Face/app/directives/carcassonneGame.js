@@ -6,12 +6,12 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
     controller: function($scope) {
 
       $scope.gameEnded = false;
-      var colorMap = ['red', 'blue'];
+      var colorMap = ['red', 'blue', 'green', 'yellow', 'purple', 'grey'];
       this.color = function(slot) {
         if(slot == -2 && $routeParams.slot) {
           return colorMap[$routeParams.slot];
         }
-        if(slot >= 0) {
+        if(slot >= 0 && slot < 6) {
           return colorMap[slot];
         }
         return 'black';

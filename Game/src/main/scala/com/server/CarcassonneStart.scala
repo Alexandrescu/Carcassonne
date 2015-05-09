@@ -3,10 +3,8 @@ package com.server
 object CarcassonneStart {
   def main(args: Array[String]): Unit = {
     val server = new ServerScala
-    //val server = new TestServer
     try {
       server.start
-      //new Server()
 
       var stopIntercept = false
       while(!stopIntercept) {

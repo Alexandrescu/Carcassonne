@@ -91,7 +91,13 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
     board.setMove(move)
 
     playedTile = true
-    moveQueue.takeRight(moveQueue.size - startPoint).toArray
+    val result = moveQueue.takeRight(moveQueue.size - startPoint).toArray
+    for(move <- result) {
+      for(client <- clientTurn.clients) {
+        client.movePlayed(move)
+      }
+    }
+    result
   }
 
   /* Informing a client when connecting to the game */
