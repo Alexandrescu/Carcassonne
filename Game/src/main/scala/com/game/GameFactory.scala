@@ -2,17 +2,18 @@ package com.game
 
 import com.board.{GameBoard, SectionKeeper, StandardLogic}
 import com.client.{AiClient, Client, RealClient}
+import com.corundumstudio.socketio.SocketIONamespace
 import com.server.json.RoomDetails
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
 object GameFactory {
-  def standardGame(roomDetails: RoomDetails) : Game =
-    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new StandardTileBag, roomDetails)
+  def standardGame(roomDetails: RoomDetails, namespace : SocketIONamespace, gameName : String) : Game =
+    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new StandardTileBag, roomDetails, namespace, gameName)
 
-  def testGame(roomDetails: RoomDetails) : Game =
-    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new TestTileBag, roomDetails)
+  def testGame(roomDetails: RoomDetails, namespace : SocketIONamespace, gameName : String) : Game =
+    new Game(new GameBoard(new StandardLogic, new SectionKeeper), new TestTileBag, roomDetails, namespace, gameName)
 
   implicit def roomDetailsToPlayerTurn(roomDetails: RoomDetails) : ClientTurn = {
     val clientList = ArrayBuffer[Client]()

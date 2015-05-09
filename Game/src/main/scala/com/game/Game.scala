@@ -1,19 +1,21 @@
 package com.game
 
 import com.board.{GameBoard, Move, PossibleMove, RemovedFollower}
-import com.client.Client
-import com.corundumstudio.socketio.SocketIOClient
+import com.client.{Client, RealClient}
+import com.corundumstudio.socketio.{SocketIONamespace, SocketIOClient}
 import com.player.{Follower, Player, PlayerObserver}
 import com.server.Converter
-import com.server.json.{GameSlots, GameClient, GameClientPlayer}
+import com.server.events.GameEvents
+import com.server.json.{GameClient, GameClientPlayer, GameSlots}
 import com.tile.Tile
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
-import scala.collection.mutable.ArrayBuffer
 import scala.collection.JavaConversions._
+import scala.collection.mutable.ArrayBuffer
 
-class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
+class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespace: SocketIONamespace, gameName : String) {
+  val gameEvents = new GameEvents(this, namespace, gameName)
   type EitherMove = Either[Move, RemovedFollower]
 
   /* Observing follower moves */
@@ -42,28 +44,37 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
   def next(): Unit = {
     // MAYBE CHECK IF THE GAME IS DONE
     if(!tileBag.hasNext) {
-      logger.info("GAME HAS ENDED")
+      logger.info("GAME HAS ENDED!")
       return
     }
 
     playedTile = false
     val gameClient = clientTurn.next()
     var currentTile = tileBag.next()
-
     currentMoves = board.getMoves(currentTile, gameClient.player)
     while(currentMoves.size == 0 && tileBag.hasNext) {
       currentTile = tileBag.next()
+      currentMoves = board.getMoves(currentTile, gameClient.player)
     }
 
     if(currentMoves.size == 0) {
       playedTile = true
-      gameClient.socketClient.getNamespace.getBroadcastOperations
-        .sendEvent("gameEnd", new GameSlots(summary.toList))
+      val endGameResult = summary
+
+      for(client <- clientTurn.clients) {
+        client.endGame(endGameResult)
+      }
+
+      namespace.getBroadcastOperations
+        .sendEvent("gameEnd", new GameSlots(endGameResult.toList))
       return
     }
 
     // Sending the draw to people
-    gameClient.socketClient.getNamespace.getBroadcastOperations.
+    for(client <- clientTurn.clients) {
+      client.draw(currentTile, gameClient.player)
+    }
+    namespace.getBroadcastOperations.
       sendEvent("gameDraw", Converter.toGameDraw(currentTile, gameClient.player))
 
     gameClient.turn(currentTile, currentMoves)
@@ -123,10 +134,12 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn) {
 
   /* Getters */
   def getClient(client : SocketIOClient) : Client = {
-    for(gameClient <- clientTurn.clients) {
-      if(gameClient.socketClient.getSessionId == client.getSessionId) {
-        return gameClient
-      }
+    for(gameClient <- clientTurn.clients) gameClient match {
+      case realClient : RealClient =>
+        if(realClient.socketClient.getSessionId == client.getSessionId) {
+          return realClient
+        }
+      case _ =>
     }
 
     throw new Error("No such client in the game. Please register first.")
