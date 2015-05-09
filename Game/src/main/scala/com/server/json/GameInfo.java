@@ -1,9 +1,10 @@
 package com.server.json;
 
-public class GameValid {
+public class GameInfo {
     public String message;
 
-    public GameValid(String message) {
+    public GameInfo(String message) {
         this.message = message;
     }
+
 }

@@ -49,6 +49,7 @@ class RoomSet {
               newSlot.isAI = true
             case None =>
               newSlot.isEmpty = true
+            case _ =>
           }
           newSlot
         }).toList
