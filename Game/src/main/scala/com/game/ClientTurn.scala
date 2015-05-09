@@ -13,10 +13,10 @@ class ClientTurn(val clients : Array[Client]) {
   def updateClient(socketClient: SocketIOClient, info: GameClient): Client = {
     for(client <- clients) client match {
       case realClient : RealClient => {
-        if (info.slot == client.slot && info.token == client.token) {
+        if (info.slot == realClient.slot && info.token == realClient.token) {
           realClient.socketClient = socketClient
-          client.connected = true
-          return client
+          realClient.connected = true
+          return realClient
         }
       }
     }

@@ -13,7 +13,7 @@ class RealClient(private val _slot : Int, private val _token : String, private v
   /* Initializations */
   override def slot: Int = _slot
 
-  override def token: String = _token
+  def token: String = _token
 
   override def name: String = _name
 

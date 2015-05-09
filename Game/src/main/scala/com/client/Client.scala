@@ -9,7 +9,6 @@ import scala.collection.mutable.ArrayBuffer
 
 trait Client {
   def slot : Int
-  def token : String
   def name : String
 
   /* Turn is my turn */

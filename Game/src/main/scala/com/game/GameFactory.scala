@@ -1,5 +1,6 @@
 package com.game
 
+import com.ai.AiFlag
 import com.board.{GameBoard, SectionKeeper, StandardLogic}
 import com.client.{AiClient, Client, RealClient}
 import com.corundumstudio.socketio.SocketIONamespace
@@ -20,7 +21,7 @@ object GameFactory {
     for(slot <- roomDetails.slots.toList) {
       if(!slot.isEmpty) {
         val client =
-          if(slot.isAI) new AiClient
+          if(slot.isAI) new AiClient(AiFlag.Random, slot.slot, slot.token, slot.playerName)
           else new RealClient(slot.slot, "token" + slot.slot, slot.playerName)
         clientList += client
       }

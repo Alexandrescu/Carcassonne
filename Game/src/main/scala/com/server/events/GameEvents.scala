@@ -46,13 +46,7 @@ class GameEvents(val game : Game, val namespace: SocketIONamespace, val name : S
   @OnEvent("playerMove")
   def onPlayerMove(client : SocketIOClient, gameMove : GameMove): Unit = {
     val gameClient = game.getClient(client)
-    if(game.isCurrentPlayer(gameClient)) {
-      val move : Move = Converter.toMove(gameMove, game.currentTile, gameClient.player)
-      runMove(move, gameClient)
-    }
-    else {
-      client.sendEvent("GameError", new GameInfo("Not your turn."))
-    }
+    runMove(gameMove, gameClient)
   }
 
   def nextRound() : Unit = {
@@ -63,26 +57,33 @@ class GameEvents(val game : Game, val namespace: SocketIONamespace, val name : S
     game.next()
   }
 
-  def runMove(move : Move, client : Client): Unit = {
-    if(game.isMove(move)) {
-      val newMoveList = game.setMove(move)
+  def runMove(gameMove : GameMove, client : Client): Unit = {
+    if(game.isCurrentPlayer(client)) {
+      val move : Move = Converter.toMove(gameMove, game.currentTile, client.player)
+      if(game.isMove(move)) {
+        val newMoveList = game.setMove(move)
 
-      client.playedMoveInfo(valid = true)
+        client.playedMoveInfo(valid = true)
 
-      // Telling people what has happened
-      for(move <- newMoveList) move match {
-        case Left(m) =>
-          namespace.getBroadcastOperations.sendEvent("gameMove", Converter.toGameMove(m))
-          namespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
-        case Right(f) =>
-          namespace.getBroadcastOperations.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
-          namespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
+        // Telling people what has happened
+        for(move <- newMoveList) move match {
+          case Left(m) =>
+            namespace.getBroadcastOperations.sendEvent("gameMove", Converter.toGameMove(m))
+            namespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
+          case Right(f) =>
+            namespace.getBroadcastOperations.sendEvent("followerRemoved", Converter.toGameRemoveFollower(f))
+            namespace.getBroadcastOperations.sendEvent("gameSlots", new GameSlots(game.getSlots.toList))
+        }
+
+        nextRound()
       }
-
-      nextRound()
+      else {
+        client.playedMoveInfo(valid = false)
+      }
     }
     else {
       client.playedMoveInfo(valid = false)
     }
+
   }
 }
