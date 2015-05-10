@@ -33,8 +33,8 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
     Small values will be very selective, while large ones will give uniform search
   */
   val random = new Random()
-  val uctConstant = 1
-  val uctVisits = 10
+  val uctConstant :Double = 4
+  val uctVisits : Int = 10
   
   def UCTSelect(node : Node) : Option[Node] = {
     var bestUCT = 0.0
@@ -46,8 +46,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
       val next = nextNode.get
 
       val uctValue = if(next.visits > 0) {
-        val uct = uctConstant * Math.sqrt(Math.log(node.visits)/ next.visits)
-        next.winRate + uct
+        uctConstant * (Math.sqrt(Math.log(node.visits)/ next.visits) + next.winRate)
       }
       else {
         // Play the random unexplored move
@@ -115,10 +114,10 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
         board.setMove(move)
         tiles.remove(move.tile)
         /* We might fiddle with this when more players are added*/
-        1 - playSimulation(nextNode)
+        playSimulation(nextNode)
       }
 
-    node.update(1 - randomResult)
+    node.update(randomResult)
     randomResult
   }
 
@@ -175,6 +174,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
   def expand(node : Node): Unit = {
     val expandingTiles : Set[Tile] = knownTile match {
       case Some(tile) =>
+        playerTurn.setCurrent(mySlot - 1)
         Set(tiles.getTile(tile.identifier))
       case None =>
         tiles.getEntireTileBag
@@ -196,6 +196,10 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
             tile.orientation = move.direction
             val newNode = new Node
             newNode.move = new Move(tile, move.place, section, player)
+
+            val (pDelta, fDelta) = Factory.moveValuation(moveList, newNode.move.get, playerNumber, mySlot, player.slot)
+
+            newNode.stats(pDelta, fDelta)
 
             /* Now append the new Node in the right place */
             if (node == lastSeenNode) {
