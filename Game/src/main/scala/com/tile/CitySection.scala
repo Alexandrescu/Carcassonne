@@ -15,7 +15,7 @@ class CitySection(override val frontEndId : Int, initialValue : Int = 1) extends
   override protected def canCloseInternal: Boolean = _openEdges == 0
 
   /* Methods which return the points per unit that count at the end */
-  override protected def pointsInGame: Int = 2
+  override def pointsInGame: Int = 2
 
   /**
    * Removes things that stops sections form closing:
@@ -27,7 +27,7 @@ class CitySection(override val frontEndId : Int, initialValue : Int = 1) extends
    */
   override def removeOpenInternal(x: Int): Unit = _openEdges -= x
 
-  override protected def pointsAtEnd: Int = 1
+  override def pointsAtEnd: Int = 1
 
   override def openInternal: Int = _openEdges
 

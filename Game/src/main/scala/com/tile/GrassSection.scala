@@ -14,7 +14,7 @@ class GrassSection(override val frontEndId : Int, initialValue : Int = 0) extend
   override protected def canCloseInternal: Boolean = false
 
   /* Methods which return the points per unit that count at the end */
-  override protected def pointsInGame: Int = 0
+  override def pointsInGame: Int = 0
 
   /**
    * Removes things that stops sections form closing:
@@ -26,7 +26,7 @@ class GrassSection(override val frontEndId : Int, initialValue : Int = 0) extend
    */
   override def removeOpenInternal(x: Int): Unit = {}
 
-  override protected def pointsAtEnd: Int = 3
+  override def pointsAtEnd: Int = 3
 
   override def openInternal: Int = 0
 

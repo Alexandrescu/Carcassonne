@@ -15,7 +15,7 @@ class MonasterySection(override val frontEndId : Int, initialValue : Int = 1) ex
   override protected def canCloseInternal: Boolean = _surrounding == 0
 
   /* Methods which return the points per unit that count at the end */
-  override protected def pointsInGame: Int = 1
+  override def pointsInGame: Int = 1
 
   /**
    * Removes things that stops sections form closing:
@@ -30,7 +30,7 @@ class MonasterySection(override val frontEndId : Int, initialValue : Int = 1) ex
     addValue(x)
   }
 
-  override protected def pointsAtEnd: Int = 1
+  override def pointsAtEnd: Int = 1
 
   override def openInternal: Int = _surrounding
 }

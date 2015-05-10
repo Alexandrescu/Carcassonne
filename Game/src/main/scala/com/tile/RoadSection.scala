@@ -26,9 +26,9 @@ class RoadSection(override val frontEndId : Int, initialValue : Int = 1) extends
   override def removeOpenInternal(x: Int): Unit = _openEdges -= x
 
   /* Methods which return the points per unit that count at the end */
-  override protected def pointsInGame: Int = 1
+  override def pointsInGame: Int = 1
 
-  override protected def pointsAtEnd: Int = 1
+  override def pointsAtEnd: Int = 1
 
   override def openInternal: Int = _openEdges
 }

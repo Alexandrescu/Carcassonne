@@ -107,8 +107,8 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
   def removeValue(x : Int) = findRoot()._value -= x
 
   /* Methods which return the points per unit that count at the end */
-  protected def pointsInGame : Int
-  protected def pointsAtEnd : Int
+  def pointsInGame : Int
+  def pointsAtEnd : Int
   protected def canClose : Boolean = findRoot().canCloseInternal
 
   private var _closed : Boolean = false
