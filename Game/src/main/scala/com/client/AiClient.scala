@@ -1,6 +1,7 @@
 package com.client
 
-import com.ai.AiFlag
+import com.ai.uct.AiUct
+import com.ai.{AI, AiFlag}
 import com.ai.random.RandomAI
 import com.board.{PossibleMove, RemovedFollower, Move}
 import com.game.Game
@@ -13,8 +14,9 @@ import scala.collection.mutable.ArrayBuffer
 class AiClient(flag : Int, private val _slot : Int, private val _token : String, private val _name : String) extends Client{
   var game : Option[Game] = None
 
-  val ai = flag match {
+  val ai : AI = flag match {
     case AiFlag.Random => new RandomAI(this)
+    case AiFlag.MC => new AiUct(this, 2)
     case _ => new RandomAI(this)
   }
 
@@ -27,13 +29,17 @@ class AiClient(flag : Int, private val _slot : Int, private val _token : String,
   }
 
   /* Current state is when you connect, might be able to remove this */
-  override def currentState(moves: ArrayBuffer[Either[Move, RemovedFollower]]): Unit = {}
+  override def currentState(moves: ArrayBuffer[Either[Move, RemovedFollower]]): Unit = {
+    ai.currentState(moves)
+  }
 
   /* Inform on a draw */
   override def draw(currentTile: Tile, player: Player): Unit = {}
 
   /* Move that someone played */
-  override def movePlayed(move: Either[Move, RemovedFollower]): Unit = {}
+  override def movePlayed(move: Either[Move, RemovedFollower]): Unit = {
+    ai.movePlayed(move)
+  }
 
   /* Callback on the move, if something happened */
   override def playedMoveInfo(valid: Boolean): Unit = {}

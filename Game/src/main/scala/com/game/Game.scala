@@ -2,11 +2,11 @@ package com.game
 
 import com.board.{GameBoard, Move, PossibleMove, RemovedFollower}
 import com.client.{AiClient, Client, RealClient}
-import com.corundumstudio.socketio.{SocketIONamespace, SocketIOClient}
+import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
 import com.player.{Follower, Player, PlayerObserver}
 import com.server.Converter
 import com.server.events.GameEvents
-import com.server.json.{GameMove, GameClient, GameClientPlayer, GameSlots}
+import com.server.json.{GameClient, GameClientPlayer, GameMove, GameSlots}
 import com.tile.Tile
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
@@ -28,13 +28,6 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
     }
   }
   clientTurn.clients.foreach(_.player.registerObserver(observer))
-  //Adding games to AiS
-  for(client <- clientTurn.clients) client match {
-    case ai : AiClient =>
-      ai.registerGame(this)
-      ai.connected = true
-    case _ =>
-  }
 
   val logger : Logger = Logger(LoggerFactory.getLogger("Game"))
   private var moveQueue : ArrayBuffer[EitherMove] =
@@ -110,11 +103,6 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
 
     playedTile = true
     val result = moveQueue.takeRight(moveQueue.size - startPoint).toArray
-    for(move <- result) {
-      for(client <- clientTurn.clients) {
-        client.movePlayed(move)
-      }
-    }
     result
   }
 
@@ -195,6 +183,15 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
     if(isCurrentPlayer(aiClient)) {
       gameEvents.runMove(move, aiClient)
     }
+  }
+
+  //Adding games to AiS
+  for(client <- clientTurn.clients) client match {
+    case ai : AiClient =>
+      ai.registerGame(this)
+      ai.connected = true
+      ai.currentState(moveQueue.clone())
+    case _ =>
   }
 
   runGame()
