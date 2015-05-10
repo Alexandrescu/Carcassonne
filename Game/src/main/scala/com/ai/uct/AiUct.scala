@@ -14,7 +14,8 @@ class AiUct(client : Client, gameSize : Int) extends AI{
 
   override def getMove(tile: Tile, moves: Set[PossibleMove]): GameMove = {
     val search = new UCT(moveList, gameSize, Some(tile), client.slot)
-    val move = search.uctSearch(30)
+    //val move = search.uctSearch(30)
+    val move = search.uctSearchSeconds(15)
 
     val sectionId : Int = move.toOwnFromTile match {
       case Some(section) => section.frontEndId

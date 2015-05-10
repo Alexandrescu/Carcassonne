@@ -26,8 +26,6 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
       tiles.remove(myMove.tile)
     case Right(follower) =>
   }
-
-  println("Generating board complete.")
   /* From here on we should have a perfect copy of the board */
 
   /*
@@ -100,7 +98,13 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
           expand(node)
         }
 
-        val nextNode = UCTSelect(node).get
+        val nextNode = UCTSelect(node) match {
+          case Some(n) => n
+          case None =>
+            println("Done weird thing. Maybe eog?")
+            return 0
+        }
+
 
         if (nextNode.move.isEmpty) {
           throw UninitializedFieldError("Move has not been set.")
@@ -150,6 +154,20 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
     bestNode.move.get
   }
 
+  def uctSearchSeconds(seconds : Int) : Move = {
+    val root = new Node
+    expand(root)
+
+    val start = java.lang.System.currentTimeMillis()
+    val end = start + seconds * 1000 // 1000 ms/sec
+    while(java.lang.System.currentTimeMillis() < end) {
+      val clone = new UCT(moveList, playerNumber, None, mySlot)
+      clone.playSimulation(root)
+    }
+
+    val bestNode = root.getBest
+    bestNode.move.get
+  }
   /*
       When we are expanding the node, we either know are draw, or we just add a move for every tile type left.
       Expanding also takes us to the next player.
