@@ -1,12 +1,13 @@
 package com.ai.random
 
 import com.ai.AI
-import com.board.PossibleMove
+import com.board.{RemovedFollower, Move, PossibleMove}
 import com.client.Client
 import com.server.Converter
 import com.server.json.GameMove
 import com.tile.Tile
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 class RandomAI(client : Client) extends AI {
@@ -22,4 +23,8 @@ class RandomAI(client : Client) extends AI {
 
     new GameMove(movePicked.place._1, movePicked.place._2, Converter.directionToString(movePicked.direction), sectionId)
   }
+
+  override def movePlayed(moveOrFollower: Either[Move, RemovedFollower]): Unit = {}
+
+  override def currentState(moveOrFollowers: ArrayBuffer[Either[Move, RemovedFollower]]): Unit = {}
 }
