@@ -40,7 +40,9 @@ class CitySection(override val frontEndId : Int, initialValue : Int = 1) extends
 
   def valueGrass(): Unit = {
     for(grass <- surroundingGrass) {
-      grass.addValue(1)
+      grass.findRoot() match {
+        case rootGrass : GrassSection => rootGrass.addClosedCity(Set(this))
+      }
     }
   }
 }

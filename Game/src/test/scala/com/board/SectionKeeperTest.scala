@@ -34,6 +34,9 @@ class SectionKeeperTest extends FlatSpec with PrivateMethodTester {
     cityA.addGrass(Set(grassB))
     cityA.valueGrass()
 
+    rootA.closeAtEnd()
+    rootB.closeAtEnd()
+
     assert(rootA.value == 1 && rootB.value == 1)
   }
 

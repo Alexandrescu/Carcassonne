@@ -29,4 +29,13 @@ class GrassSection(override val frontEndId : Int, initialValue : Int = 0) extend
   override protected def pointsAtEnd: Int = 3
 
   override def openInternal: Int = 0
+
+  private var cities : Set[CitySection] = Set()
+  def addClosedCity(citySection: Set[CitySection]): Unit = {
+    cities ++= citySection
+  }
+
+  def getClosedCities : Set[CitySection] = cities
+
+  def valueCities() = addValue(cities.size)
 }
