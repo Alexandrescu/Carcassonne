@@ -19,6 +19,7 @@ class ClientTurn(val clients : Array[Client]) {
           return realClient
         }
       }
+      case _ =>
     }
     throw UninitializedFieldError("No client with this slot and token.")
   }
