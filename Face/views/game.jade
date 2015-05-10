@@ -1,5 +1,5 @@
 div(flex='100', layout='row', carcassonne-game, layout-wrap)
-  div(flex, ng-hide='gameEnded')
+  div(flex)
     div
       carcassonne-board(height='600', width='900', move='newMove', my-move='nextMove', tile-size='50', follower-removed='removed')
   md-sidenav(ng-hide='gameEnded', class="md-sidenav-right md-whiteframe-z2", md-component-id="right", md-is-locked-open="$mdMedia('gt-md')")
