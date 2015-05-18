@@ -8,15 +8,15 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : Int, knownTile : Option[Tile], mySlot : Int) {
-
   /*
-      We have a perfect copy of the board with a new set of tiles created from the moveList.
-      We are going to run the simulation on this.
-   */
+    We create a perfect copy of the board and the moves from the moveList.
+    This will update our player model and tile bag accordingly.
+    Note: a tile bag is a collection of all the tiles in the basic game of Carcassonne.
+  */
 
-  val board : GameBoard = new GameBoard(Factory.logic, Factory.keeper)
-  val tiles : StandardTileBag = new StandardTileBag
-  val playerTurn: PlayerTurn = new PlayerTurn(playerNumber)
+  private val board : GameBoard = new GameBoard(Factory.logic, Factory.keeper)
+  private val tiles : StandardTileBag = new StandardTileBag
+  private val playerTurn: PlayerTurn = new PlayerTurn(playerNumber)
 
   for(m <- moveList) m match {
     case Left(move) =>
@@ -26,49 +26,54 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
       tiles.remove(myMove.tile)
     case Right(follower) =>
   }
-  /* From here on we should have a perfect copy of the board */
+  /* From here onwards we should have a perfect copy of the board */
 
   /*
-    This varies the selectivity of the search:
-    Small values will be very selective, while large ones will give uniform search
+    The uctConstant varies the selectivity of the search:
+    Small values will be very selective, while large ones will give uniform search.
+
+    The uctVisits is enforcing a minimum number of exploration of a node before we expand.
   */
-  val random = new Random()
-  val uctConstant :Double = 4
-  val uctVisits : Int = 10
-  
+  private val random = new Random()
+  private val uctConstant :Double = 4
+  private val uctVisits : Int = 10
+  private val oo = 10000 /* infinity */
+
+  /* Selection phase */
   def UCTSelect(node : Node) : Option[Node] = {
     var bestUCT = 0.0
     var result : Option[Node] = None
 
-    var nextNode = node.child
-
-    while(nextNode nonEmpty) {
-      val next = nextNode.get
-
-      val uctValue = if(next.visits > 0) {
-        uctConstant * (Math.sqrt(Math.log(node.visits)/ next.visits) + next.winRate)
+    for(child <- node.children) {
+      val uctValue = if(child.visits > 0) {
+        /* UCT Formula; the 2 in the sqrt is supressed in the uctConstant */
+        uctConstant * (Math.sqrt(Math.log(node.visits)/ child.visits) + child.winRate)
       }
       else {
-        // Play the random unexplored move
-        10000 + random.nextInt(1000)
+        /* childNode not visited, so the fraction would have yield infinity */
+        oo + random.nextInt(1000)
       }
 
+      /* Updating the best node to select based on UCT */
       if(uctValue > bestUCT) {
         bestUCT = uctValue
-        result = nextNode
+        result = Some(child)
       }
-
-      nextNode = next.sibling
     }
     result
   }
 
+  /*
+      Simulation phase
+      Doing a random playout and returning the value of the simulation, X, in the interval [0, 1].
+  */
   def playRandomGame()  : Double = {
     while(tiles.hasNext) {
       val nextPlayer = playerTurn.next()
-
       var nextTile = tiles.next()
+
       var moves = board.getMoves(nextTile, nextPlayer).toVector
+      /* In case we can't play the tile, we discard the tile */
       while(moves.size == 0) {
         nextTile = tiles.next()
         moves = board.getMoves(nextTile, nextPlayer).toVector
@@ -80,45 +85,57 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
       board.setMove(new Move(nextTile, movePicked.place, sectionPicked, nextPlayer))
     }
 
+    /* This iteration is doing the end evaluation of the board. */
     for(section <- tiles.allSections) {
       section.closeAtEnd()
     }
     playerTurn.winResult(mySlot)
   }
 
+  /* Exploration + Backpropagation phase */
   def playSimulation(node : Node): Double = {
-    val randomResult =
-      if (node.child.isEmpty && node.visits < uctVisits) {
+    val simulationResult =
+      if (!node.hasChildren && node.visits < uctVisits) {
         // Run a number of simulations before children are expanded
         playRandomGame()
       }
       else {
-        if (node.child.isEmpty) {
+        /*
+          We either haven't reached a terminal node (leaf) or
+          we have explored this sequence of moves enough time.
+        */
+        if (!node.hasChildren) {
           expand(node)
         }
 
         val nextNode = UCTSelect(node) match {
           case Some(n) => n
           case None =>
-            println("Done weird thing. Maybe eog?")
+            // No moves left to explore in the tree
             return 0
         }
 
-
         if (nextNode.move.isEmpty) {
+          // Should always have a move set.
           throw UninitializedFieldError("Move has not been set.")
         }
 
+        /* Translating the move to this current board */
         val move = adoptMove(nextNode.move.get)
 
         board.setMove(move)
         tiles.remove(move.tile)
-        /* We might fiddle with this when more players are added*/
         playSimulation(nextNode)
       }
 
-    node.update(randomResult)
-    randomResult
+    /* Propagating the simulation result in as is, and "reversing" the value when is not my turn. */
+    if(playerTurn.isCurrent(mySlot)) {
+      node.update(1 - simulationResult)
+    }
+    else {
+      node.update(simulationResult)
+    }
+    simulationResult
   }
 
   private def adoptMove(move : Move) : Move = {
@@ -140,6 +157,14 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
     new Move(tile, move.place, section, player)
   }
 
+  /*
+      We are considering 2 types of budget:
+
+      1. iteration number in uctSearch
+      2. number of seconds in uctSearchSeconds
+
+      The state of the root node is encapsuled by initialisation of the object
+  */
   def uctSearch(simulations : Int) : Move = {
     val root = new Node
     expand(root)
@@ -167,28 +192,34 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
     val bestNode = root.getBest
     bestNode.move.get
   }
+
   /*
-      When we are expanding the node, we either know are draw, or we just add a move for every tile type left.
-      Expanding also takes us to the next player.
-   */
+      When expanding the node, we either know the drew tile, or we just add a move for every tile type left.
+  */
   def expand(node : Node): Unit = {
+    /* Deciding the set of tiles for the actions */
     val expandingTiles : Set[Tile] = knownTile match {
       case Some(tile) =>
+        /*
+          Tiles have mutable state, so they are not shared by boards.
+          getTile retreives the currents board copy of that tile.
+        */
         playerTurn.setCurrent(mySlot - 1)
         Set(tiles.getTile(tile.identifier))
       case None =>
         tiles.getEntireTileBag
     }
 
+    /* In case we are expanding a possible tile we keep track of them */
     var expanded : Set[String] = Set()
     val player = playerTurn.next()
+    var children = new ArrayBuffer[Node]()
+
     for(tile <- expandingTiles) {
       if(!expanded(tile.identifier)) {
         expanded += tile.identifier
         /* This is the board at the current state */
         val validMoves = board.getMoves(tile, player)
-
-        var lastSeenNode = node
 
         for (move <- validMoves) {
           for (section <- move.toOwnFromTile) {
@@ -197,24 +228,16 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
             val newNode = new Node
             newNode.move = new Move(tile, move.place, section, player)
 
+            /* Evaluating the immediate reward of this move */
             val (pDelta, fDelta) = Factory.moveValuation(moveList, newNode.move.get, playerNumber, mySlot, player.slot)
-
             newNode.stats(pDelta, fDelta)
 
-            /* Now append the new Node in the right place */
-            if (node == lastSeenNode) {
-              /* Adding child */
-              lastSeenNode.child = Some(newNode)
-            }
-            else {
-              /* Completing the layer, i.e. siblings */
-              lastSeenNode.sibling = Some(newNode)
-            }
-            /* Moving to the next node */
-            lastSeenNode = newNode
+            children += newNode
           }
         }
       }
     }
+
+    node.children = children
   }
 }

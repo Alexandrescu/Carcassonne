@@ -3,55 +3,56 @@ package com.ai.uct
 import com.board.Direction.Direction
 import com.board.Move
 
+import scala.collection.mutable.ArrayBuffer
+
 class Node {
+  private var wins: Double = 0
+  var visits: Int = 0
+
   private var pDelta : Double = 0
   private var fDelta : Double = 0
+
+  private var _children: ArrayBuffer[Node] = new ArrayBuffer()
+  def children : Array[Node] = _children.toArray
+  def children_= (newChildren : ArrayBuffer[Node]) : Unit = _children = newChildren
+  def hasChildren = _children.nonEmpty
+
+  private val pointWorth : Double = 3
+  private val followerWorth : Double = 7
+  private val winWorth : Double = 1
+  private val total : Double = pointWorth + followerWorth + winWorth
+
+  private val pRatio = pointWorth / total
+  private val fRatio = followerWorth / total
+  private val wRatio = winWorth / total
+
   def stats(pointDelta: Double, followerDelta: Double) = {
     pDelta = pointDelta
     fDelta = followerDelta + 7
   }
 
+  def update(value : Double): Unit = {
+    visits += 1
+    wins += value
+  }
 
   def getBest: Node = {
-    var child = this.child
     var best : Option[Node] = None
     var bestValue : Double = -1
-    while(child.isDefined) {
-      if(child.get.winRate > bestValue) {
-        bestValue = child.get.winRate
-        best = child
+
+    for(child <- _children) {
+      if(child.winRate > bestValue) {
+        bestValue = child.winRate
+        best = Some(child)
       }
-      child = child.get.sibling
     }
+
+    if(best isEmpty) {
+      throw UninitializedFieldError("No children.")
+    }
+
     best.get
   }
-
-  var wins: Double = 0
-  var visits: Int = 0
-
-  private var _orientation : Option[Direction] = None
-  private var _move: Option[Move] = None
-  def move_=(move : Move): Unit = {
-    _orientation = Some(move.tile.orientation)
-    _move = Some(move)
-  }
-  def move : Option[Move] = {
-    if(_move isDefined) {
-      _move.get.tile.orientation = _orientation.get
-    }
-    _move
-  }
-  var child: Option[Node] = None
-  var sibling: Option[Node] = None
-
-  val pointWorth : Double = 3
-  val followerWorth : Double = 7
-  val winWorth : Double = 1
-  val total : Double = pointWorth + followerWorth + winWorth
-
-  val pRatio = pointWorth / total
-  val fRatio = followerWorth / total
-  val wRatio = winWorth / total
 
   private def sigmoidFunction(value : Double) : Double = 1 - Math.pow(1.618, -value)
 
@@ -65,8 +66,16 @@ class Node {
     else 0
   }
 
-  def update(value : Double): Unit = {
-    visits += 1
-    wins += value
+  private var _orientation : Option[Direction] = None
+  private var _move: Option[Move] = None
+  def move_=(move : Move): Unit = {
+    _orientation = Some(move.tile.orientation)
+    _move = Some(move)
+  }
+  def move : Option[Move] = {
+    if(_move isDefined) {
+      _move.get.tile.orientation = _orientation.get
+    }
+    _move
   }
 }
