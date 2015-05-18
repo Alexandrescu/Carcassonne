@@ -44,8 +44,8 @@ class Node {
   var child: Option[Node] = None
   var sibling: Option[Node] = None
 
-  val pointWorth : Double = 10
-  val followerWorth : Double = 3
+  val pointWorth : Double = 3
+  val followerWorth : Double = 7
   val winWorth : Double = 1
   val total : Double = pointWorth + followerWorth + winWorth
 

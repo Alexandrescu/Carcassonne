@@ -52,19 +52,4 @@ class Player(val slot : Int, private var observers: Set[PlayerObserver] = Set())
   def removeObserver(observer: PlayerObserver) = {
     observers -= observer
   }
-
-  def latentPoints : Int = {
-    var seen : Set[Section] = Set()
-    var result = points
-    for(follower <- followerBag)
-      if(follower.isPlaced) follower.section match{
-      case Some(section) =>
-        if(!section.closed && !seen(section)) {
-          result += (section.value * section.pointsAtEnd)
-          seen += section
-        }
-      case None =>
-    }
-    result
-  }
 }

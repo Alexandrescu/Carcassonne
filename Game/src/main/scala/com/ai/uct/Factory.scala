@@ -10,15 +10,24 @@ object Factory {
   val logic = new StandardLogic
 
   /* Returns the point delta and the follower delta */
-  def moveValuation(moveList: ArrayBuffer[Either[Move, RemovedFollower]], newMove : Move, playerNumber : Int, mySlot : Int, currentPlayer : Int): (Int, Int) = {
-    if(currentPlayer != mySlot) {
+  def moveValuation(moveList: ArrayBuffer[Either[Move, RemovedFollower]], newMove: Move, playerNumber: Int, mySlot: Int, currentPlayer: Int): (Int, Int) = {
+    if (currentPlayer != mySlot) {
       return (0, 0)
     }
-    val board : GameBoard = new GameBoard(Factory.logic, Factory.keeper)
-    val tiles : StandardTileBag = new StandardTileBag
+
+    val (startPoints, startFollowers) = runGame(moveList.toArray, playerNumber, mySlot)
+    val newList : Array[Either[Move, RemovedFollower]]= moveList.toArray :+ Left(newMove)
+    val (endPoints, endFollowers) = runGame(newList, playerNumber, mySlot)
+
+    (endPoints - startPoints, endFollowers - startFollowers)
+  }
+
+  def runGame(moveList: Array[Either[Move, RemovedFollower]], playerNumber: Int, mySlot: Int): (Int, Int) = {
+    val board: GameBoard = new GameBoard(Factory.logic, Factory.keeper)
+    val tiles: StandardTileBag = new StandardTileBag
     val playerTurn: PlayerTurn = new PlayerTurn(playerNumber)
 
-    def adoptMove(move : Move) : Move = {
+    def adoptMove(move: Move): Move = {
       val tile = tiles.getTile(move.tile.identifier)
       tile.orientation = move.tile.orientation
       val section = move.toOwnFromTile match {
@@ -26,7 +35,7 @@ object Factory {
         case None => None
       }
 
-      val player = if(move.player != null) {
+      val player = if (move.player != null) {
         playerTurn.setCurrent(move.player.slot)
         playerTurn.getBySlot(move.player.slot)
       }
@@ -37,7 +46,7 @@ object Factory {
       new Move(tile, move.place, section, player)
     }
 
-    for(m <- moveList) m match {
+    for (m <- moveList) m match {
       case Left(move) =>
         val myMove = adoptMove(move)
 
@@ -46,21 +55,16 @@ object Factory {
       case Right(follower) =>
     }
 
-    val adoptedMove = adoptMove(newMove)
-    val me =  playerTurn.getBySlot(mySlot)
-    val startPoints = me.points + me.latentPoints
-    val startFollowers = me.followers
+    val me = playerTurn.getBySlot(mySlot)
 
-    board.setMove(adoptedMove)
+    val followers = me.followers
 
-    val endFollowers = me.followers
-
-    for(section <- tiles.allSections) {
+    for (section <- tiles.allSections) {
       section.closeAtEnd()
     }
 
-    val endPoints = me.points
+    val points = me.points
 
-    (endPoints - startPoints, endFollowers - startFollowers)
+    (points, followers)
   }
 }

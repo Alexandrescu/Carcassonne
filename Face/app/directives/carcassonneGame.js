@@ -116,7 +116,7 @@ carcassonne.directive('carcassonneGame', ['$socket', '$location', '$routeParams'
         $timeout(function() {
           console.log("[Remove Move]", removed);
           /* Debug */
-          // $scope.removed = removed;
+          $scope.removed = removed;
         }, 0);
       });
 
