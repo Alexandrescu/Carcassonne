@@ -5,8 +5,11 @@ import com.player.Player
 class PlayerTurn(number : Int) {
   def isCurrent(i: Int): Boolean = _current == i
 
+  var sorted = Array[Player]()
   def winResult(slot: Int): Double = {
-    val sorted = players.sortBy(player => -player.points)
+    if(sorted.size == 0) {
+      sorted = players.sortBy(player => -player.points)
+    }
     if(sorted(0).slot == slot) return 1
     0
   }

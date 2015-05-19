@@ -11,12 +11,12 @@ import com.tile.Tile
 
 import scala.collection.mutable.ArrayBuffer
 
-class AiClient(flag : Int, private val _slot : Int, private val _token : String, private val _name : String) extends Client{
+class AiClient(flag : Int, private val _slot : Int, private val _token : String, private val _name : String, private val gameSize : Int) extends Client{
   var game : Option[Game] = None
 
   val ai : AI = flag match {
     case AiFlag.Random => new RandomAI(this)
-    case AiFlag.MC => new AiUct(this, 2)
+    case AiFlag.MC => new AiUct(this, gameSize)
     case _ => new RandomAI(this)
   }
 

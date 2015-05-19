@@ -18,6 +18,8 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
   private val tiles : StandardTileBag = new StandardTileBag
   private val playerTurn: PlayerTurn = new PlayerTurn(playerNumber)
 
+  /* Create map of players */
+
   for(m <- moveList) m match {
     case Left(move) =>
       val myMove = adoptMove(move)
@@ -67,7 +69,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
       Simulation phase
       Doing a random playout and returning the value of the simulation, X, in the interval [0, 1].
   */
-  def playRandomGame()  : Double = {
+  def playRandomGame()  : Unit = {
     while(tiles.hasNext) {
       val nextPlayer = playerTurn.next()
       var nextTile = tiles.next()
@@ -89,53 +91,46 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
     for(section <- tiles.allSections) {
       section.closeAtEnd()
     }
-    playerTurn.winResult(mySlot)
   }
 
   /* Exploration + Backpropagation phase */
-  def playSimulation(node : Node): Double = {
-    val simulationResult =
-      if (!node.hasChildren && node.visits < uctVisits) {
-        // Run a number of simulations before children are expanded
-        playRandomGame()
-      }
-      else {
-        /*
-          We either haven't reached a terminal node (leaf) or
-          we have explored this sequence of moves enough time.
-        */
-        if (!node.hasChildren) {
-          expand(node)
-        }
+  def playSimulation(node : Node, nodeOwner : Int): Unit = {
 
-        val nextNode = UCTSelect(node) match {
-          case Some(n) => n
-          case None =>
-            // No moves left to explore in the tree
-            return 0
-        }
-
-        if (nextNode.move.isEmpty) {
-          // Should always have a move set.
-          throw UninitializedFieldError("Move has not been set.")
-        }
-
-        /* Translating the move to this current board */
-        val move = adoptMove(nextNode.move.get)
-
-        board.setMove(move)
-        tiles.remove(move.tile)
-        playSimulation(nextNode)
-      }
-
-    /* Propagating the simulation result in as is, and "reversing" the value when is not my turn. */
-    if(playerTurn.isCurrent(mySlot)) {
-      node.update(1 - simulationResult)
+    if (!node.hasChildren && node.visits < uctVisits) {
+      // Run a number of simulations before children are expanded
+      playRandomGame()
     }
     else {
-      node.update(simulationResult)
+      /*
+        We either haven't reached a terminal node (leaf) or
+        we have explored this sequence of moves enough time.
+      */
+      if (!node.hasChildren) {
+        expand(node)
+      }
+
+      val nextNode = UCTSelect(node) match {
+        case Some(n) => n
+        case None =>
+          // No moves left to explore in the tree
+          return
+      }
+
+      if (nextNode.move.isEmpty) {
+        // Should always have a move set.
+        throw UninitializedFieldError("Move has not been set.")
+      }
+
+      /* Translating the move to this current board */
+      val move = adoptMove(nextNode.move.get)
+
+      board.setMove(move)
+      tiles.remove(move.tile)
+      playSimulation(nextNode, move.player.slot)
     }
-    simulationResult
+
+    /* Propagating the simulation result in as is, and "complementing" the value when is not my turn. */
+    node.update(playerTurn.winResult(nodeOwner))
   }
 
   private def adoptMove(move : Move) : Move = {
@@ -171,7 +166,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
 
     for(simNo <- 1 to simulations) {
       val clone = new UCT(moveList, playerNumber, None, mySlot)
-      clone.playSimulation(root)
+      clone.playSimulation(root, mySlot)
     }
 
     val bestNode = root.getBest
@@ -186,7 +181,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
     val end = start + seconds * 1000 // 1000 ms/sec
     while(java.lang.System.currentTimeMillis() < end) {
       val clone = new UCT(moveList, playerNumber, None, mySlot)
-      clone.playSimulation(root)
+      clone.playSimulation(root, mySlot)
     }
 
     val bestNode = root.getBest

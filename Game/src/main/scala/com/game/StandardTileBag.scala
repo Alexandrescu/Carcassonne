@@ -15,9 +15,11 @@ import scala.util.Random
 
 class StandardTileBag extends TileBag {
   def remove(tile: Tile) = {
-    tiles -= tile
     if(thisTile == tile) {
       next()
+    }
+    else {
+      tiles -= tile
     }
   }
 
@@ -67,8 +69,10 @@ class StandardTileBag extends TileBag {
   private var thisTile : Tile = startTile
 
   override def next(): Tile = {
-    val random = Random.nextInt(tiles.length)
-    thisTile = tiles.remove(random)
+    if(tiles.size > 0) {
+      val random = Random.nextInt(tiles.size)
+      thisTile = tiles.remove(random)
+    }
     thisTile
   }
 

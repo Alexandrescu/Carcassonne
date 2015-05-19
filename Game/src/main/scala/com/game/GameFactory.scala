@@ -20,7 +20,7 @@ object GameFactory {
     for(slot <- roomDetails.slots.toList) {
       if(!slot.isEmpty) {
         val client =
-          if(slot.isAI) new AiClient(slot.slot, slot.slot, slot.token, slot.playerName)
+          if(slot.isAI) new AiClient(slot.slot, slot.slot, slot.token, slot.playerName, roomDetails.slots.size)
           else new RealClient(slot.slot, "token" + slot.slot, slot.playerName)
         clientList += client
       }
