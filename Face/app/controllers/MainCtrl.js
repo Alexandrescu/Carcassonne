@@ -2,6 +2,7 @@ var carcassonne = angular.module('carcassonne');
 
 carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$timeout', function($scope, $socket, $location, $timeout) {
   var host = $location.host();
+  console.log('http://' + host + ':1337');
   var socket = $socket.io('http://' + host + ':1337');
 
   // This receives all the games. i.e. namespaces
