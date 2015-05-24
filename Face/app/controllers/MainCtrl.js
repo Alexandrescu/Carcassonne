@@ -1,6 +1,6 @@
 var carcassonne = angular.module('carcassonne');
 
-carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($scope, $socket, $location) {
+carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$timeout', function($scope, $socket, $location, $timeout) {
   var host = $location.host();
   var socket = $socket.io('http://' + host + ':1337');
 
@@ -161,4 +161,29 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', function($
     'Flavius'
   ];
   $scope.slots = new Array(slotNumber);
+
+  /* Testing */
+  function rooms(name) {
+    $scope.createRoom(name);
+    $scope.joinRoom(name);
+    $scope.myRoom = {
+      roomName : name
+    };
+    $scope.aiSlot(0);
+    $scope.aiSlot(1);
+    $scope.aiSlot(2);
+    $scope.aiSlot(3);
+    $scope.aiSlot(4);
+    $scope.startGame();
+
+    $scope.myRoom = {
+      joined : false,
+      roomName: ''
+    }
+  }
+
+  for(var i = 0; i < 200; i++) {
+    rooms("test" + i);
+  }
+
 }]);
