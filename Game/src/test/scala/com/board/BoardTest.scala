@@ -128,8 +128,6 @@ class BoardTest extends FlatSpec {
     assert(Q1.followers.map(f => f.player).contains(playerA)
         && Q1.followers.map(f => f.player).contains(playerB))
 
-    //assert(Q1.openEdges == 0)
-    assert(playerB.points == 10 && playerA.points == 10)
+    assert(playerB.points == 14 && playerA.points == 14)
   }
-  it should "evaluate the board points in case of 'game end' event"
 }

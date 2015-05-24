@@ -2,12 +2,12 @@ package com.game
 
 import com.board.{GameBoard, Move, PossibleMove, RemovedFollower}
 import com.client.{AiClient, Client, RealClient}
-import com.corundumstudio.socketio.{SocketIONamespace, SocketIOClient}
+import com.corundumstudio.socketio.{SocketIOClient, SocketIONamespace}
 import com.player.{Follower, Player, PlayerObserver}
 import com.server.Converter
 import com.server.events.GameEvents
-import com.server.json.{GameMove, GameClient, GameClientPlayer, GameSlots}
-import com.tile.Tile
+import com.server.json.{GameClient, GameClientPlayer, GameMove, GameSlots}
+import com.tile._
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
@@ -21,20 +21,13 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
   /* Observing follower moves */
   private val observer = new PlayerObserver {
     override def followerUpdate(follower: Follower): Unit = {
-      val newRF = new RemovedFollower(follower.removedPlace, follower.removedFrontEndId, follower.player)
+      val newRF = new RemovedFollower(follower.removedPlace, follower.removedFrontEndId, follower.player, follower.sectionType)
       logger.info(newRF.toString)
       announceClients(Right(newRF))
       moveQueue += Right(newRF)
     }
   }
   clientTurn.clients.foreach(_.player.registerObserver(observer))
-  //Adding games to AiS
-  for(client <- clientTurn.clients) client match {
-    case ai : AiClient =>
-      ai.registerGame(this)
-      ai.connected = true
-    case _ =>
-  }
 
   val logger : Logger = Logger(LoggerFactory.getLogger("Game"))
   private var moveQueue : ArrayBuffer[EitherMove] =
@@ -110,11 +103,6 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
 
     playedTile = true
     val result = moveQueue.takeRight(moveQueue.size - startPoint).toArray
-    for(move <- result) {
-      for(client <- clientTurn.clients) {
-        client.movePlayed(move)
-      }
-    }
     result
   }
 
@@ -187,6 +175,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
       section.closeAtEnd()
     }
 
+    _ended = true
     getSlots
   }
 
@@ -196,6 +185,18 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
       gameEvents.runMove(move, aiClient)
     }
   }
+
+  //Adding games to AiS
+  for(client <- clientTurn.clients) client match {
+    case ai : AiClient =>
+      ai.registerGame(this)
+      ai.connected = true
+      ai.currentState(moveQueue.clone())
+    case _ =>
+  }
+
+  private var _ended = false
+  def ended : Boolean = _ended
 
   runGame()
 }

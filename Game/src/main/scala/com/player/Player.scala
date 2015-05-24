@@ -1,6 +1,6 @@
 package com.player
 
-import com.tile.Section
+import com.tile._
 
 class Player(val slot : Int, private var observers: Set[PlayerObserver] = Set()) {
   private var followerBag : Set[Follower] = Set()
@@ -11,6 +11,13 @@ class Player(val slot : Int, private var observers: Set[PlayerObserver] = Set())
       if(!follower.isPlaced) {
         follower.place = place
         follower.section = section
+        follower.sectionType = section match {
+          case x : GrassSection => 0
+          case x : CitySection => 1
+          case x : RoadSection => 2
+          case x : MonasterySection => 3
+          case _ => -1
+        }
         section.addFollowers(Set(follower))
         return
       }

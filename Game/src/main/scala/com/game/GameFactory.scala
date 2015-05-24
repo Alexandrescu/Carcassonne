@@ -1,6 +1,5 @@
 package com.game
 
-import com.ai.AiFlag
 import com.board.{GameBoard, SectionKeeper, StandardLogic}
 import com.client.{AiClient, Client, RealClient}
 import com.corundumstudio.socketio.SocketIONamespace
@@ -17,11 +16,12 @@ object GameFactory {
     new Game(new GameBoard(new StandardLogic, new SectionKeeper), new TestTileBag, roomDetails, namespace, gameName)
 
   implicit def roomDetailsToPlayerTurn(roomDetails: RoomDetails) : ClientTurn = {
+    val gameSize = roomDetails.slots.count(p => !p.isEmpty)
     val clientList = ArrayBuffer[Client]()
     for(slot <- roomDetails.slots.toList) {
       if(!slot.isEmpty) {
         val client =
-          if(slot.isAI) new AiClient(AiFlag.Random, slot.slot, slot.token, slot.playerName)
+          if(slot.isAI) new AiClient(slot.slot, slot.slot, slot.token, slot.playerName, gameSize)
           else new RealClient(slot.slot, "token" + slot.slot, slot.playerName)
         clientList += client
       }

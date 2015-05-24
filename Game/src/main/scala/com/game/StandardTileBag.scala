@@ -14,6 +14,15 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 class StandardTileBag extends TileBag {
+  def remove(tile: Tile) = {
+    if(thisTile == tile) {
+      next()
+    }
+    else {
+      tiles -= tile
+    }
+  }
+
   private var tiles : ArrayBuffer[Tile] = new ArrayBuffer()
   tiles ++= (for(i <- 1 to 2) yield TileGenerator.A)
   tiles ++= (for(i <- 1 to 4) yield TileGenerator.B)
@@ -51,7 +60,7 @@ class StandardTileBag extends TileBag {
 
   override val startTile: Tile = TileGenerator.D
 
-  override def getEntireTileBag: Iterable[Tile] = ???
+  override def getEntireTileBag: Set[Tile] = tiles.toSet
 
   override def hasNext: Boolean = tiles.size > 0
 
@@ -60,10 +69,27 @@ class StandardTileBag extends TileBag {
   private var thisTile : Tile = startTile
 
   override def next(): Tile = {
-    val random = Random.nextInt(tiles.length)
-    thisTile = tiles.remove(random)
+    if(tiles.size > 0) {
+      val random = Random.nextInt(tiles.size)
+      thisTile = tiles.remove(random)
+    }
     thisTile
   }
 
   override def current: Tile = thisTile
+
+  override def getTile(name: String): Tile = {
+    /* Can do binary search */
+    for(i <- 0 until tiles.size) {
+      if(tiles(i).identifier == name) {
+        return tiles(i)
+      }
+    }
+    /* Should throw error here or tile might be this */
+    if(thisTile.identifier == name) {
+      return thisTile
+    }
+
+    null
+  }
 }

@@ -11,7 +11,7 @@ class TestTileBag extends TileBag{
     result
   }
 
-  override def getEntireTileBag: Iterable[Tile] = ???
+  override def getEntireTileBag: Set[Tile] = ???
 
   override def hasNext: Boolean = bag.size > 0
 
@@ -31,4 +31,8 @@ class TestTileBag extends TileBag{
   }
 
   override def current: Tile = thisTile
+
+  override def getTile(name: String): Tile = ???
+
+  override def remove(tile: Tile): Unit = ???
 }

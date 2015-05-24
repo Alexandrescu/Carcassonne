@@ -20,8 +20,3 @@ lazy val carcassonne = (project in file(".")).
     libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.2.10",
     libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
   )
-
-lazy val game = (project in file("./game/.")).
-  settings(commonSettings: _*).
-  settings(name := "game").
-  dependsOn(carcassonne % "compile->compile;test->test")

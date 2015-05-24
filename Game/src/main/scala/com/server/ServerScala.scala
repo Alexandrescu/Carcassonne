@@ -97,4 +97,65 @@ class ServerScala {
       }
     }
   }
+
+  def logDiffScore(): Unit = {
+    println("Logging diffs i.e. A - B in points")
+    for(game <- gameSet) {
+      if(game.game.ended) {
+        var position = 1
+        for(client <- game.game.getClients)
+          if(client.slot == 0) {
+            println(position)
+          }
+          else {
+            position += 1
+          }
+      }
+    }
+  }
+  
+  def logCumScores() : Unit = {
+    for(game <- gameSet) {
+      if(game.game.ended) {
+        val pointsA = game.game.getClients(0).player.points
+        val pointsB = game.game.getClients(1).player.points
+
+        println(pointsA + pointsB)
+      }
+    }
+  }
+
+  def logIndividualScores() : Unit = {
+    for(game <- gameSet) {
+      if(game.game.ended) {
+        val pointsA = game.game.getClients(0).player.points
+        val pointsB = game.game.getClients(1).player.points
+        val pointsC = game.game.getClients(2).player.points
+        val pointsD = game.game.getClients(3).player.points
+        val pointsE = game.game.getClients(4).player.points
+
+        println(pointsA)
+        println(pointsB)
+        println(pointsC)
+        println(pointsD)
+        println(pointsE)
+      }
+    }
+  }
+
+
+  def logSections(slot : Int) : Unit = {
+    for (game <- gameSet) {
+      for (move <- game.game.moveList) {
+        move match {
+          case Right(follower) =>
+            if (follower.player.slot == slot) {
+              println(follower.sectionType)
+            }
+          case _ =>
+        }
+      }
+    }
+  }
+
 }

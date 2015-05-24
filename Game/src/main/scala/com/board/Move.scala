@@ -26,8 +26,8 @@ class PossibleMove(val direction : Direction, val place : (Int, Int), val toOwnF
   }
 }
 
-class RemovedFollower(val place : (Int, Int), val sectionId : Int, player: Player) {
+class RemovedFollower(val place : (Int, Int), val sectionId : Int, val player: Player, val sectionType : Int) {
   override def toString : String = {
-    s"RemovedFollower @ $place, with section $sectionId and player ${player.slot}."
+    s"RemovedFollower @ $place, with section $sectionId (type $sectionType) and player ${player.slot}."
   }
 }

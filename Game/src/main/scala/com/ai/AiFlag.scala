@@ -1,5 +1,7 @@
 package com.ai
 
 object AiFlag {
-  val Random = 0
+  val slot1 = 0
+  val slot0 = 0
+  //val Random = 1
 }

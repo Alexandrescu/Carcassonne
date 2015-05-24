@@ -50,6 +50,8 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
       (parent, child) match {
         case (parentCity : CitySection, childCity : CitySection) =>
           parentCity.addGrass(childCity.getGrass)
+        case (parentGrass : GrassSection, childGrass : GrassSection) =>
+          parentGrass.addClosedCity(childGrass.getClosedCities)
         case _ =>
       }
       child._parent = Some(parent)
@@ -105,8 +107,8 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
   def removeValue(x : Int) = findRoot()._value -= x
 
   /* Methods which return the points per unit that count at the end */
-  protected def pointsInGame : Int
-  protected def pointsAtEnd : Int
+  def pointsInGame : Int
+  def pointsAtEnd : Int
   protected def canClose : Boolean = findRoot().canCloseInternal
 
   private var _closed : Boolean = false
@@ -129,6 +131,10 @@ abstract class Section(val frontEndId : Int, private var _value : Int) {
   def closeAtEnd(): Unit = {
     val root = findRoot()
     if(!root._closed) {
+      root match {
+        case grass : GrassSection => grass.valueCities()
+        case _ =>
+      }
       root._closed = true
       root.closeWithPoints(root.pointsAtEnd)
     }
