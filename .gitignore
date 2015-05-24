@@ -18,3 +18,5 @@ Face/.idea/*
 Face/node_modules/*
 
 Face/public/*
+
+Game/project/target/*

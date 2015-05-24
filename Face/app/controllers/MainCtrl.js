@@ -181,9 +181,9 @@ carcassonne.controller('MainCtrl', ['$scope', '$socket', '$location', '$timeout'
       roomName: ''
     }
   }
-
+/*
   for(var i = 0; i < 200; i++) {
     rooms("test" + i);
   }
-
+*/
 }]);
