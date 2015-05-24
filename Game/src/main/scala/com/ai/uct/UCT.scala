@@ -20,10 +20,11 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
 
   /* Create map of players */
 
+  var moveNumber = 0
   for(m <- moveList) m match {
     case Left(move) =>
       val myMove = adoptMove(move)
-
+      moveNumber += 1
       board.setMove(myMove)
       tiles.remove(myMove.tile)
     case Right(follower) =>
@@ -161,7 +162,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
       The state of the root node is encapsuled by initialisation of the object
   */
   def uctSearch(simulations : Int) : Move = {
-    val root = new Node
+    val root = new Node(1)
     expand(root)
 
     for(simNo <- 1 to simulations) {
@@ -174,7 +175,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
   }
 
   def uctSearchSeconds(seconds : Int) : Move = {
-    val root = new Node
+    val root = new Node(1)
     expand(root)
 
     val start = java.lang.System.currentTimeMillis()
@@ -220,7 +221,7 @@ class UCT(moveList: ArrayBuffer[Either[Move, RemovedFollower]], playerNumber : I
           for (section <- move.toOwnFromTile) {
             /* Creating the move to store */
             tile.orientation = move.direction
-            val newNode = new Node
+            val newNode = new Node(moveNumber)
             newNode.move = new Move(tile, move.place, section, player)
 
             /* Evaluating the immediate reward of this move */

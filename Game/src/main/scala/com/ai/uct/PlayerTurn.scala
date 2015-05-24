@@ -5,12 +5,26 @@ import com.player.Player
 class PlayerTurn(number : Int) {
   def isCurrent(i: Int): Boolean = _current == i
 
+  val pointRange = 50
   var sorted = Array[Player]()
   def winResult(slot: Int): Double = {
-    if(sorted.size == 0) {
+    if(sorted.length == 0) {
       sorted = players.sortBy(player => -player.points)
     }
-    if(sorted(0).slot == slot) return 1
+
+    for(i <- 0 until sorted.length) {
+      if(sorted(i).slot == slot) {
+        val diff =
+          if(i == 0) {
+            Math.min(sorted(i).points - sorted(sorted.length - 1).points, 50)
+          }
+          else {
+            Math.max(sorted(i).points - sorted(0).points, -50)
+          }
+
+        return 0.5 + (diff/100)
+      }
+    }
     0
   }
 

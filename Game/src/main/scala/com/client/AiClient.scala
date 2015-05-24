@@ -2,8 +2,7 @@ package com.client
 
 import com.ai.uct.AiUct
 import com.ai.{AI, AiFlag}
-import com.ai.random.RandomAI
-import com.board.{PossibleMove, RemovedFollower, Move}
+import com.board.{Move, PossibleMove, RemovedFollower}
 import com.game.Game
 import com.player.Player
 import com.server.json.GameClientPlayer
@@ -15,9 +14,9 @@ class AiClient(flag : Int, private val _slot : Int, private val _token : String,
   var game : Option[Game] = None
 
   val ai : AI = flag match {
-    case AiFlag.Random => new RandomAI(this)
-    case AiFlag.MC => new AiUct(this, gameSize)
-    case _ => new RandomAI(this)
+    case AiFlag.`slot0` => new AiUct(this, gameSize)
+    //case _ => new RandomAI(this)
+    case _ => new AiUct(this, gameSize)
   }
 
   private val _player = new Player(slot)

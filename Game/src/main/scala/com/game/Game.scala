@@ -7,7 +7,7 @@ import com.player.{Follower, Player, PlayerObserver}
 import com.server.Converter
 import com.server.events.GameEvents
 import com.server.json.{GameClient, GameClientPlayer, GameMove, GameSlots}
-import com.tile.Tile
+import com.tile._
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
@@ -21,7 +21,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
   /* Observing follower moves */
   private val observer = new PlayerObserver {
     override def followerUpdate(follower: Follower): Unit = {
-      val newRF = new RemovedFollower(follower.removedPlace, follower.removedFrontEndId, follower.player)
+      val newRF = new RemovedFollower(follower.removedPlace, follower.removedFrontEndId, follower.player, follower.sectionType)
       logger.info(newRF.toString)
       announceClients(Right(newRF))
       moveQueue += Right(newRF)
@@ -175,6 +175,7 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
       section.closeAtEnd()
     }
 
+    _ended = true
     getSlots
   }
 
@@ -193,6 +194,9 @@ class Game(board : GameBoard, tileBag : TileBag, clientTurn: ClientTurn, namespa
       ai.currentState(moveQueue.clone())
     case _ =>
   }
+
+  private var _ended = false
+  def ended : Boolean = _ended
 
   runGame()
 }

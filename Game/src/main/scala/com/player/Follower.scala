@@ -4,6 +4,8 @@ import com.tile.Section
 
 // Player is who's follower this is.
 class Follower(val player : Player) {
+  var sectionType = -1
+
   /*
     When removing a follower I need to
       know the coordinates and the section id.

@@ -5,7 +5,7 @@ import com.board.Move
 
 import scala.collection.mutable.ArrayBuffer
 
-class Node {
+class Node(private val round : Int) {
   private var wins: Double = 0
   var visits: Int = 0
 
@@ -17,8 +17,9 @@ class Node {
   def children_= (newChildren : ArrayBuffer[Node]) : Unit = _children = newChildren
   def hasChildren = _children.nonEmpty
 
-  private val pointWorth : Double = 3
-  private val followerWorth : Double = 7
+  // (1, 1)
+  private val pointWorth : Double = 4
+  private val followerWorth : Double = 7 // * ((85 - round) / 72)
   private val winWorth : Double = 1
   private val total : Double = pointWorth + followerWorth + winWorth
 
@@ -57,10 +58,10 @@ class Node {
   private def sigmoidFunction(value : Double) : Double = 1 - Math.pow(1.618, -value)
 
   def winRate : Double = {
-    println(s"PointDelta $pDelta and followerDelta $fDelta")
+    //println(s"PointDelta $pDelta and followerDelta $fDelta")
     if(this.visits > 0) {
       val result :Double= (wins / visits.toDouble) * wRatio + sigmoidFunction(pDelta) * pRatio + sigmoidFunction(fDelta) * fRatio
-      println(s"Result $result")
+      //println(s"Result $result")
       result
     }
     else 0
