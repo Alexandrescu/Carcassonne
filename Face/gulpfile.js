@@ -5,7 +5,8 @@ var _ = require('lodash'),
     gulpLoadPlugins = require('gulp-load-plugins'),
     runSequence = require('run-sequence'),
     defaultAssets = require('./config/assets'),
-    plugins = gulpLoadPlugins();
+    plugins = gulpLoadPlugins(),
+    sass = require('gulp-sass');
 
 gulp.task('env:dev', function(){
   process.env.NODE_ENV = 'development';
@@ -56,7 +57,7 @@ gulp.task('js', function(done) {
 
 gulp.task('sass', function () {
   return gulp.src(defaultAssets.server.sass + '**')
-    .pipe(plugins.sass())
+    .pipe(sass())
     .pipe(gulp.dest(defaultAssets.client.css));
 });
 
